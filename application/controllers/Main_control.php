@@ -138,6 +138,18 @@ class Main_control extends CI_Controller {
 		}
 
 	}
+	
+	function dashboard()
+	{
+		if($this->session->userdata('admin_login')!='')
+		{
+		$this->load->view('dashboard');
+		}
+		else
+		{
+			redirect('home');
+		}
+	}
 
 }
 ?>

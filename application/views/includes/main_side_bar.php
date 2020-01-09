@@ -54,7 +54,7 @@
 						<!-- Main -->
 						
 						<li class="nav-item">
-							<a href="<?php echo base_url();?>main/dashboard/#dashboard" class="nav-link">
+							<a href="<?php echo base_url();?>main_control/dashboard/#dashboard" class="nav-link">
 								<i class="icon-home4"></i>
 								<span>
 									Dashboard
@@ -69,6 +69,16 @@
 								</span>
 							</a>
 						</li>
+						<li class="nav-item nav-item-submenu">
+								<a href="#" class="nav-link"><i class="icon-users"></i> <span>Master</span></a>
+
+								<ul class="nav nav-group-sub" data-submenu-title="Layouts">
+									<li class="nav-item"><a href="../governement_pension.php" class="nav-link">Government Pension</a></li>
+									<li class="nav-item"><a href="../federal_tax.php" class="nav-link">Federal Tax</a></li>
+									<li class="nav-item"><a href="../ei_contribution.php" class="nav-link">Ei Contribution</a></li>
+								</ul>
+							</li>
+
 						<li class="nav-item">
 							<a href="" class="nav-link">
 								<i class="fa fa-inr" style="font-size:18px;"></i>
