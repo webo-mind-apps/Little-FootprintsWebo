@@ -126,7 +126,7 @@
 					<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYESS PAYROLL</h6> 
 					
 		  </div> 
-				
+				<h1></h1>
           <div class="card-body">
           	<?php
    				if($this->session->flashdata('abc','success')){
