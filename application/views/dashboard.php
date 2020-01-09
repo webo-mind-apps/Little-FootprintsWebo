@@ -57,13 +57,13 @@
 <body> 
 
 		<?php
-         include('includes/main-nav-bar.php');
+         include('includes/main_nav_bar.php');
          ?>
 	<!-- Page content -->
 	<div class="page-content"> 
 
 		<?php
-         include('includes/main-side-bar.php');
+         include('includes/main_side_bar.php');
          ?>
 
 		<!-- Main content -->
@@ -97,7 +97,7 @@
 			<!-- /content area --> 
 			
 		<?php
-         include('includes/main-footer-bar.php');
+         include('includes/main_footer.php');
          ?>
 	
 	</div>
