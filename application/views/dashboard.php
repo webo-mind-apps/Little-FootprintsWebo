@@ -71,10 +71,7 @@
 			<!-- Content area -->
 			<div class="content">  
 
-		
-				  
-			</div>
-			<!-- /card area --> 
+		 
 			
 			</div>
 			<!-- /content area --> 
@@ -90,7 +87,7 @@
 		</div>
 	<!-- /page content -->
 			
-</div>
+
 
 </body>
 </html>
