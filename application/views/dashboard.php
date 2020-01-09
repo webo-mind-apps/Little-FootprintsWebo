@@ -56,15 +56,16 @@
 
 <body> 
 
-		<?php
-         include('includes/main_nav_bar.php');
-         ?>
+		<!-- Main navbar -->
+		<?php $this->load->view('includes/main_nav_bar')?>
+	<!-- /main navbar --> 
+
 	<!-- Page content -->
 	<div class="page-content"> 
 
-		<?php
-         include('includes/main_side_bar.php');
-         ?>
+		  <!-- Main sidebar ---->
+		  <?php $this->load->view('includes/main_side_bar')?>
+    <!--/main sidebar --->
 
 		<!-- Main content -->
 		<div class="content-wrapper"> 
@@ -75,11 +76,9 @@
 			
 			</div>
 			<!-- /content area --> 
-			
-		<?php
-         include('includes/main_footer.php');
-         ?>
-	
+			<!-- Footer -->
+		 <?php $this->load->view('includes/main_footer') ?>
+	<!-- /footer --> 
 	</div>
 		<!-- /content wrapper --> 
 		

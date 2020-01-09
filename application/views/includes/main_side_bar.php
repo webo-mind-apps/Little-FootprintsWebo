@@ -54,7 +54,7 @@
 						<!-- Main -->
 						
 						<li class="nav-item">
-							<a href="<?php echo base_url();?>main_control/dashboard/#dashboard" class="nav-link">
+							<a href="<?php echo base_url();?>main/dashboard/#dashboard" class="nav-link">
 								<i class="icon-home4"></i>
 								<span>
 									Dashboard
