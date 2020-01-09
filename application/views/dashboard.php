@@ -71,26 +71,9 @@
 			<!-- Content area -->
 			<div class="content">  
 
-		<!-- Multiple row inputs (horizontal) -->
-	           <!-- <div class="card">
-					<div class="card-header header-elements-inline">
-						<h6 class="card-title payslip_heading">Employee master<br><br><a href="<?php echo base_url();?>main/employee_details_fetch">Search</a></h6>
-						
-						
-						<div class="header-elements">
-							<div class="list-icons">
-		                		<a class="list-icons-item" data-action="collapse"></a>
-		                		<a class="list-icons-item" data-action="reload"></a>
-		                		<a class="list-icons-item" data-action="remove"></a>
-		                	</div>
-	                	</div>
-					</div>
-					
-					
-                  
-			
+		
 				  
-			</div>-->
+			</div>
 			<!-- /card area --> 
 			
 			</div>
@@ -107,7 +90,7 @@
 		</div>
 	<!-- /page content -->
 			
-
+</div>
 
 </body>
 </html>
