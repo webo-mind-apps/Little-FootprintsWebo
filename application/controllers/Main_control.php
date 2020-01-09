@@ -123,13 +123,18 @@ class Main_control extends CI_Controller {
 	public function download_payroll($id = null)
 	{
 
-		// $this->load->view('payroll-pdf');	
+		$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
+		
+		
+		// echo "<pre>";
+		// print_r ($result);
+		// echo "</pre>";
 		
 		if(!empty($id)){
 			# fetch data from data base 
 			# after fetching data pass to view page and display on view page
 			$mpdf = new \Mpdf\Mpdf();
-			$html = $this->load->view('payroll-pdf',[],true);
+			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);
 			$mpdf->Output(); // opens in browser
 			//$mpdf->Output('payroll.pdf','D'); // it downloads 
