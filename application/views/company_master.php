@@ -64,7 +64,7 @@
                   <div class="col-md-6">
                      <div class="card">
                         <div class="card-header header-elements-inline">
-                           <h6 class="card-title payslip_heading">Government Pension</h6>
+                           <h6 class="card-title payslip_heading">Company Master</h6>
                            <div class="header-elements">
                               <div class="list-icons">
                                  <a class="list-icons-item" data-action="reload"></a>

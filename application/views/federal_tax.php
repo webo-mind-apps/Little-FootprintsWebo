@@ -212,26 +212,47 @@
       <script>
          function decimal_check()
          {
-          var number=/[0-9]/;
+            var number=/[0-9]/;
           var dot=/[.]/;
-          var rate=$('#federal').val();
-          for(var i=0;i<rate.length;i++)
+          var letter=/[a-zA-Z]/
+          var amt=$('#federal').val();
+          var letter_count=0;
+          var number_count=0;
+          var dot_count=0;
+          for(var i=0;i<amt.length;i++)
           {
-              if(i==1)
-              {
-              if(!dot.test(rate[i]))
-              {
-                $('#federal').val('');
-              }
-              }
-              else{
-          if(!number.test(rate[i]))
+          if(number.test(amt[i]))
+               	  {
+               		   number_count=++number_count;
+               	  }
+         	if(dot.test(amt[i]))
+               	{
+               	  dot_count=++dot_count;
+               	}
+            if(letter.test(amt[i]))
+               	{
+                    letter_count=++letter_count;
+               	}
+          }
+        i--;
+          if(letter_count>0)
           {
          	 $('#federal').val('');
           }
+          if(dot_count>1)
+          {
+         	 $('#federal').val('');
           }
+          if(number_count==0)
+          {
+         	 $('#federal').val('');
           }
-          
+          if(dot.test(amt[i]))
+          {
+         	 $('#federal').val('');
+          }
+
+
          }
            $('.del').css('cursor', 'pointer');
          <!-- delete -->   

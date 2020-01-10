@@ -64,7 +64,7 @@
                   <div class="col-md-6">
                      <div class="card">
                         <div class="card-header header-elements-inline">
-                           <h6 class="card-title payslip_heading">Federal Tax </h6>
+                           <h6 class="card-title payslip_heading">EI Contribution </h6>
                            <div class="header-elements">
                               <div class="list-icons">
                                  <a class="list-icons-item" data-action="reload"></a>
@@ -114,7 +114,7 @@
                               </div>
                              
                               <div class="form-group">
-                                 <label>EI Contribution (format : 0.0)</label>
+                                 <label>EI Contribution </label>
                                  <div class="input-group">
                                     <input type="text" id="ei-contn"   class="form-control" placeholder="EI Contribution" name="ei_contn" onfocusout="decimal_check();"  minlength="3" required>
                                  </div>
@@ -224,26 +224,46 @@
       <script>
          function decimal_check()
          {
-          var number=/[0-9]/;
+            var number=/[0-9]/;
           var dot=/[.]/;
-          var rate=$('#ei-contn').val();
-          for(var i=0;i<rate.length;i++)
+          var letter=/[a-zA-Z]/
+          var amt=$('#ei-contn').val();
+          var letter_count=0;
+          var number_count=0;
+          var dot_count=0;
+          for(var i=0;i<amt.length;i++)
           {
-              if(i==1)
-              {
-              if(!dot.test(rate[i]))
-              {
-                $('#ei-contn').val('');
-              }
-              }
-              else{
-          if(!number.test(rate[i]))
+          if(number.test(amt[i]))
+               	  {
+               		   number_count=++number_count;
+               	  }
+         	if(dot.test(amt[i]))
+               	{
+               	  dot_count=++dot_count;
+               	}
+            if(letter.test(amt[i]))
+               	{
+                    letter_count=++letter_count;
+               	}
+          }
+        i--;
+          if(letter_count>0)
           {
          	 $('#ei-contn').val('');
           }
+          if(dot_count>1)
+          {
+         	 $('#ei-contn').val('');
           }
+          if(number_count==0)
+          {
+         	 $('#ei-contn').val('');
           }
-          
+          if(dot.test(amt[i]))
+          {
+         	 $('#ei-contn').val('');
+          }
+         
          }
 
 

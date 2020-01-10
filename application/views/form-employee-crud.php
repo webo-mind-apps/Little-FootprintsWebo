@@ -590,6 +590,11 @@
               				data:{company_name:company_name},
               				success:function(data){
                               console.log(data);
+                              foreach(data as r)
+                              {
+                                 
+
+                              }
               		
               				}
               			 });	
