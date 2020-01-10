@@ -220,9 +220,7 @@ class Main extends CI_Controller {
 					}
 					else
 					{
-                        redirect(base_url().'main/governmenfederal_tax
-                        
-                        t_pension/');
+                        redirect(base_url().'main/federal_tax/');
 					} 
         }
     }
