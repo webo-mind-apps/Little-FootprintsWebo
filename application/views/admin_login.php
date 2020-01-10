@@ -8,19 +8,19 @@
 
 	<!-- Global stylesheets -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
-	<link href="<?php echo base_url();?>global_assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
-	<link href="<?php echo base_url();?>global_assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
-	<link href="<?php echo base_url();?>global_assets/css/bootstrap_limitless.min.css" rel="stylesheet" type="text/css">
-	<link href="<?php echo base_url();?>global_assets/css/layout.min.css" rel="stylesheet" type="text/css">
-	<link href="<?php echo base_url();?>global_assets/css/components.min.css" rel="stylesheet" type="text/css">
-	<link href="<?php echo base_url();?>global_assets/css/colors.min.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo base_url();?>my_assets/global_assets/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo base_url();?>my_assets/global_assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo base_url();?>my_assets/global_assets/css/bootstrap_limitless.min.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo base_url();?>my_assets/global_assets/css/layout.min.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo base_url();?>my_assets/global_assets/css/components.min.css" rel="stylesheet" type="text/css">
+	<link href="<?php echo base_url();?>my_assets/global_assets/css/colors.min.css" rel="stylesheet" type="text/css">
 	<!-- /global stylesheets -->
 
 	<!-- Core JS files -->
-	<script src="<?php echo base_url();?>global_assets/js/main/jquery.min.js"></script>
-	<script src="<?php echo base_url();?>global_assets/js/main/bootstrap.bundle.min.js"></script>
-	<script src="<?php echo base_url();?>global_assets/js/plugins/loaders/blockui.min.js"></script>
-	<script src="<?php echo base_url();?>global_assets/js/plugins/ui/ripple.min.js"></script>
+	<script src="<?php echo base_url();?>my_assets/global_assets/js/main/jquery.min.js"></script>
+	<script src="<?php echo base_url();?>my_assets/global_assets/js/main/bootstrap.bundle.min.js"></script>
+	<script src="<?php echo base_url();?>my_assets/global_assets/js/plugins/loaders/blockui.min.js"></script>
+	<script src="<?php echo base_url();?>my_assets/>global_assets/js/plugins/ui/ripple.min.js"></script>
 	<!-- /core JS files -->
 
 	<!-- Theme JS files -->

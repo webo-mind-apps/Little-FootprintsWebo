@@ -223,7 +223,7 @@ class Main extends CI_Controller {
                         redirect(base_url().'main/federal_tax/');
 					} 
         }
-    }}
+    }
     else
 		{
 			redirect('home');

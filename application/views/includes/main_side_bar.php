@@ -76,6 +76,8 @@
 									<li class="nav-item"><a href="<?php echo base_url();?>main/government_pension/#government-pension" class="nav-link">Government Pension</a></li>
 									<li class="nav-item"><a href="<?php echo base_url();?>main/federal_tax/#federal-tax" class="nav-link">Federal Tax</a></li>
 									<li class="nav-item"><a href="<?php echo base_url();?>main/ei_contribution/#ei-contribution" class="nav-link">Ei Contribution</a></li>
+									<li class="nav-item"><a href="<?php echo base_url();?>main/ei_contribution/#ei-contribution" class="nav-link">Company Master</a></li>
+									<li class="nav-item"><a href="<?php echo base_url();?>main/ei_contribution/#ei-contribution" class="nav-link">Center Master</a></li>
 									<li class="nav-item"><a href="<?php echo base_url();?>main/center/#center" class="nav-link">Center</a></li>
 								</ul>
 							</li>
