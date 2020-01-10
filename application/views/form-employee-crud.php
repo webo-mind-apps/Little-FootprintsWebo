@@ -126,21 +126,7 @@
                                  <div class="input-group">
                                  <select name="center_name" id="center-name" class="form-control" required>
                                        <option value="">Select</option>
-                                       <?php
-                                          $i=1;
-                                          if($center_select_feild)
-                                          {
-                                            
-                                          foreach($center_select_feild as $row)
-                                          {
-                                          	
-                                          ?>
-                                       <option value="<?php echo $row['center_name'];?>"><?php echo $row['center_name'];?></option>
-                                       <?php
-                                           $i++;
-                                          }
-                                       }
-                                          ?>
+                                      
                                     </select>  
                                  </div>
                               </div>
@@ -441,9 +427,6 @@
                $(".select select option").filter(function() {
                return $(this).text() == position;
                }).prop('selected', true);
-               
-               
-               
                   	$("#medical").val("<?php echo $medical; ?>");
                
                   	$("#vocation-rate").val("<?php echo $vocation_rate; ?>");
@@ -589,12 +572,13 @@
                         dataType:'json',
               				data:{company_name:company_name},
               				success:function(data){
-                              console.log(data);
-                              foreach(data as r)
-                              {
-                                 
+                              // console.log(data);
+                              // foreach(data as r)
+                              // {
+                              //    $('#center-name option').append('<option value='r['center_name']'>r['center_name']</option>');
 
-                              }
+                              // }
+                              alert(data)
               		
               				}
               			 });	

@@ -474,18 +474,7 @@ function emp_ei_insert()
 		
 	}
 
-	// function lit_employee_details_fetch()
-	// {
-	// 	$this->db->select('a.*,b.position,b.id as pos_id');
-	// 	$this->db->from('lit_employee_details a');
-	// 	$this->db->join('lit_employee_position b','a.emp_position = b.id','left');
-	// 	$this->db->order_by('a.id', 'desc');
-	// 	$query=$this->db->get();
-	// 	$result=$query->result_array();
-	// 	return $result;
-	// }	
-
-
+	
 
 	function center_master()
 	{
@@ -553,16 +542,21 @@ function emp_ei_insert()
 			 		return false;
 				 }
 	}
+
+
+
 	function center_select_feild($company_name)
 	{
 
-		$this->db->select('*');
-		$this->db->from('lit_center');
+		$this->db->select('a.*,b.*,b.id as cen_id');
+	$this->db->from('lit_company a');
+	$this->db->join('lit_center b','a.id = b.company_name','right');
+	$this->db->where(array('name'=>$company_name));
+	$query=$this->db->get();
+	$result=$query->result_array();
+	return $result;
 		
-		$this->db->where(array('company_name'=>$company_name));
-		$query=$this->db->get();
-		$result=$query->result_array();
-		return $result;
+		
 	}	
 
 	

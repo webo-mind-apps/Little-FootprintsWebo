@@ -522,7 +522,7 @@ class Main extends CI_Controller {
 			
 			$data=$this->db_model->center_select_feild($company_name);
           
-			echo json_encode($data);
+			print_r($data);
 			}
         }
 
