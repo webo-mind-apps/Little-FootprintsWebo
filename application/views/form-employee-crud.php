@@ -569,7 +569,7 @@
                   jQuery.ajax({
               				url:"<?php echo base_url();?>main/center_select_feild",
               				type:"POST",	
-                        dataType:'json',
+                        // dataType:'json',
               				data:{company_name:company_name},
               				success:function(data){
                               // console.log(data);
