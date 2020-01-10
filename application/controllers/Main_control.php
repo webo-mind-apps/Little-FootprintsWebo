@@ -6,6 +6,7 @@ class Main_control extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->model('pay_roll_model'); 
+		if($this->session->userdata('admin_login') == false){ redirect('home','location',); }
 	} 
 	function pay_roll_page()
 	{   
@@ -128,32 +129,15 @@ class Main_control extends CI_Controller {
 	// download payroll on pdf format
 	public function download_payroll($id = null)
 	{
-
-		
-		
-		
-		// echo "<pre>";
-		// print_r ($result);
-		// echo "</pre>";
-		
 		if(!empty($id)){
 			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
-			
-			// echo "<pre>";
-			// print_r ($result);
-			// echo "</pre>";
-			
-			// $this->load->view('payroll-pdf', $result, FALSE);
-			
-
-
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);
 			$mpdf->Output();
 			//$mpdf->Output('payroll.pdf','D');
 		}else{
-			#show error here
+			redirect('main_control/pay_roll_page');
 		}
 
 	}
