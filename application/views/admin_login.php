@@ -45,7 +45,7 @@
 					<div class="card mb-0">
 						<div class="card-body">
 							<div class="text-center mb-3">
-								<img src="<?php echo base_url();?>global_assets/images/foot.jpg" width="80" height="80" style="border-radius: 50%; border:0px solid green">
+								<img src="<?php echo base_url();?>my_assets/global_assets/images/foot.jpg" width="80" height="80" style="border-radius: 50%; border:0px solid green">
 								<h5 class="mb-0">Login to your account</h5>
 								<span class="d-block text-muted">Enter your credentials below</span>
 							</div>
@@ -63,7 +63,7 @@
 								<div class="form-control-feedback">
 									<i class="icon-lock2 text-muted"></i>
 								</div>
-								<span style="color:black;font-size:20px;font-size:12px;">(Password minimum 8 characters, including 1uppercase, 1lowercase letters and 1number)</span>
+								
 							</div>
 
 							<div class="form-group">
