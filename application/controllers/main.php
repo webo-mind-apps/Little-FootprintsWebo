@@ -16,6 +16,7 @@ class Main extends CI_Controller {
 	{
 		if($this->session->userdata('admin_login'))
 		{
+		$data['comapny_fetch']=$this->db_model->company_master();
 		$data['employee_position_fetch']=$this->db_model->lit_employee_position_fetch();
 		$this->load->view('form-employee-crud',$data);
 		}
@@ -340,9 +341,190 @@ class Main extends CI_Controller {
 		{
 			redirect('home');
 		}
+		}
+		
+
+
+		
+
+		function company_master()
+        {
+            if($this->session->userdata('admin_login'))
+            {
+            $data['comapny_fetch']=$this->db_model->company_master();
+            $this->load->view('company_master',$data);
+            }
+            else
+            {
+                redirect('home');
+            }
+            
+            
         }
+
+        function company_master_insert_update()
+		{
+            if($this->session->userdata('admin_login'))
+		{
+		if(isset($_POST['insert_button']))
+		{
+				
+				 if($this->db_model->company_master_insert())
+					{
+                        $this->session->set_flashdata('insert','success');
+						redirect(base_url().'main/company_master/');
+					}
+					else
+					{
+						redirect(base_url().'main/company_master/');
+                    } 
+        }
+             
+		if(isset($_POST['update_button']))
+		{
+                    
+                    if($this->db_model->company_master_update())
+					{
+                        $this->session->set_flashdata('update','success');
+						redirect(base_url().'main/company_master/');
+					}
+					else
+					{
+                        redirect(base_url().'main/company_master/');
+					} 
+        }
+    }
+    else
+		{
+			redirect('home');
+		}
+    }
+
+
+    function company_master_delete()
+		{
+            if($this->session->userdata('admin_login'))
+		{
+			
+            $this->db_model->company_master_delete($_POST['id']);
+        }
+        else
+		{
+			redirect('home');
+		}
+        }
+
+
+        function company_master_fetch_for_update()
+        {
+		if($this->session->userdata('admin_login'))
+		{
+            $data['comapny_fetch']=$this->db_model->company_master();
+		$data['company_master_fetch_for_update']=$this->db_model->company_master_fetch_for_update();
+			$this->load->view('company_master',$data);
+			}
+		else
+		{
+			redirect('home');
+		}
+        }
+
     
-    
+		function center_master()
+        {
+            if($this->session->userdata('admin_login'))
+            {
+			$data['comapny_fetch']=$this->db_model->company_master();
+            $data['center_fetch']=$this->db_model->center_master();
+            $this->load->view('center_master',$data);
+            }
+            else
+            {
+                redirect('home');
+            }
+            
+            
+        }
+
+        function center_master_insert_update()
+		{
+            if($this->session->userdata('admin_login'))
+		{
+		if(isset($_POST['insert_button']))
+		{
+				
+				 if($this->db_model->center_master_insert())
+					{
+                        $this->session->set_flashdata('insert','success');
+						redirect(base_url().'main/center_master/');
+					}
+					else
+					{
+						redirect(base_url().'main/center_master/');
+                    } 
+        }
+             
+		if(isset($_POST['update_button']))
+		{
+                    
+                    if($this->db_model->center_master_update())
+					{
+                        $this->session->set_flashdata('update','success');
+						redirect(base_url().'main/center_master/');
+					}
+					else
+					{
+                        redirect(base_url().'main/center_master/');
+					} 
+        }
+    }
+    else
+		{
+			redirect('home');
+		}
+    }
+
+
+    function center_master_delete()
+		{
+            if($this->session->userdata('admin_login'))
+		{
+			
+            $this->db_model->center_master_delete($_POST['id']);
+        }
+        else
+		{
+			redirect('home');
+		}
+        }
+
+
+        function center_master_fetch_for_update()
+        {
+		if($this->session->userdata('admin_login'))
+		{
+			$data['comapny_fetch']=$this->db_model->company_master();
+            $data['center_fetch']=$this->db_model->center_master();
+		$data['center_master_fetch_for_update']=$this->db_model->center_master_fetch_for_update();
+			$this->load->view('center_master',$data);
+			}
+		else
+		{
+			redirect('home');
+		}
+		}
+		
+		function center_select_feild()
+        {
+            if($this->session->userdata('admin_login'))
+            {
+			$company_name=$_POST['company_name'];
+			
+			$data=$this->db_model->center_select_feild($company_name);
+          
+			echo json_encode($data);
+			}
+        }
 
 }
 ?>

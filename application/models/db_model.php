@@ -407,6 +407,163 @@ function emp_ei_insert()
 		$result=$query->result_array();
 		return $result;
 	}	
+	function company_master()
+	{
+		$this->db->select('*');
+		$this->db->from('lit_company');
+		$this->db->order_by('id', 'desc');
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+	function company_master_delete($id)
+	{
+		
+		$this->db->where(array('id'=>$id));
+		$this->db->delete('lit_company');
+	}
+
+	function company_master_fetch_for_update()
+	{
+		$id=$this->uri->segment(3);
+		$this->db->select('*');
+		$this->db->from('lit_company');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+
+	function company_master_insert()
+	{
+	
+		$company_name=$_POST['comp_name'];
+		$at_num=$_POST['at_num'];
+		$data = array('name' =>$company_name,'ac_num' =>$at_num);
+			
+				 if($this->db->insert('lit_company',$data))
+				 {
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+		
+	}
+	function company_master_update()
+	{
+		$id=$_POST['emp_id'];
+		$company_name=$_POST['comp_name'];
+		$at_num=$_POST['at_num'];
+		$data = array('name' =>$company_name,'ac_num' =>$at_num);
+		$this->db->where(array('id'=>$id));
+			
+				 if($this->db->update('lit_company',$data))
+				 {
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+		
+	}
+
+	// function lit_employee_details_fetch()
+	// {
+	// 	$this->db->select('a.*,b.position,b.id as pos_id');
+	// 	$this->db->from('lit_employee_details a');
+	// 	$this->db->join('lit_employee_position b','a.emp_position = b.id','left');
+	// 	$this->db->order_by('a.id', 'desc');
+	// 	$query=$this->db->get();
+	// 	$result=$query->result_array();
+	// 	return $result;
+	// }	
+
+
+
+	function center_master()
+	{
+		$this->db->select('a.*,b.*,b.id as cen_id');
+		$this->db->from('lit_company a');
+		$this->db->join('lit_center b','a.id = b.company_name','right');
+		$this->db->order_by('cen_id', 'desc');
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+	function center_master_delete($id)
+	{
+		
+		$this->db->where(array('id'=>$id));
+		$this->db->delete('lit_center');
+	}
+
+	function center_master_fetch_for_update()
+	{
+		$id=$this->uri->segment(3);
+		$this->db->select('*');
+		$this->db->from('lit_center');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+
+	function center_master_insert()
+	{
+		$company_name=$_POST['company_name'];
+		$center_name=$_POST['center_name'];
+		$data = array('company_name' =>$company_name,'center_name' =>$center_name);
+			
+				 if($this->db->insert('lit_center',$data))
+				 {
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+		
+	}
+	function center_master_update()
+	{
+		$id=$_POST['emp_id'];
+		$company_name=$_POST['company_name'];
+		$center_name=$_POST['center_name'];
+		$data = array('company_name' =>$company_name,'center_name' =>$center_name);
+			
+		$this->db->where(array('id'=>$id));
+			
+				 if($this->db->update('lit_center',$data))
+				 {
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+	}
+	function center_select_feild($company_name)
+	{
+
+		$this->db->select('*');
+		$this->db->from('lit_center');
+		
+		$this->db->where(array('company_name'=>$company_name));
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
 
 	
 }

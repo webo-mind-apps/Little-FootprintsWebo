@@ -74,6 +74,7 @@
                      </div>
                   </div>
                   <?php
+
                            if($this->session->flashdata('insert','Inserted successfully')){
                               ?> 
                         <div class="alert bg-success alert-styled-left">
@@ -96,6 +97,55 @@
                   <form method="post" id="frm" 
                      action="<?php echo base_url();?>main/employee_details_insert_update">
                      <div class="card-body">
+                     <div class="row">
+                           <div class="col-sm-5" >
+                              <div class="form-group">
+                                 <label>Company Name</label>
+                                 <div class="input-group">
+                                 <select name="company_name" id="company-name" class="form-control" onchange="center_select_feild();" required>
+                                       <option value="">Select</option>
+                                       <?php
+                                          $i=1;
+                                          foreach($comapny_fetch as $row)
+                                          {
+                                          	
+                                          ?>
+                                       <option value="<?php echo $row['name'];?>"><?php echo $row['name'];?></option>
+                                       <?php
+                                           $i++;
+                                          }
+                                          ?>
+                                    </select>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="col-sm-1" ></div>
+                           <div class="col-sm-5" >
+                              <div class="form-group">
+                                 <label>Center Name</label>
+                                 <div class="input-group">
+                                 <select name="center_name" id="center-name" class="form-control" required>
+                                       <option value="">Select</option>
+                                       <?php
+                                          $i=1;
+                                          if($center_select_feild)
+                                          {
+                                            
+                                          foreach($center_select_feild as $row)
+                                          {
+                                          	
+                                          ?>
+                                       <option value="<?php echo $row['center_name'];?>"><?php echo $row['center_name'];?></option>
+                                       <?php
+                                           $i++;
+                                          }
+                                       }
+                                          ?>
+                                    </select>  
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
                         <div class="row">
                            <div class="col-sm-5" >
                               <div class="form-group">
@@ -527,6 +577,25 @@
                   
                  var date = $('.dateformat').datepicker({dateFormat: 'dd-M-yy',changeMonth: true,changeYear: true,yearRange: '1960:' + d.getFullYear() }).val();
                } );
+
+
+               function center_select_feild()
+               {
+
+                  var company_name=$('#company-name').val();
+                  jQuery.ajax({
+              				url:"<?php echo base_url();?>main/center_select_feild",
+              				type:"POST",	
+                        dataType:'json',
+              				data:{company_name:company_name},
+              				success:function(data){
+                              console.log(data);
+              		
+              				}
+              			 });	
+
+               }
+               
       </script>
    </body>
 </html>
