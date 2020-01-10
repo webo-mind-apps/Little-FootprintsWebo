@@ -31,12 +31,16 @@ class Main_control extends CI_Controller {
 					</tr>';
 		if(!empty($result)):
 		  foreach($result as $key => $row) { 
-			$regular_hrs  = (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
-			$stat_hol =  (!empty($row->payRoll->stat_hol) ? $row->payRoll->stat_hol: '');
-			$wage_amount =  (!empty($row->payRoll->wage_amount) ? $row->payRoll->wage_amount: '');
-			$miscellaneous_amount =  (!empty($row->payRoll->miscellaneous_amount) ? $row->payRoll->miscellaneous_amount: '');
-			$payrollId =  (!empty($row->payRoll->id) ? $row->payRoll->id: '');
+
+			$regular_hrs  			= (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
+			$stat_hol 				=  (!empty($row->payRoll->stat_hol) ? $row->payRoll->stat_hol: '');
+			$wage_amount 			=  (!empty($row->payRoll->wage_amount) ? $row->payRoll->wage_amount: '');
+			$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount) ? $row->payRoll->miscellaneous_amount: '');
+			$payrollId 				=  (!empty($row->payRoll->id) ? $row->payRoll->id: '');
+
+
 			if(!empty($regular_hrs) && !empty($stat_hol) && !empty($wage_amount) && !empty($miscellaneous_amount)){
+
 				$btn = '<a href="'.base_url().'download-payroll/'.$payrollId.'" class="pdf-download"><i class="icon-file-download2 ml-2"></i></a>';
 			}else{
 				$btn = '<a  class="pdf-download disableda"><i class="icon-file-download2 ml-2"></i></a>';
@@ -45,7 +49,8 @@ class Main_control extends CI_Controller {
 			$table .='     
 			<tr>
 				<td>
-					<input type="hidden"  name="emp_ids[]" value="'.$row->emp_id.'" > 
+					<input type="hidden"  name="prl_id[]" value="'.$payrollId.'" >
+					<input type="hidden"  name="emp_ids[]" value="'.$row->emp_id.'" >
 					'.($key + 1).'
 				</td>
 			 
@@ -58,7 +63,7 @@ class Main_control extends CI_Controller {
 				</td>
 			 
 				<td>
-					'.$row->hour_rate.'
+					<input type="text" readonly class="form-control" name="rate_hour[]" value="'.$row->hour_rate.'">
 				</td>
 			 
 				<td class="text-center">
@@ -110,9 +115,10 @@ class Main_control extends CI_Controller {
 				'stat_hol' 				=> $post['stat_hol_hrs'][$key], 
 				'wage_amount' 			=> $post['wage_amount'][$key], 
 				'miscellaneous_amount' 	=> $post['miscellaneous_amount'][$key], 
+				'per_hr_rate'			=> $post['rate_hour'][$key]
 			);
-
-			$this->pay_roll_model->updatePayrolls($data, $sDate, $eDate);
+			$pid = $post['prl_id'][$key];
+			$this->pay_roll_model->updatePayrolls($data, $sDate, $eDate, $pid);
 			
 		}
 		$this->session->set_flashdata('abc','success');
@@ -123,7 +129,7 @@ class Main_control extends CI_Controller {
 	public function download_payroll($id = null)
 	{
 
-		$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
+		
 		
 		
 		// echo "<pre>";
@@ -131,13 +137,21 @@ class Main_control extends CI_Controller {
 		// echo "</pre>";
 		
 		if(!empty($id)){
-			# fetch data from data base 
-			# after fetching data pass to view page and display on view page
+			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
+			
+			// echo "<pre>";
+			// print_r ($result);
+			// echo "</pre>";
+			
+			// $this->load->view('payroll-pdf', $result, FALSE);
+			
+
+
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);
-			$mpdf->Output(); // opens in browser
-			//$mpdf->Output('payroll.pdf','D'); // it downloads 
+			$mpdf->Output();
+			//$mpdf->Output('payroll.pdf','D');
 		}else{
 			#show error here
 		}

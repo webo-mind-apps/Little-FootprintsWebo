@@ -79,25 +79,24 @@ class Pay_roll_model extends CI_Model{
 		return $a;
 	}
 
-	// update Payment 
-	public function updatePayrolls($data = null, $sDate = null , $eDate = null)
+	// // update Payment 
+	public function updatePayrolls($data = null, $sDate = null , $eDate = null, $id = null)
 	{
-		$query = $this->db->where('pay_date >=', $sDate)
-		->where('pay_date <=', $eDate)	
-		->where('emp_ids', $data['emp_ids'])
-		->get('lit_payroll');
-
-		if($query->num_rows() > 0):
-			$this->updatePayrollByid($data);
+		
+		if(!empty($id)):
+			
+			$this->updatePayrollByid($data, $id);
 		else:
+			
 			$this->inserPayroll($data, $sDate , $eDate);
 		endif;
 		return true;
 	}
 
-	public function updatePayrollByid($data = null)
+	public function updatePayrollByid($data = null, $id = null)
 	{
 		$this->db->where('emp_ids', $data['emp_ids'])->update('lit_payroll', $data);
+		$this->updateYtd($id, $data, $data['emp_ids']);
 		return true;
 	}
 
@@ -105,7 +104,35 @@ class Pay_roll_model extends CI_Model{
 	{
 		$data = array_merge($data, array('pay_date' => $sDate, 'pay_end_date' => $eDate));
 		$this->db->insert('lit_payroll', $data);
+		$id = $this->db->insert_id();
+		$this->updateYtd($id, $data, $data['emp_ids']);
 		return true;
+	}
+
+	// // YTD Update
+	public function updateYtd($id = null, $data = null, $empid = null)
+	{
+		$emps = $this->fetchSingleEmp($empid, $id);
+		if(empty($emps)){
+			$emps = new stdClass();
+			$emps->total_reg_ytd = 0;
+			$emps->total_stat_ytd = 0;
+		}
+		$total_reg_ytd 		=  	(int)$emps->total_reg_ytd  + (int)$data['regular_hrs'];
+		$total_stat_ytd 	=   (int)$emps->total_stat_ytd + (int)$data['stat_hol'];
+		$datas = array(
+			'total_reg_ytd' 	=> $total_reg_ytd, 
+			'total_stat_ytd' 	=> $total_stat_ytd
+		);
+		$this->db->where('id', $id);
+		$this->db->update('lit_payroll', $datas);
+		return true;		
+	}
+
+	// // get single employee details
+	public function fetchSingleEmp($empid = null, $id = null)
+	{
+		return $this->db->where('emp_ids',$empid)->where('id <>', $id)->order_by('id', 'DESC')->get('lit_payroll')->row();
 	}
 
 	// get data for genarate pdf
@@ -113,6 +140,10 @@ class Pay_roll_model extends CI_Model{
 	{
 		$data['master'] = $this->getMasterDetails();
 		$data['emp']	= $this->getEmpDetails($id);
+		$totlaWages 	= $this->countWages($data['emp']->emp_ids);
+		$toatalMiscellaneous =  $this->countMiscellaneous($data['emp']->emp_ids);
+		$data['emp']->totalWages = $totlaWages->wage_amount;
+		$data['emp']->tmiscellaneous = $toatalMiscellaneous->miscellaneous_amount;
 		return $data;
 	}
 
@@ -134,6 +165,22 @@ class Pay_roll_model extends CI_Model{
 		->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left')
 		->get()
 		->row();
+	}
+
+	// count of tottal wages
+	public function countWages($id = null)
+	{
+		return $this->db->where('emp_ids', $id)
+		->select_sum('wage_amount')
+		->get('lit_payroll')->row();
+	}
+
+	// count of tottal Micelanice
+	public function countMiscellaneous($id = null)
+	{
+		return $this->db->where('emp_ids', $id)
+		->select_sum('miscellaneous_amount')
+		->get('lit_payroll')->row();
 	}
 
 }
