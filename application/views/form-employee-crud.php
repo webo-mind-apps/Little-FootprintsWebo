@@ -10,17 +10,17 @@
       <link href="<?php echo base_url()?>my_assets/global_assets/css/bootstrap_limitless.min.css" rel="stylesheet" type="text/css">
       <link href="<?php echo base_url()?>my_assets/global_assets/css/components.min.css" rel="stylesheet" type="text/css">
       <link href="<?php echo base_url()?>my_assets/global_assets/css/colors.min.css" rel="stylesheet" type="text/css">
-      <link href="<?php echo base_url()?>assets/css/layout.min.css" rel="stylesheet" type="text/css">
+      <link href="<?php echo base_url()?>my_assets/assets/css/layout.min.css" rel="stylesheet" type="text/css">
       <!-- /global stylesheets -->
       <!-- Core JS files -->
       <script src="<?php echo base_url()?>my_assets/global_assets/js/main/jquery.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/jquery-ui/jquery-ui.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/main/bootstrap.bundle.min.js"></script>
-      <script src="<?php echo base_url()?>global_assets/js/plugins/loaders/blockui.min.js"></script>
+      <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/loaders/blockui.min.js"></script>
       <!-- /core JS files --
          <!-- Theme JS files -->
       <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/tables/datatables/datatables.min.js"></script>
-      <script src="<?php echo base_url()?>global_assets/js/plugins/tables/datatables/extensions/responsive.min.js"></script>
+      <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/tables/datatables/extensions/responsive.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/forms/selects/select2.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/app.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/demo_pages/datatables_advanced.js"></script>
@@ -73,7 +73,26 @@
                         </div>
                      </div>
                   </div>
-                  <div id="insert-status"></div>
+                  <?php
+                           if($this->session->flashdata('insert','Inserted successfully')){
+                              ?> 
+                        <div class="alert bg-success alert-styled-left">
+                           <button type="button" class="close" data-dismiss="alert">&times;</button>
+                           <span class="text-semibold">Inserts are saved successfully..!</span>
+                        </div>
+                        <?php 
+                           }
+                            	    ?>	
+                        <?php
+                           if($this->session->flashdata('update','Updated successfully')){
+                              ?> 
+                        <div class="alert bg-success alert-styled-left">
+                           <button type="button" class="close" data-dismiss="alert">&times;</button>
+                           <span class="text-semibold">Updates are saved successfully..!</span>
+                        </div>
+                        <?php 
+                           }
+                            	    ?>
                   <form method="post" id="frm" 
                      action="<?php echo base_url();?>main/employee_details_insert_update">
                      <div class="card-body">
@@ -285,10 +304,10 @@
                         </div>
                         <input type="hidden" id="emp-id" name="emp_id">
                         <div class="text-right" style="display:block;" id="insert-activate">
-                           <button  type="submit" id="insert-button" name="insert_button" class="insert btn btn-primary" onclick="">Submit form <i class="icon-paperplane ml-2"></i></button>
+                           <button  type="submit" id="insert-button" name="insert_button" class="insert btn btn-primary" onclick="">Submit<i class="icon-paperplane ml-2"></i></button>
                         </div>
                         <div class="text-right" style="display:none;" id="update-activate">
-                           <button  type="submit" id="update-button" name="update_button" class="update btn btn-primary">Edit form<i class="icon-paperplane ml-2"></i></button>
+                           <button  type="submit" id="update-button" name="update_button" class="update btn btn-primary">Edit<i class="icon-paperplane ml-2"></i></button>
                         </div>
                   </form>
                   </div>
@@ -508,19 +527,6 @@
                   
                  var date = $('.dateformat').datepicker({dateFormat: 'dd-M-yy',changeMonth: true,changeYear: true,yearRange: '1960:' + d.getFullYear() }).val();
                } );
-             
-          
-         
-         
-         var url = window.location.href;
-         
-         var result="";
-         result=url.split("#");
-         if(result[1]!="employee-master")
-         {
-         bootbox.alert(result[1]);
-         } 
-         
       </script>
    </body>
 </html>

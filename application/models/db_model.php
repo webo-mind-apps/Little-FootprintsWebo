@@ -56,12 +56,10 @@ class Db_model extends CI_Model
 		{
 		 if($this->db->insert('lit_employee_details',$data))
 		 {
-			 return "Inserted-successfully";
+			$this->session->set_flashdata('insert','Inserted successfully');
+			 return true;
 		 }
-		 else
-		 {
-			 return "Inserted-failed";
-		 }	
+		 
 		}
 		
 		if(isset($_POST['update_button']))
@@ -69,12 +67,10 @@ class Db_model extends CI_Model
 		 $this->db->where(array('id'=>$id));
 		 if($this->db->update('lit_employee_details',$data))
 		 {
-			return "Updated-successfully";
+			$this->session->set_flashdata('update','Updated successfully');
+			return true ;
 		 }
-		 else
-		 {
-			 return "Updated-failed";
-		 }
+		 
 		}
 	}
 	function lit_employee_details_fetch()
@@ -120,5 +116,298 @@ class Db_model extends CI_Model
 	{
 	$this->db->insert_batch('lit_employee_details',$data);
 	}
+	function emp_pension_insert()
+	{
+			$year=$_POST['year'];
+			$basic_exemption_amt=$_POST['basic'];
+			$emp_contribution=$_POST['emp_contn'];
+			$max_pentionable_earning=$_POST['annual'];
+			$data = array('year' =>$year,'basic_exemption_amt' =>$basic_exemption_amt,'emp_contribution' =>$emp_contribution,'max_pentionable_earning' =>$max_pentionable_earning);
+			
+			$this->db->select('year');
+			$this->db->from('lit_master');
+			$this->db->where('year',$year);
+			$query=$this->db->get();
+			$result="";
+			$result=$query->result_array();
+
+			if($result)
+			{
+				$this->db->where(array('year'=>$year));
+				if($this->db->update('lit_master',$data))
+				 {
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+				
+			}
+			else
+			{
+				
+				 if($this->db->insert('lit_master',$data))
+				 {
+					 
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+			}
+	}
+	function emp_pension_fetch()
+	{
+		$this->db->select('id,year,basic_exemption_amt,emp_contribution,max_pentionable_earning');
+		$this->db->from('lit_master');
+		$this->db->order_by('id', 'desc');
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+	function employee_pension_delete($id)
+	{
+		
+		$data = array('basic_exemption_amt' =>NULL,'emp_contribution' =>NULL,'max_pentionable_earning' =>NULL);
+		$this->db->where(array('id'=>$id));
+		$this->db->update('lit_master',$data);
+	}
+
+	function employee_pension_fetch_for_update()
+	{
+		$id=$this->uri->segment(3);
+		$this->db->select('id,year,basic_exemption_amt,emp_contribution,max_pentionable_earning');
+		$this->db->from('lit_master');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+
+
+	function emp_pension_update()
+	{
+			$id=$_POST['emp_id'];
+			$year=$_POST['year'];
+			$basic_exemption_amt=$_POST['basic'];
+			$emp_contribution=$_POST['emp_contn'];
+			$max_pentionable_earning=$_POST['annual'];
+			$data = array('year' =>$year,'basic_exemption_amt' =>$basic_exemption_amt,'emp_contribution' =>$emp_contribution,'max_pentionable_earning' =>$max_pentionable_earning);
+			
+			
+				$this->db->where(array('id'=>$id));
+				if($this->db->update('lit_master',$data))
+				 {
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+			
+
+	}
+
+
+
+function emp_federal_fetch()
+{
+	$this->db->select('id,fed_tax,year');
+	$this->db->from('lit_master');
+	$this->db->order_by('id', 'desc');
+	$query=$this->db->get();
+	$result=$query->result_array();
+	return $result;
+}	
+
+function emp_federal_insert()
+	{
+			$year=$_POST['year'];
+			$federal=$_POST['federal'];
+			
+			$data = array('year' =>$year,'fed_tax' =>$federal);
+			
+			$this->db->select('year');
+			$this->db->from('lit_master');
+			$this->db->where('year',$year);
+			$query=$this->db->get();
+			$result="";
+			$result=$query->result_array();
+
+			if($result)
+			{
+				$this->db->where(array('year'=>$year));
+				if($this->db->update('lit_master',$data))
+				 {
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+				
+			}
+			else
+			{
+				
+				 if($this->db->insert('lit_master',$data))
+				 {
+					 
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+			}
+	}
+
+
+	
+	function emp_federal_update()
+	{
+			$id=$_POST['emp_id'];
+			$year=$_POST['year'];
+			$federal=$_POST['federal'];
+			$data = array('year' =>$year,'fed_tax' =>$federal);
+			
+			
+				$this->db->where(array('id'=>$id));
+				if($this->db->update('lit_master',$data))
+				 {
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+			
+
+	}
+
+	function employee_federal_delete($id)
+	{
+		
+		$data = array('fed_tax' =>NULL);
+		$this->db->where(array('id'=>$id));
+		$this->db->update('lit_master',$data);
+	}
+
+	function employee_federal_fetch_for_update()
+	{
+		$id=$this->uri->segment(3);
+		$this->db->select('id,year,fed_tax');
+		$this->db->from('lit_master');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+	
+
+
+	function ei_contribution()
+{
+	$this->db->select('id,year,ei_cont,ei_amt');
+	$this->db->from('lit_master');
+	$this->db->order_by('id', 'desc');
+	$query=$this->db->get();
+	$result=$query->result_array();
+	return $result;
+}	
+
+function emp_ei_insert()
+	{
+	
+		$year=$_POST['year'];
+		$ei_cont=$_POST['ei_contn'];
+		$ei_amt=$_POST['ei_amt'];
+		$data = array('year' =>$year,'ei_cont' =>$ei_cont,'ei_amt' =>$ei_amt);
+			
+			$this->db->select('year');
+			$this->db->from('lit_master');
+			$this->db->where('year',$year);
+			$query=$this->db->get();
+			$result="";
+			$result=$query->result_array();
+
+			if($result)
+			{
+				$this->db->where(array('year'=>$year));
+				if($this->db->update('lit_master',$data))
+				 {
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+				
+			}
+			else
+			{
+				
+				 if($this->db->insert('lit_master',$data))
+				 {
+			
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+			}
+	}
+
+
+	
+	function emp_ei_update()
+	{
+			$id=$_POST['emp_id'];
+			$year=$_POST['year'];
+			$ei_cont=$_POST['ei_contn'];
+			$ei_amt=$_POST['ei_amt'];
+			$data = array('year' =>$year,'ei_cont' =>$ei_cont,'ei_amt' =>$ei_amt);
+			
+			
+				$this->db->where(array('id'=>$id));
+				if($this->db->update('lit_master',$data))
+				 {
+					 return true;
+				 }
+				 else
+		 		{
+			 		return false;
+				 }
+			
+
+	}
+
+	function employee_ei_delete($id)
+	{
+		
+		$data = array('ei_cont' =>NULL,'ei_amt' =>NULL);
+		$this->db->where(array('id'=>$id));
+		$this->db->update('lit_master',$data);
+	}
+
+	function employee_ei_fetch_for_update()
+	{
+		$id=$this->uri->segment(3);
+		$this->db->select('id,year,ei_cont,ei_amt');
+		$this->db->from('lit_master');
+		$this->db->where('id',$id);
+		$query=$this->db->get();
+		$result=$query->result_array();
+		return $result;
+	}	
+
+	
 }
 ?>

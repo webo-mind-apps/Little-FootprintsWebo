@@ -64,7 +64,7 @@
                   <div class="col-md-6">
                      <div class="card">
                         <div class="card-header header-elements-inline">
-                           <h6 class="card-title payslip_heading">Government Pension</h6>
+                           <h6 class="card-title payslip_heading">Federal Tax </h6>
                            <div class="header-elements">
                               <div class="list-icons">
                                  <a class="list-icons-item" data-action="reload"></a>
@@ -92,7 +92,7 @@
                            }
                             	    ?>	
                         <form method="post" id="frm" 
-                           action="<?php echo base_url();?>main/emp_pension_insert_update">
+                           action="<?php echo base_url();?>main/emp_federal_insert_update">
                            <div class="card-body">
                               <div class="form-group">
                                  <label>Year</label>
@@ -112,24 +112,14 @@
                                     </select>
                                  </div>
                               </div>
+                             
                               <div class="form-group">
-                                 <label>Basic exemption amount</label>
+                                 <label>Federal Tax Rate (format : 0.0)</label>
                                  <div class="input-group">
-                                    <input type="text" id="basic" class="form-control" placeholder="Basic exemption amount" name="basic" onkeypress="return isNumber();" maxlength="4" minlength="4" required>
+                                    <input type="text" id="federal"   class="form-control" placeholder="Federal Tax Rate" name="federal" onfocusout="decimal_check();"  minlength="3" required>
                                  </div>
                               </div>
-                              <div class="form-group">
-                                 <label>Employee contribution (format : 0.0)</label>
-                                 <div class="input-group">
-                                    <input type="text" id="emp-contn"   class="form-control" placeholder="Employee contribution" name="emp_contn" onfocusout="decimal_check();"  minlength="3" required>
-                                 </div>
-                              </div>
-                              <div class="form-group">
-                                 <label>Maximum annual earnings</label>
-                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="annual" placeholder="Maximum annual earnings" name="annual" onkeypress="return isNumber();" maxlength="10" minlength="5" required>
-                                 </div>
-                              </div>
+                             
                               <input type="hidden" id="emp-id" name="emp_id">
                               <div class="text-right" style="display:block;" id="insert-activate">
                                  <button  type="submit" id="insert-button" name="insert_button" class="insert btn btn-primary" onclick="">Submit<i class="icon-paperplane ml-2"></i></button>
@@ -144,8 +134,9 @@
                      <!-- /card area -->
                   </div>
                </div>
+
                <div class="row">
-                  <div class="col-md-10">
+                  <div class="col-md-8">
                <div class="card">
                   <table class="table datatable-responsive dataTable no-footer dtr-inline ">
                      <thead>
@@ -153,63 +144,59 @@
                            <th>S.no</th>
                            <th>Edit</th>
                            <th>Delete</th>
-                           <th>year</th>
-                           <th>Basic&nbspamount</th>
-                           <th>Employee&nbspcontribution</th>
-                           <th>Annual&nbspEarnings</th>
+                           <th>Year</th>
+                           <th>Federal Tax</th>
+                           <th></th>
+                           
                      </thead>
                      <tbody>
                         <?php
                            $i=1;
-                           foreach($emp_pension_fetch as $row)
+                           foreach($emp_federal_fetch as $row)
                            {
-                              if(!empty($row['basic_exemption_amt']))
-                           {
+                           	
                            ?>
                         <tr>
                            <td><?php echo $i;?></td>
-                           <td><a href="<?php echo base_url();?>main/employee_pension_fetch_for_update/<?php echo $row['id'];?>"><span  class='edit'  id='edit-<?php echo $row['id'];?>'><i style='color:green' class='icon-pencil' ></i></span></a></td>
-                             <td> <span  class='del' id='delete-<?php echo $row['id'];?>'><i style='color:red' class='icon-trash'></i></span>
+                           <td><a href="<?php echo base_url();?>main/employee_federal_fetch_for_update/<?php echo $row['id'];?>"><span  class='edit'  id='edit-<?php echo $row['id'];?>'><i style='color:green' class='icon-pencil' ></i></span></a></td>
+
+                           <td>   <span  class='del' id='delete-<?php echo $row['id'];?>'><i style='color:red' class='icon-trash'></i></span>
                            </td>
                            <td><?php echo $row['year'];?></td>
-                           <td><?php echo $row['basic_exemption_amt'];?></td>
-                           <td><?php echo $row['emp_contribution'];?></td>
-                           <td><?php echo $row['max_pentionable_earning'];?></td>
+                           <td><?php echo $row['fed_tax'];?></td>
+                          <td></td>
                         </tr>
                         <?php
                            $i++;
                            }
-                        }
+                           
                            ?>
                      </tbody>
                   </table>
                   </div>
-                  </div>
+               </div>
                </div>
             </div>
             <?php
-               if(isset($employee_pension_update_fetch))
+               if(isset($employee_federal_update_fetch))
                {
-               				foreach($employee_pension_update_fetch as $row)
+               				foreach($employee_federal_update_fetch as $row)
                				{
                					$id=$row['id'];
                                 $year= $row['year'];
-                                $basic_exemption_amt=$row['basic_exemption_amt'];
-                                $emp_contributiond= $row['emp_contribution'];
-                                $max_pentionable_earningd= $row['max_pentionable_earning'];
+                               $federal=$row['fed_tax'];
+                               
                					
                                }
+                               
                				?>
             <script>
                $('#insert-activate').css("display","none");
                $('#update-activate').css("display","block");
                $("#emp-id").val("<?php echo $id;?>");
                 $("#year").val("<?php echo $year;?>");
-                $("#basic").val("<?php echo $basic_exemption_amt; ?>");
-               $("#emp-contn").val("<?php echo $emp_contributiond; ?>");
-               $("#annual").val("<?php echo $max_pentionable_earningd; ?>");
-              
-               			
+                $("#federal").val("<?php echo $federal; ?>");
+               
             </script>
             <?php				
                }				
@@ -226,36 +213,25 @@
          {
           var number=/[0-9]/;
           var dot=/[.]/;
-          var rate=$('#emp-contn').val();
+          var rate=$('#federal').val();
           for(var i=0;i<rate.length;i++)
           {
               if(i==1)
               {
               if(!dot.test(rate[i]))
               {
-                $('#emp-contn').val('');
+                $('#federal').val('');
               }
               }
               else{
           if(!number.test(rate[i]))
           {
-         	 $('#emp-contn').val('');
+         	 $('#federal').val('');
           }
           }
           }
           
          }
-         
-                 <!--Numeric validation -->
-                 function isNumber(evt) {
-                 evt = (evt) ? evt : window.event;
-                 var charCode = (evt.which) ? evt.which : evt.keyCode;
-                 if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-                 	return false;
-                 }
-                 return true;
-                 
-                 }	
            $('.del').css('cursor', 'pointer');
          <!-- delete -->   
               $(document).on('click', '.del',function(){
@@ -266,7 +242,7 @@
               
               			if(result){
               			jQuery.ajax({
-              				url:"<?php echo base_url();?>main/employee_pension_delete",
+              				url:"<?php echo base_url();?>main/employee_federal_delete",
               				type:"POST",	
               				data:{id:delete_id[1]},
               				success:function(data){
