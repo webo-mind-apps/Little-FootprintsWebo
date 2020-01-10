@@ -83,7 +83,7 @@
 							</li>
 
 						<li class="nav-item">
-							<a href="" class="nav-link">
+							<a href="<?php echo base_url('payroll') ?>" class="nav-link">
 								<i class="fa fa-inr" style="font-size:18px;"></i>
 								<span>
 									Payroll
@@ -91,7 +91,7 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a href="" class="nav-link">
+							<a href="<?php echo base_url('summarized-report') ?>" class="nav-link">
 								<i class="fa fa-file-text-o"></i>
 								<span>
 									Summarized Report

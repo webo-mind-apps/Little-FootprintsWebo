@@ -10,22 +10,32 @@
 <body>
 <?php
 // grosspay 
-$grossPay = ($pdf['emp']->regular_hrs * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate );
-
+$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount);
+$ytdGrossPay    = ($pdf['emp']->total_reg_ytd * $pdf['emp']->per_hr_rate )  +  ($pdf['emp']->total_stat_ytd * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->tmiscellaneous) + ($pdf['emp']->totalWages);
 // Total earnings
-$totalErnings = ($pdf['emp']->regular_hrs * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate );
-
+$totalErnings   = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate );
+$ytdTotalErnings= ($pdf['emp']->total_reg_ytd * $pdf['emp']->per_hr_rate )  +  ($pdf['emp']->total_stat_ytd * $pdf['emp']->per_hr_rate );
 // Govt Penction
-$gvtPention = (($pdf['master']->govt_pen - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
-
+if($grossPay < $pdf['master']->max_pentionable_earning){
+    $gvtPention     =(($pdf['master']->govt_pen - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
+}else{
+    $gvtPention = 0.00;
+}
 // fedtax
-$fedTax = (($pdf['master']->fed_tax - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
-
+$fedTax         = ($pdf['master']->fed_tax * $grossPay);
+$ytdFedtax      = ($pdf['master']->fed_tax * $ytdGrossPay);
 // Ei Count
-$eiCount = (($pdf['master']->ei_cont - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
-
+$eiCount        = ($pdf['master']->ei_cont * $grossPay );
+$ytdEiCount     = ($pdf['master']->ei_cont * $ytdGrossPay );
 // vacation
-$vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
+$vacation       = ($pdf['emp']->vocation_rate * $grossPay);
+$ytVacation     = ($pdf['emp']->vocation_rate * $ytdGrossPay);
+// deduction
+$totalDeduction = (($gvtPention + $fedTax + $eiCount + $vacation));
+$ytdDeduction   = (($gvtPention + $ytdFedtax + $ytdEiCount + $ytVacation));
+// net Pay
+$netPay         = $totalDeduction - $grossPay;
+$ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
 
 ?>
     <table >
@@ -63,7 +73,6 @@ $vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt 
                 <table width="100%">
                     <tr>
                         <th class="text-left">EARNINGS</th>
-                        <th>DATE <br> YMMDD </th>
                         <th>RATE</th>
                         <th>CURRENT <br> HRS/UNITS</th>
                         <th>CURRENT <br>AMOUNT</th>
@@ -72,64 +81,50 @@ $vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt 
                     </tr>
                     <tr>
                         <td>REGULAR</td>
-                        <td></td>
+                        <td class="text-center"><?php echo $pdf['emp']->per_hr_rate ?></td>
                         <td class="text-center"><?php echo $pdf['emp']->regular_hrs ?></td>
-                        <td class="text-center"><?php echo $pdf['emp']->per_hr_rate ?></td>
                         <td class="text-center"><?php echo ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) ?></td>
-                        <td class="text-center"><?php echo $pdf['emp']->per_hr_rate ?></td>
-                        <td class="text-center">need to Store</td>
+                        <td class="text-center"><?php echo $pdf['emp']->total_reg_ytd ?></td>
+                        <td class="text-center"><?php echo ($pdf['emp']->total_reg_ytd * $pdf['emp']->per_hr_rate ) ?></td>
                     </tr>
                     <tr>
                         <td>STAT HOL </td>
-                        <td></td>
-                        <td class="text-center"><?php echo $pdf['emp']->regular_hrs ?></td>
+                        <td class="text-center"><?php echo $pdf['emp']->per_hr_rate ?></td>
                         <td class="text-center"><?php echo $pdf['emp']->stat_hol ?></td>
-                        <td class="text-center"><?php echo ($pdf['emp']->regular_hrs * $pdf['emp']->stat_hol ) ?></td>
-                        <td class="text-center"><?php echo $pdf['emp']->per_hr_rate ?></td> 
-                        <td class="text-center">need to fetch</td> 
+                        <td class="text-center"><?php echo ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) ?></td>
+                        <td class="text-center"><?php echo $pdf['emp']->total_stat_ytd ?></td> 
+                        <td class="text-center"><?php echo ($pdf['emp']->total_stat_ytd * $pdf['emp']->per_hr_rate ) ?></td> 
                     </tr>
                     <tr>
                         <td>WAGE BC</td>
-                        <td></td>
-                        <td class="text-center">18.0000</td>
-                        <td class="text-center">0.000</td>
-                        <td class="text-center">0.0</td>
+                        <td class="text-center">0.00</td>
+                        <td class="text-center">0.00</td>
                         <td class="text-center"><?php echo $pdf['emp']->wage_amount ?></td> 
-                        <td class="text-center">0.0</td> 
-                    </tr>
-                    <tr>
-                        <td>TOTAL EARNINGS</td>
-                        <td></td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
-                        <td class="text-center"><?php echo $totalErnings ?></td>
-                        <td class="text-center"></td> 
-                        <td class="text-center">need to fetch</td> 
-                    </tr>
-                    <tr>
-                        <td>LESS TAXABLE BENEFITS</td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
-                        <td class="text-center"></td>
                         <td class="text-center">0.0</td>
-                        <td class="text-center"></td> 
-                        <td class="text-center">0.0</td> 
+                        <td class="text-center"><?php echo $pdf['emp']->totalWages ?></td> 
                     </tr>
                     <tr>
-                        <td><br>TOTAL GROSS <br><br><br><br></td>
-                        <td></td>
+                        <td>MISCELLANEOUS <br>AMOUNT</td>
+                        <td class="text-center"></td>
+                        <td class="text-center"></td>
+                        <td class="text-center"><?php echo $pdf['emp']->miscellaneous_amount ?></td>
+                        <td class="text-center"></td> 
+                        <td class="text-center"><?php echo $pdf['emp']->tmiscellaneous ?></td> 
+                    </tr>
+                   
+                    <tr>
+                        <td><br><b>TOTAL GROSS</b> <br><br><br><br></td>
                         <td class="text-center"></td>
                         <td class="text-center"></td>
                         <td class="text-center"><br>
-                            <?php echo $grossPay ?>
+                            <b><?php echo $grossPay ?></b>
                             <br><br><br><br>
                         </td>
                         <td class="text-center"></td> 
-                        <td class="text-center"><br>need to fetch <br><br><br><br></td> 
+                        <td class="text-center"><br><b><?php echo $ytdGrossPay ?></b><br><br><br><br></td> 
                     </tr>
                     <tr class="mt15">
                         <th class="text-left">DEDUCTIONS</th>
-                        <th></th>
                         <th></th>
                         <th></th>
                         <th>CURRENT<br>AMOUNT</th>
@@ -140,10 +135,9 @@ $vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt 
                         <td >GOVT PEN</td>
                         <td></td>
                         <td></td>
+                        <td class="text-center"><?php echo round($gvtPention, 2) ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo $gvtPention ?></td>
-                        <td></td>
-                        <td class="text-center"><?php echo $gvtPention ?></td>
+                        <td class="text-center"><?php echo round($gvtPention, 2) ?></td>
                        
                         
                     </tr>
@@ -151,30 +145,27 @@ $vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt 
                         <td>FEDL TAX</td>
                         <td></td>
                         <td></td>
+                        <td class="text-center"><?php echo round($fedTax, 2)  ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo $fedTax  ?></td>
-                        <td></td>
-                        <td class="text-center"><?php echo $fedTax  ?></td>
+                        <td class="text-center"><?php echo round($fedTax, 2)  ?></td>
                         
                     </tr>
                     <tr>
                         <td>EI  CONT</td>
                         <td></td>
                         <td></td>
+                        <td class="text-center"><?php echo round($eiCount, 2)  ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo $eiCount  ?></td>
-                        <td></td>
-                        <td class="text-center"><?php echo $eiCount  ?></td>
+                        <td class="text-center"><?php echo round($eiCount, 2)  ?></td>
                         
                     </tr>
                     <tr>
                         <td>Vacation</td>
                         <td></td>
                         <td></td>
+                        <td class="text-center"><?php echo round($vacation, 2)  ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo $vacation  ?></td>
-                        <td></td>
-                        <td class="text-center"><?php echo $vacation  ?></td>
+                        <td class="text-center"><?php echo round($vacation, 2)  ?></td>
                         
                     </tr>
                     
@@ -182,8 +173,7 @@ $vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt 
                         <td>TOTAL DEDUCTIONS</td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td class="text-center">229.8</td> 
+                        <td class="text-center"><?php echo round($totalDeduction, 2) ?></td> 
                         <td></td>
                         <td class="text-center">908.0</td> 
                     </tr>
@@ -191,20 +181,18 @@ $vacation = (($pdf['emp']->vocation_rate - ($pdf['master']->basic_exemption_amt 
                         <th class="text-left"><br>NET PAY</th>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td class="text-center"><br><b>1120.1</b></td>
+                        <td class="text-center"><br><b><?php echo round($netPay, 2) ?></b></td>
                         <td></td> 
-                        <td></td> 
+                        <td class="text-center"><?php echo round($ytdNetPay, 2) ?></td> 
                     </tr> 
                 </table>
 
                 <table class="mr-350">
-                    <tr><th class="text-left">xyz</th></tr>
-                    <tr><td>KAUR MANPREE</td></tr>
-                    <tr><td>111 139</td></tr>
-                    <tr><td>72 AV</td></tr>
-                    <tr><td>SURREY BC V3W 2</td></tr>
-                    <tr><td>CANADA</td></tr>
+                    <tr><th class="text-left"><?php echo $pdf['emp']->fname.' '.$pdf['emp']->lname ?></th></tr>
+                    <tr><td><?php echo $pdf['emp']->city ?></td></tr>
+                    <tr><td><?php echo $pdf['emp']->address ?></td></tr>
+                    <tr><td><?php echo $pdf['emp']->pincode ?></td></tr>
+                   
                 </table>
             </td>
         </tr>
