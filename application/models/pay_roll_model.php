@@ -108,6 +108,34 @@ class Pay_roll_model extends CI_Model{
 		return true;
 	}
 
+	// get data for genarate pdf
+	public function GetDataForPdf($id)
+	{
+		$data['master'] = $this->getMasterDetails();
+		$data['emp']	= $this->getEmpDetails($id);
+		return $data;
+	}
+
+	// get Master Table
+	public function getMasterDetails()
+	{
+		$year = date('Y');
+		return $this->db->where('year', $year)
+		->get('lit_master')
+		->row();
+	}
+
+	// get Emplyee Data
+	public function getEmpDetails($id = null)
+	{
+		return $this->db->where('p.id', $id)
+		->select('p.*, e.first_name as fname, e.last_name as lname, e.address1 as address, e.email, e.pincode, e.city, e.phone, e.vocation_rate, e.hour_rate')
+		->from('lit_payroll p')
+		->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left')
+		->get()
+		->row();
+	}
+
 }
 
 ?>

@@ -97,7 +97,6 @@
 			max-width: 75px;
 			margin:auto;
 		}
-		
 
 	</style>
 </head>
