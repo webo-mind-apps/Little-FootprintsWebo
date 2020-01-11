@@ -95,7 +95,7 @@
                            action="<?php echo base_url();?>main/center_master_insert_update">
                            <div class="card-body">
                               <div class="form-group">
-                                 <label>Year</label>
+                                 <label>Select Company</label>
                                  <div class="input-group">
                                  <select name="company_name" id="company-name" class="form-control" required>
                                        <option value="">Select</option>
@@ -161,7 +161,7 @@
                            <td><?php echo $i;?></td>
                            <td><a href="<?php echo base_url();?>main/center_master_fetch_for_update/<?php echo $row['id'];?>"><span  class='edit'  id='edit-<?php echo $row['id'];?>'><i style='color:green' class='icon-pencil' ></i></span></a></td>
 
-                           <td>   <span  class='del' id='delete-<?php echo $row['id'];?>'><i style='color:red' class='icon-trash'></i></span>
+                           <td>   <span  class='del'  id='delete-<?php echo $row['id'];?>'><i style='color:red' class='icon-trash'></i></span>
                            </td>
                            <td><?php echo $row['name'];?></td>
                            <td><?php echo $row['center_name'];?></td>

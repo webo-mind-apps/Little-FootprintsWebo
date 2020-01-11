@@ -44,11 +44,11 @@ class Main extends CI_Controller {
 	{
 		if($this->session->userdata('admin_login'))
 		{
-		
-		$data['employee_detail_fetch']=$this->db_model->employee_details_fetch_for_update();
-		$data['employee_position_fetch']=$this->db_model->lit_employee_position_fetch();
+			$data['comapny_fetch']=$this->db_model->company_master();
+			$data['employee_detail_fetch']=$this->db_model->employee_details_fetch_for_update();
+			$data['employee_position_fetch']=$this->db_model->lit_employee_position_fetch();
 			$this->load->view('form-employee-crud',$data);
-			}
+		}
 		else
 		{
 			redirect('home');
@@ -518,11 +518,11 @@ class Main extends CI_Controller {
         {
             if($this->session->userdata('admin_login'))
             {
-			$company_name=$_POST['company_name'];
+			$id = $_POST['company_name'];
 			
-			$data=$this->db_model->center_select_feild($company_name);
-          
-			print_r($data);
+			$data=$this->db_model->center_select_feild($id);
+		  
+			echo json_encode($data);
 			}
         }
 

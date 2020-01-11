@@ -6,36 +6,38 @@ class Db_model extends CI_Model
     
 	function employee_details_insert_update()
 	{
-				$id=$_POST['emp_id'];
-				$first_name=$_POST['first_name'];
-				$last_name=$_POST['last_name'];
-				$empsin=$_POST['empsin1']."-".$_POST['empsin2']."-".$_POST['empsin3'];
-				$dob=$_POST['dob'];
-				$address1=$_POST['address1'];
-				$address2=$_POST['address2'];
-				$city=$_POST['city'];
-				$pincode=$_POST['pincode'];
-				$code=$_POST['code'];
-				$phone=$_POST['phone'];
-				$phone_code=$code."-".$phone;
-				$email=$_POST['email'];
-				$hire_date=$_POST['hire_date'];
-				$rehire_date=$_POST['rehire_date'];
-				$empcert=$_POST['empcert'];
-				$hour_rate=$_POST['hour_rate'];
-				$position=$_POST['position'];
-				$medical=$_POST['medical'];
-				$vocation_rate=$_POST['vocation_rate'];
-				$status=$_POST['status'];
-				
-				$this->db->select(array("emp_id"));
-				$this->db->from("lit_employee_details");
-				$this->db->order_by("id", "desc");
-				$this->db->limit(1);
-				$query=$this->db->get();
-				$row=$query->result_array(); 
-				$emp_id=$row[0]['emp_id'];
-				$emp_id_increment=$emp_id+1;
+			$center = implode(',', $_POST['center']);
+			$company = $_POST['company_name'];		
+			$id=$_POST['emp_id'];
+			$first_name=$_POST['first_name'];
+			$last_name=$_POST['last_name'];
+			$empsin=$_POST['empsin1']."-".$_POST['empsin2']."-".$_POST['empsin3'];
+			$dob=$_POST['dob'];
+			$address1=$_POST['address1'];
+			$address2=$_POST['address2'];
+			$city=$_POST['city'];
+			$pincode=$_POST['pincode'];
+			$code=$_POST['code'];
+			$phone=$_POST['phone'];
+			$phone_code=$code."-".$phone;
+			$email=$_POST['email'];
+			$hire_date=$_POST['hire_date'];
+			$rehire_date=$_POST['rehire_date'];
+			$empcert=$_POST['empcert'];
+			$hour_rate=$_POST['hour_rate'];
+			$position=$_POST['position'];
+			$medical=$_POST['medical'];
+			$vocation_rate=$_POST['vocation_rate'];
+			$status=$_POST['status'];
+			
+			$this->db->select(array("emp_id"));
+			$this->db->from("lit_employee_details");
+			$this->db->order_by("id", "desc");
+			$this->db->limit(1);
+			$query=$this->db->get();
+			$row=$query->result_array(); 
+			$emp_id=$row[0]['emp_id'];
+			$emp_id_increment=$emp_id+1;
 				if($emp_id<9)
 				{
 					$emp_new_id="00".$emp_id_increment;
@@ -50,7 +52,7 @@ class Db_model extends CI_Model
 				}
 				
 				
-				$data = array('emp_id' =>$emp_new_id,'first_name' =>$first_name,'last_name' =>$last_name,'empsin' =>$empsin,'dob' =>$dob,'address1' =>$address1,'address2' =>$address2,'city' =>$city,'pincode' =>$pincode,'phone' =>$phone_code,'email' =>$email,'hire_date' =>$hire_date,'rehire_date' =>$rehire_date,'empcert' =>$empcert,'hour_rate' =>$hour_rate,'emp_position' =>$position,'medical' =>$medical,'vocation_rate' =>$vocation_rate,'status' =>$status);
+				$data = array('company'=> $company , 'center'=> $center , 'emp_id' =>$emp_new_id,'first_name' =>$first_name,'last_name' =>$last_name,'empsin' =>$empsin,'dob' =>$dob,'address1' =>$address1,'address2' =>$address2,'city' =>$city,'pincode' =>$pincode,'phone' =>$phone_code,'email' =>$email,'hire_date' =>$hire_date,'rehire_date' =>$rehire_date,'empcert' =>$empcert,'hour_rate' =>$hour_rate,'emp_position' =>$position,'medical' =>$medical,'vocation_rate' =>$vocation_rate,'status' =>$status);
 				
 		if(isset($_POST['insert_button']))
 		{
@@ -481,7 +483,7 @@ function emp_ei_insert()
 		$this->db->select('a.*,b.*,b.id as cen_id');
 		$this->db->from('lit_company a');
 		$this->db->join('lit_center b','a.id = b.company_name','right');
-		$this->db->order_by('cen_id', 'desc');
+		$this->db->order_by('b.id', 'desc');
 		$query=$this->db->get();
 		$result=$query->result_array();
 		return $result;
@@ -545,18 +547,10 @@ function emp_ei_insert()
 
 
 
-	function center_select_feild($company_name)
+	function center_select_feild($id)
 	{
-
-		$this->db->select('a.*,b.*,b.id as cen_id');
-	$this->db->from('lit_company a');
-	$this->db->join('lit_center b','a.id = b.company_name','right');
-	$this->db->where(array('name'=>$company_name));
-	$query=$this->db->get();
-	$result=$query->result_array();
-	return $result;
-		
-		
+		return $this->db->where('company_name', $id)
+		->get('lit_center')->result_array();
 	}	
 
 	

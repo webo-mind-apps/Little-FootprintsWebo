@@ -98,7 +98,7 @@
                               <div class="form-group">
                                  <label>Company Name</label>
                                  <div class="input-group">
-                                    <input type="text" id="comp-name" class="form-control" placeholder="Company Name" name="comp_name" onkeypress="return isalpha();" minlength="3" required>
+                                    <input type="text" id="comp-name" class="form-control" placeholder="Company Name" name="comp_name"  minlength="2" required>
                                  </div>
                               </div>
                               <div class="form-group">

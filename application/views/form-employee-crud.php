@@ -15,13 +15,13 @@
       <!-- Core JS files -->
       <script src="<?php echo base_url()?>my_assets/global_assets/js/main/jquery.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/jquery-ui/jquery-ui.min.js"></script>
+      <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/forms/selects/select2.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/main/bootstrap.bundle.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/loaders/blockui.min.js"></script>
       <!-- /core JS files --
          <!-- Theme JS files -->
       <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/tables/datatables/datatables.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/tables/datatables/extensions/responsive.min.js"></script>
-      <script src="<?php echo base_url()?>my_assets/global_assets/js/plugins/forms/selects/select2.min.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/app.js"></script>
       <script src="<?php echo base_url()?>my_assets/global_assets/js/demo_pages/datatables_advanced.js"></script>
       <!-- /theme JS files -->
@@ -110,7 +110,7 @@
                                           {
                                           	
                                           ?>
-                                       <option value="<?php echo $row['name'];?>"><?php echo $row['name'];?></option>
+                                       <option value="<?php echo $row['id'];?>"><?php echo $row['name'];?></option>
                                        <?php
                                            $i++;
                                           }
@@ -122,12 +122,11 @@
                            <div class="col-sm-1" ></div>
                            <div class="col-sm-5" >
                               <div class="form-group">
-                                 <label>Center Name</label>
+                                 <label>Select Center</label>
                                  <div class="input-group">
-                                 <select name="center_name" id="center-name" class="form-control" required>
-                                       <option value="">Select</option>
+                                 <select name="center[]" multiple="multiple" id="center-name" class="form-control" required>
                                       
-                                    </select>  
+                                 </select>  
                                  </div>
                               </div>
                            </div>
@@ -352,6 +351,13 @@
                <!-- /card area --> 
             </div>
             <!-- /content area --> 
+            <script>
+                 $(document).ready(function () {
+                  $('#center-name').select2({
+                     placeholder: "Select  Centers"
+                  });
+               });
+            </script>
             <?php
                if(isset($employee_detail_fetch))
                {
@@ -381,6 +387,8 @@
                				}
                				?>
             <script>
+
+               
                $('#insert-activate').css("display","none");
                $('#update-activate').css("display","block");
                   	$("#first-name").val("<?php echo $first_name;?>");
@@ -435,7 +443,9 @@
                
                  
                
-               <!-- /update --> 
+                   
+               
+                
                			
             </script>
             <?php				
@@ -569,17 +579,13 @@
                   jQuery.ajax({
               				url:"<?php echo base_url();?>main/center_select_feild",
               				type:"POST",	
-                        // dataType:'json',
+                        dataType:'json',
               				data:{company_name:company_name},
               				success:function(data){
-                              // console.log(data);
-                              // foreach(data as r)
-                              // {
-                              //    $('#center-name option').append('<option value='r['center_name']'>r['center_name']</option>');
-
-                              // }
-                              alert(data)
-              		
+                           $.each(data, function (index, value) { 
+                              $('#center-name').append('<option value="'+value.id+'">'+value.center_name+'</option>');
+                              
+                           });
               				}
               			 });	
 
