@@ -131,6 +131,7 @@ class Main_control extends CI_Controller {
 	{
 		if(!empty($id)){
 			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
+			$result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);

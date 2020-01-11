@@ -84,12 +84,11 @@ class Pay_roll_model extends CI_Model{
 	{
 		
 		if(!empty($id)):
-			
 			$this->updatePayrollByid($data, $id);
 		else:
-			
 			$this->inserPayroll($data, $sDate , $eDate);
 		endif;
+		
 		return true;
 	}
 
@@ -97,6 +96,7 @@ class Pay_roll_model extends CI_Model{
 	{
 		$this->db->where('emp_ids', $data['emp_ids'])->update('lit_payroll', $data);
 		$this->updateYtd($id, $data, $data['emp_ids']);
+		$this->updateYtds($data['emp_ids'], $id);
 		return true;
 	}
 
@@ -106,6 +106,7 @@ class Pay_roll_model extends CI_Model{
 		$this->db->insert('lit_payroll', $data);
 		$id = $this->db->insert_id();
 		$this->updateYtd($id, $data, $data['emp_ids']);
+		$this->updateYtds($data['emp_ids'], $id);
 		return true;
 	}
 
@@ -135,8 +136,71 @@ class Pay_roll_model extends CI_Model{
 		return $this->db->where('emp_ids',$empid)->where('id <>', $id)->order_by('id', 'DESC')->get('lit_payroll')->row();
 	}
 
+
+	// updateYts
+	public function updateYtds($empid = null, $id = null)
+	{
+		$pdf = $this->GetDataForPdf($id);
+		$oldytd = $this->oldYtds($id);
+
+		// grosspay 
+		$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount);
+		// Govt Penction
+		if($grossPay < $pdf['master']->max_pentionable_earning){
+			$gvtPention     =(($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
+		}else{
+			$gvtPention = 0.00;
+		}
+		$fedTax       = ($pdf['master']->fed_tax * $grossPay); // fedtax
+		$eiCount      = ($pdf['master']->ei_cont * $grossPay ); // Ei Count
+		$vacation     = ($pdf['emp']->vocation_rate * $grossPay); // vacation
+		if(!empty($oldytd->id)){
+			$inserData = array(
+				'govt_pen' 	=> (float)$gvtPention,
+				'fedl_tax' 	=> (float)$fedTax,
+				'ei_count' 	=> (float)$eiCount,
+				'vacation' 	=> (float)$vacation,
+				'payroll_id'=> $id,
+				'empid'		=> $empid,
+			);
+		}else{
+			$inserData = array(
+				'govt_pen' 	=> (float)$oldytd->govt_pen		+ (float)$gvtPention,
+				'fedl_tax' 	=> (float)$oldytd->fedl_tax 	+ (float)$fedTax,
+				'ei_count' 	=> (float)$oldytd->ei_count 	+ (float)$eiCount,
+				'vacation' 	=> (float)$oldytd->vacation 	+ (float)$vacation,
+				'payroll_id'=> $id,
+				'empid'		=> $empid,
+			);
+		}
+		
+		if(!empty($oldytd->id)){
+			$this->db->where('payroll_id', $id)->update('lit_yts', $inserData);
+		}else{
+			$this->db->insert('lit_yts', $inserData);
+		}
+		
+		return true;
+	}
+
+	// oldytds
+	public function oldYtds($id = null)
+	{
+		$query =$this->db->where('payroll_id', $id)->get('lit_yts');
+		if($query->num_rows() < 1){
+			$query = new stdClass();
+			$query->govt_pen = 0;
+			$query->fedl_tax = 0;
+			$query->ei_count = 0;
+			$query->vacation = 0;
+			return $query;
+		}else{
+			return $query->row();	
+		}		
+	}
+
 	// get data for genarate pdf
-	public function GetDataForPdf($id)
+	public function GetDataForPdf($id = null)
 	{
 		$data['master'] = $this->getMasterDetails();
 		$data['emp']	= $this->getEmpDetails($id);

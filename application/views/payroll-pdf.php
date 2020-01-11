@@ -17,7 +17,7 @@ $totalErnings   = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['
 $ytdTotalErnings= ($pdf['emp']->total_reg_ytd * $pdf['emp']->per_hr_rate )  +  ($pdf['emp']->total_stat_ytd * $pdf['emp']->per_hr_rate );
 // Govt Penction
 if($grossPay < $pdf['master']->max_pentionable_earning){
-    $gvtPention     =(($pdf['master']->govt_pen - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
+    $gvtPention     =(($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
 }else{
     $gvtPention = 0.00;
 }
@@ -32,10 +32,10 @@ $vacation       = ($pdf['emp']->vocation_rate * $grossPay);
 $ytVacation     = ($pdf['emp']->vocation_rate * $ytdGrossPay);
 // deduction
 $totalDeduction = (($gvtPention + $fedTax + $eiCount + $vacation));
-$ytdDeduction   = (($gvtPention + $ytdFedtax + $ytdEiCount + $ytVacation));
+$totalYtdDeduction   = (($yrDeduction->govt_pen + $yrDeduction->fedl_tax + $yrDeduction->ei_count + $yrDeduction->vacation));
 // net Pay
-$netPay         = $totalDeduction - $grossPay;
-$ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
+$netPay         =  $grossPay - $totalDeduction;
+$ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction );
 
 ?>
     <table >
@@ -137,7 +137,7 @@ $ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
                         <td></td>
                         <td class="text-center"><?php echo round($gvtPention, 2) ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo round($gvtPention, 2) ?></td>
+                        <td class="text-center"><?php echo round($yrDeduction->govt_pen, 2) ?></td>
                        
                         
                     </tr>
@@ -147,7 +147,7 @@ $ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
                         <td></td>
                         <td class="text-center"><?php echo round($fedTax, 2)  ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo round($fedTax, 2)  ?></td>
+                        <td class="text-center"><?php echo round($yrDeduction->fedl_tax, 2)  ?></td>
                         
                     </tr>
                     <tr>
@@ -156,7 +156,7 @@ $ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
                         <td></td>
                         <td class="text-center"><?php echo round($eiCount, 2)  ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo round($eiCount, 2)  ?></td>
+                        <td class="text-center"><?php echo round($yrDeduction->ei_count, 2)  ?></td>
                         
                     </tr>
                     <tr>
@@ -165,7 +165,7 @@ $ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
                         <td></td>
                         <td class="text-center"><?php echo round($vacation, 2)  ?></td>
                         <td></td>
-                        <td class="text-center"><?php echo round($vacation, 2)  ?></td>
+                        <td class="text-center"><?php echo round($yrDeduction->vacation, 2)  ?></td>
                         
                     </tr>
                     
@@ -175,7 +175,7 @@ $ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
                         <td></td>
                         <td class="text-center"><?php echo round($totalDeduction, 2) ?></td> 
                         <td></td>
-                        <td class="text-center">908.0</td> 
+                        <td class="text-center"><?php echo round($totalYtdDeduction, 2) ?></td> 
                     </tr>
                     <tr>
                         <th class="text-left"><br>NET PAY</th>
@@ -183,7 +183,7 @@ $ytdNetPay      = ($gvtPention - $fedTax - $eiCount - $vacation);
                         <td></td>
                         <td class="text-center"><br><b><?php echo round($netPay, 2) ?></b></td>
                         <td></td> 
-                        <td class="text-center"><?php echo round($ytdNetPay, 2) ?></td> 
+                        <td class="text-center"><b><?php echo round($ytdNetPay, 2) ?></b></td> 
                     </tr> 
                 </table>
 
