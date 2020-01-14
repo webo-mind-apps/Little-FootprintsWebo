@@ -25,12 +25,12 @@ var DatatableAdvanced = function() {
         }
 
         // Setting datatable defaults
-        $.extend( $.fn.dataTable.defaults, {
+        $.extend($.fn.dataTable.defaults, {
             autoWidth: false,
-            columnDefs: [{ 
+            columnDefs: [{
                 orderable: false,
                 width: 100,
-                targets: [ 5 ]
+                targets: [10]
             }],
             dom: '<"datatable-header"fl><"datatable-scroll"t><"datatable-footer"ip>',
             language: {
@@ -43,7 +43,10 @@ var DatatableAdvanced = function() {
 
         // Datatable 'length' options
         $('.datatable-show-all').DataTable({
-            lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "All"]]
+            lengthMenu: [
+                [10, 25, 50, -1],
+                [10, 25, 50, "All"]
+            ]
         });
 
         // DOM positioning
@@ -54,7 +57,7 @@ var DatatableAdvanced = function() {
         // Highlighting rows and columns on mouseover
         var lastIdx = null;
         var table = $('.datatable-highlight').DataTable();
-         
+
         $('.datatable-highlight tbody').on('mouseover', 'td', function() {
             var colIdx = table.cell(this).index().column;
 
@@ -68,17 +71,16 @@ var DatatableAdvanced = function() {
 
         // Columns rendering
         $('.datatable-columns').dataTable({
-            columnDefs: [ 
-                {
+            columnDefs: [{
                     // The `data` parameter refers to the data for the cell (defined by the
                     // `data` option, which defaults to the column being worked with, in
                     // this case `data: 0`.
-                    render: function (data, type, row) {
-                        return data +' ('+ row[3]+')';
+                    render: function(data, type, row) {
+                        return data + ' (' + row[3] + ')';
                     },
                     targets: 0
                 },
-                { visible: false, targets: [ 3 ] }
+                { visible: false, targets: [3] }
             ]
         });
     };

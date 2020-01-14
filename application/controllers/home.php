@@ -42,7 +42,3 @@ class Home extends CI_Controller {
 		redirect('home');
 	}
 }
-?>
-
-
-

@@ -1,4 +1,3 @@
-
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
@@ -44,6 +43,8 @@ class Main extends CI_Controller {
 	{
 		if($this->session->userdata('admin_login'))
 		{
+			$data['centers'] = $this->db_model->empCenters();
+			
 			$data['comapny_fetch']=$this->db_model->company_master();
 			$data['employee_detail_fetch']=$this->db_model->employee_details_fetch_for_update();
 			$data['employee_position_fetch']=$this->db_model->lit_employee_position_fetch();
@@ -527,4 +528,3 @@ class Main extends CI_Controller {
         }
 
 }
-?>

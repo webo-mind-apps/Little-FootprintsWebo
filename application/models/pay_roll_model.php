@@ -1,4 +1,3 @@
-
 <?php
 class Pay_roll_model extends CI_Model{
 	public function __construct(){
@@ -41,21 +40,30 @@ class Pay_roll_model extends CI_Model{
 		
 	} 
 
-	function select_where_employee_details($sdate, $edate){ 
+	function select_where_employee_details($sdate = null, $edate = null, $company = null, $center = null){ 
 		$result = $this->db->get('lit_employee_details') ->result();
 		foreach ($result as $key => $value) {
-			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate);
+			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center);
 		}
 		return $result;
 	}
 
 	// Get payriol detils
-	public function getPayRoll($id = null, $sdate = null, $edate = null)
+	public function getPayRoll($id = null, $sdate = null, $edate = null, $company = null, $center = null)
 	{
-		return $this->db->where('pay_date >=', $sdate)
-		->where('pay_date <=', $edate)	
-		->where('emp_ids', $id)
-		->get('lit_payroll')->row();
+		// if(!empty($company)){
+		// 	$this->db->where('e.company');
+		// }
+		if (!empty($center)) {
+			# code...
+		}
+		$this->db->from('lit_payroll p');
+		$this->db->select('p.*');
+		$this->db->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left');
+		return $this->db->where('p.pay_date >=', $sdate)
+		->where('p.pay_date <=', $edate)	
+		->where('p.emp_ids', $id)
+		->get()->row();
 	}
 
 
@@ -119,8 +127,8 @@ class Pay_roll_model extends CI_Model{
 			$emps->total_reg_ytd = 0;
 			$emps->total_stat_ytd = 0;
 		}
-		$total_reg_ytd 		=  	(int)$emps->total_reg_ytd  + (int)$data['regular_hrs'];
-		$total_stat_ytd 	=   (int)$emps->total_stat_ytd + (int)$data['stat_hol'];
+		$total_reg_ytd 		=  	(float)$emps->total_reg_ytd  + (float)$data['regular_hrs'];
+		$total_stat_ytd 	=   (float)$emps->total_stat_ytd + (float)$data['stat_hol'];
 		$datas = array(
 			'total_reg_ytd' 	=> $total_reg_ytd, 
 			'total_stat_ytd' 	=> $total_stat_ytd
@@ -147,7 +155,7 @@ class Pay_roll_model extends CI_Model{
 		$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount);
 		// Govt Penction
 		if($grossPay < $pdf['master']->max_pentionable_earning){
-			$gvtPention     =(($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
+			$gvtPention     =((($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution) / 100);
 		}else{
 			$gvtPention = 0.00;
 		}
@@ -247,6 +255,9 @@ class Pay_roll_model extends CI_Model{
 		->get('lit_payroll')->row();
 	}
 
+	// company list
+	public function companyList()
+	{
+		return $this->db->where('status',1)->get('lit_company')->result();
+	}
 }
-
-?>

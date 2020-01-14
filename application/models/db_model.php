@@ -6,9 +6,10 @@ class Db_model extends CI_Model
     
 	function employee_details_insert_update()
 	{
-			$center = implode(',', $_POST['center']);
+			
 			$company = $_POST['company_name'];		
 			$id=$_POST['emp_id'];
+			$employeeId = $_POST['employeeId'];
 			$first_name=$_POST['first_name'];
 			$last_name=$_POST['last_name'];
 			$empsin=$_POST['empsin1']."-".$_POST['empsin2']."-".$_POST['empsin3'];
@@ -17,9 +18,8 @@ class Db_model extends CI_Model
 			$address2=$_POST['address2'];
 			$city=$_POST['city'];
 			$pincode=$_POST['pincode'];
-			$code=$_POST['code'];
 			$phone=$_POST['phone'];
-			$phone_code=$code."-".$phone;
+			$phone_code=$phone;
 			$email=$_POST['email'];
 			$hire_date=$_POST['hire_date'];
 			$rehire_date=$_POST['rehire_date'];
@@ -29,15 +29,15 @@ class Db_model extends CI_Model
 			$medical=$_POST['medical'];
 			$vocation_rate=$_POST['vocation_rate'];
 			$status=$_POST['status'];
-			
-			$this->db->select(array("emp_id"));
-			$this->db->from("lit_employee_details");
-			$this->db->order_by("id", "desc");
-			$this->db->limit(1);
-			$query=$this->db->get();
-			$row=$query->result_array(); 
-			$emp_id=$row[0]['emp_id'];
-			$emp_id_increment=$emp_id+1;
+			if(empty($employeeId)){
+				$this->db->select(array("emp_id"));
+				$this->db->from("lit_employee_details");
+				$this->db->order_by("id", "desc");
+				$this->db->limit(1);
+				$query=$this->db->get();
+				$row=$query->result_array(); 
+				$emp_id=$row[0]['emp_id'];
+				$emp_id_increment=$emp_id+1;
 				if($emp_id<9)
 				{
 					$emp_new_id="00".$emp_id_increment;
@@ -50,9 +50,20 @@ class Db_model extends CI_Model
 				{
 					$emp_new_id=$emp_id_increment;
 				}
+			}else{
+				$emp_new_id = $employeeId;
+			}
 				
+				if(isset($_POST['center'])){
+					$this->db->where('empid', $emp_new_id)->delete('emp_center');
+					$center = $_POST['center'];
+					foreach ($center as $key => $value) {
+						$centerData = array('empid' => $emp_new_id, 'center' => $value);
+						$this->employeeCenter($centerData);
+					}
+				}
 				
-				$data = array('company'=> $company , 'center'=> $center , 'emp_id' =>$emp_new_id,'first_name' =>$first_name,'last_name' =>$last_name,'empsin' =>$empsin,'dob' =>$dob,'address1' =>$address1,'address2' =>$address2,'city' =>$city,'pincode' =>$pincode,'phone' =>$phone_code,'email' =>$email,'hire_date' =>$hire_date,'rehire_date' =>$rehire_date,'empcert' =>$empcert,'hour_rate' =>$hour_rate,'emp_position' =>$position,'medical' =>$medical,'vocation_rate' =>$vocation_rate,'status' =>$status);
+				$data = array('company'=> $company ,  'emp_id' =>$emp_new_id,'first_name' =>$first_name,'last_name' =>$last_name,'empsin' =>$empsin,'dob' =>$dob,'address1' =>$address1,'address2' =>$address2,'city' =>$city,'pincode' =>$pincode,'phone' =>$phone_code,'email' =>$email,'hire_date' =>$hire_date,'rehire_date' =>$rehire_date,'empcert' =>$empcert,'hour_rate' =>$hour_rate,'emp_position' =>$position,'medical' =>$medical,'vocation_rate' =>$vocation_rate,'status' =>$status);
 				
 		if(isset($_POST['insert_button']))
 		{
@@ -75,6 +86,13 @@ class Db_model extends CI_Model
 		 
 		}
 	}
+
+	public function employeeCenter($data)
+	{
+		$this->db->insert('emp_center', $data);
+		return true;
+	}
+
 	function lit_employee_details_fetch()
 	{
 		$this->db->select('a.*,b.position,b.id as pos_id');
@@ -86,6 +104,18 @@ class Db_model extends CI_Model
 		return $result;
 	}	
 	
+	public function empCenters()
+	{
+		$id=$this->uri->segment(3);
+		$this->db->select('c.*');
+		$this->db->from('lit_employee_details e');
+		$this->db->where('e.id',$id);
+		$this->db->join('emp_center ec', 'ec.empid = e.emp_id', 'left');
+		$this->db->join('lit_center c', 'c.id = ec.center', 'left');
+		return $this->db->get()->result();
+		
+	}
+
 	function employee_details_fetch_for_update()
 	{
 		$id=$this->uri->segment(3);
@@ -555,4 +585,3 @@ function emp_ei_insert()
 
 	
 }
-?>

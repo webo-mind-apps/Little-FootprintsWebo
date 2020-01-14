@@ -44,22 +44,7 @@
         }
         
 
-	 	function payroll_show_function(){ 
-	 		var payment_date = $("#payment_date").val(); 
-	 	 	var pay_end_date = $("#pay_end_date").val();
-	 	 	 
-             jQuery.ajax({	
-					type:'POST',
-					url:"<?php echo base_url();?>"+"main_control/pay_roll_dates",
-					data:{payment_date:payment_date,pay_end_date:pay_end_date},
-					success:function(response){							 
-						  $("#payroll_details").empty();
-						  $("#payroll_details").html(response);
-						//alert(response);
-					}
-			}); 
-	 	 	$(".pay_roll_dropdown").css("display","block");
-	 	}
+	 	
 	 </script>
 	<style type="text/css">
 		.payslip_heading{
@@ -98,6 +83,10 @@
 			margin:auto;
 		}
 
+		select, input{font-size: 12px; width: 100%; height: 30px; border-radius: 3px; border: 1px solid #b0b0b0;}
+		label{margin-bottom: 0; font-size: 10px;}
+		input{margin:0px !important}
+
 	</style>
 </head>
 
@@ -122,10 +111,8 @@
 	<!-- Multiple row inputs (horizontal) -->
         <div class="card" >
 		  <div class="card-header header-elements-inline">
-					<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYESS PAYROLL</h6> 
-					
+				<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYEES PAYROLL</h6> 
 		  </div> 
-				<h1></h1>
           <div class="card-body">
           	<?php
    				if($this->session->flashdata('abc','success')){
@@ -141,18 +128,27 @@
 
 				  <table class="table ">
 				  			<tr class="table-active table-border-double">
-								<td width="25%">
-									PAYMENT DATE:<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
+								<td width="18%">
+									<label>PAYMENT DATE</label><br>
+									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
 								</td>
-								<td  width="25%">
-								PAY END DATE:<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="pay_end_date" name="pay_end_date_val"  style="margin-left:12px;font-size:12px;" autocomplete="off"> 
+								<td   width="18%">
+									<label>PAY END DATE</label><br>
+									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="pay_end_date" name="pay_end_date_val"  style="margin-left:12px;font-size:12px;" autocomplete="off"> 
 								</td>
-								<td >
-									<div style="color:white;display:none;" id="pay_roll_button">
-										<a class="btn btn-primary legitRipple btn-sm" onclick="payroll_show_function()">Show</a>
-									</div>
+								<td  width="18%">
+				   					<label for="">SELECT COMPANY</label><br>
+									<select id="companySelect">
+				   						<?php foreach ($company as $key => $value) {
+											echo '<option value="'.$value->id.'" >'.$value->name.'</option>';
+										} ?>
+									</select>
 								</td>
-							
+								<td  width="18%">
+				   					<label for="">SELECT CENTER</label><br>
+									<select id="centerSelect"> </select>
+								</td>
+								
 							</tr>
 				  </table>
 				  <table class="table " id="payroll_details">
@@ -188,5 +184,58 @@
 	</div>
 	<!-- /page content -->
   
+  <script>
+	$(document).ready(function () {
+		$('#payment_date , #pay_end_date').change(function(){
+			payroll_show_function();
+		});
+
+		// fetch center
+		$('#companySelect').change(function() { 
+			centerList();
+		});
+
+		centerList();
+	});
+	function payroll_show_function(){ 
+	 	var payment_date = $("#payment_date").val(); 
+	 	var pay_end_date = $("#pay_end_date").val();
+	 	var companySelect= $("#companySelect").val();
+	 	var centerSelect = $("#centerSelect").val();
+	 	if(payment_date != '' && pay_end_date != '' && companySelect != '' && centerSelect != ''){
+			jQuery.ajax({	
+				type:'POST',
+				url:"<?php echo base_url();?>"+"main_control/pay_roll_dates",
+				data:{
+					payment_date	:	payment_date,
+					pay_end_date	:	pay_end_date,
+					company 		: 	companySelect,
+					center 			:	centerSelect
+				},
+				success:function(response){							 
+					$("#payroll_details").empty();
+					$("#payroll_details").html(response);
+				}
+			}); 
+			$(".pay_roll_dropdown").css("display","block");
+		}
+	}
+
+	function centerList(){
+		var company_name = $('#companySelect').val();
+		$.ajax({
+         	url:"<?php echo base_url();?>main/center_select_feild",
+         	type:"POST",	
+         	dataType:'json',
+         	data:{company_name:company_name},
+         	success:function(data){
+            	$.each(data, function (index, value) { 
+               		$('#centerSelect').append('<option value="'+value.id+'">'+value.center_name+'</option>');
+            	});
+         	}
+         });	
+	}
+
+  </script>
 </body>
 </html>

@@ -6,17 +6,19 @@ class Main_control extends CI_Controller {
 	public function __construct(){
 		parent::__construct();
 		$this->load->model('pay_roll_model'); 
-		if($this->session->userdata('admin_login') == false){ redirect('home','location',); }
+		if($this->session->userdata('admin_login') == false){ redirect('home','refresh'); }
 	} 
 	function pay_roll_page()
-	{   
-        $this->load->view('pay_roll'); 
+	{   $data['company'] = $this->pay_roll_model->companyList();
+        $this->load->view('pay_roll', $data); 
 	}	
 	function pay_roll_dates()
 	{ 	
-		$sdate = $this->input->post('payment_date');
-		$edate = $this->input->post('pay_end_date'); 
-		$result = $this->pay_roll_model->select_where_employee_details($sdate, $edate);  
+		$sdate 	 = $this->input->post('payment_date');
+		$edate 	 = $this->input->post('pay_end_date'); 
+		$company = $this->input->post('company');
+		$center  = $this->input->post('center');
+		$result  = $this->pay_roll_model->select_where_employee_details($sdate, $edate, $company, $center);  
 		
 		$table = '';
 		$table .= '<tr> 
@@ -144,5 +146,3 @@ class Main_control extends CI_Controller {
 	}
 
 }
-?>
-

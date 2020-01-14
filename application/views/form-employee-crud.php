@@ -105,16 +105,17 @@
                                  <select name="company_name" id="company-name" class="form-control" onchange="center_select_feild();" required>
                                        <option value="">Select</option>
                                        <?php
-                                          $i=1;
+                                          $companys = '';
+                                          if(!empty($employee_detail_fetch[0]['company'])){
+                                             $companys = $employee_detail_fetch[0]['company'];
+                                          }
                                           foreach($comapny_fetch as $row)
                                           {
-                                          	
-                                          ?>
-                                       <option value="<?php echo $row['id'];?>"><?php echo $row['name'];?></option>
+                                       ?>
+                                          <option <?php echo ($companys == $row['id'])? 'selected' : '' ?> value="<?php echo $row['id'];?>"><?php echo $row['name'];?></option>
                                        <?php
-                                           $i++;
                                           }
-                                          ?>
+                                       ?>
                                     </select>
                                  </div>
                               </div>
@@ -124,7 +125,7 @@
                               <div class="form-group">
                                  <label>Select Center</label>
                                  <div class="input-group">
-                                 <select name="center[]" multiple="multiple" id="center-name" class="form-control" required>
+                                 <select name="center[]"  id="center-name" class="form-control" required>
                                       
                                  </select>  
                                  </div>
@@ -185,7 +186,7 @@
                               <div class="form-group">
                                  <label>Address2</label>
                                  <div class="input-group">
-                                    <textarea  class="form-control" id="address2" name="address2" cols="45" rows="5" placeholder="Address2" required></textarea>
+                                    <textarea  class="form-control" id="address2" name="address2" cols="45" rows="5" placeholder="Address2" ></textarea>
                                  </div>
                               </div>
                            </div>
@@ -210,15 +211,15 @@
                            </div>
                         </div>
                         <div class="row">
-                           <div class="col-sm-1" >
+                           <!-- <div class="col-sm-1" >
                               <div class="form-group">
                                  <label>Code</label>
                                  <div class="input-group">
                                     <input type="text" id="code" class="form-control" placeholder="+" name="code" maxlength="3" onkeydown="return isNumber();" required>
-                                 </div>
+                                 </div> 
                               </div>
-                           </div>
-                           <div class="col-sm-4" >
+                           </div> -->
+                           <div class="col-sm-5" >
                               <div class="form-group">
                                  <label>Phone.No</label>
                                  <div class="input-group">
@@ -250,7 +251,7 @@
                               <div class="form-group">
                                  <label>Rehire date</label>
                                  <div class="input-group">
-                                    <input type="text" id="rehire-date" class="dateformat form-control" placeholder="Rehire date" name="rehire_date" onkeydown="return isalpha();" onkeypress="return isNumber();"  format="" required>
+                                    <input type="text" id="rehire-date" class="dateformat form-control" placeholder="Rehire date" name="rehire_date" onkeydown="return isalpha();" onkeypress="return isNumber();"  format="" >
                                  </div>
                               </div>
                            </div>
@@ -318,7 +319,7 @@
                         <div class="row">
                            <div class="col-sm-5" >
                               <div class="form-group">
-                                 <label>Vocation rate (format : 0.0004)</label>
+                                 <label>vacation rate (format : 0.0004)</label>
                                  <div class="input-group">
                                     <input type="text" id="vocation-rate" class="form-control" placeholder="Vocation rate" name="vocation_rate" maxlength="6" onfocusout="vocation_rate_check();" required>
                                  </div>
@@ -338,6 +339,7 @@
                            </div>
                         </div>
                         <input type="hidden" id="emp-id" name="emp_id">
+                        <input type="hidden" name="employeeId" value="<?php echo (!empty($employee_detail_fetch[0]['emp_id'])? $employee_detail_fetch[0]['emp_id'] : '') ?>">
                         <div class="text-right" style="display:block;" id="insert-activate">
                            <button  type="submit" id="insert-button" name="insert_button" class="insert btn btn-primary" onclick="">Submit<i class="icon-paperplane ml-2"></i></button>
                         </div>
@@ -354,13 +356,21 @@
             <script>
                  $(document).ready(function () {
                   $('#center-name').select2({
-                     placeholder: "Select  Centers"
+                     placeholder: "Select  Centers",
+                     multiple: true,
                   });
                });
             </script>
             <?php
+            if(!empty($centers)){
+               $centerslist =  json_encode($centers);
+            }else{
+               $centerslist =  json_encode(array());
+            }
                if(isset($employee_detail_fetch))
                {
+    
+                  
                				foreach($employee_detail_fetch as $row)
                				{
                					$id=$row['id'];
@@ -404,10 +414,8 @@
                $("#empsin3").val(empsin[2]);
                
                   	$("#dob").val("<?php echo $dob; ?>");
-               var phone_code="<?php echo $phone; ?>"
-               var phone=phone_code.split("-");
-                  	$("#code").val(phone[0]);
-               $("#phone").val(phone[1]);
+               var phone=<?php echo $phone; ?>;
+               $("#phone").val(phone);
                
                
                   	$("#email").val("<?php echo $email; ?>");
@@ -440,18 +448,11 @@
                   	$("#vocation-rate").val("<?php echo $vocation_rate; ?>");
                
                   	$("#status").val("<?php echo $status; ?>");
-               
-                 
-               
-                   
-               
-                
-               			
             </script>
             <?php				
                }				
                ?>
-           
+            
 	<!-- Footer -->
 		 <?php $this->load->view('includes/main_footer') ?>
 	<!-- /footer --> 
@@ -519,7 +520,7 @@
           {
          	 $('#vocation-rate').val('');
           }
-          if(number_count!=5||dot_count!=1)
+          if(number_count < 1||dot_count!=1)
                	{
          		$('#vocation-rate').val('');
          	}
@@ -536,7 +537,7 @@
                	}
                }
          
-                 <!--Numeric validation -->
+                
                  function isNumber(evt) {
                  evt = (evt) ? evt : window.event;
                  var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -577,20 +578,32 @@
 
                   var company_name=$('#company-name').val();
                   jQuery.ajax({
-              				url:"<?php echo base_url();?>main/center_select_feild",
+              				url:"<?php echo base_url();?>main/center_select_feild?use=<?php echo $this->uri->segment(3) ?>",
               				type:"POST",	
                         dataType:'json',
               				data:{company_name:company_name},
               				success:function(data){
+                           $('#center-name').empty();
                            $.each(data, function (index, value) { 
                               $('#center-name').append('<option value="'+value.id+'">'+value.center_name+'</option>');
-                              
                            });
               				}
               			 });	
 
                }
-               
+         center_select_feild();
+         
+         $(document).ready(function () {
+            var slr = <?php echo $centerslist ?>;
+            var selectedValues = new Array();
+            $.each(slr, function (index, value) { 
+               var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
+               selectedValues[index] = value.id;
+            });
+            $('#center-name').val(selectedValues).trigger('change');
+            console.log(selectedValues);
+            
+         });
       </script>
    </body>
 </html>

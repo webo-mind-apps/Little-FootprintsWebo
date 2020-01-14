@@ -91,7 +91,7 @@
 							</a>
 						</li>
 						<li class="nav-item">
-							<a href="<?php echo base_url('summarized-report') ?>" class="nav-link">
+							<a href="<?php echo base_url('summarized-report?year=').date('Y') ?>" class="nav-link">
 								<i class="fa fa-file-text-o"></i>
 								<span>
 									Summarized Report

@@ -39,5 +39,4 @@ class admin_model extends CI_Model
         $this->db->where('admin_email_id', $array['admin_email_id']);
         $this->db->update('admin_details', $updateData); 
       	} */
-   } 
-?>
+   }

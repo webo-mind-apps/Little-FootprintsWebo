@@ -17,7 +17,7 @@ $totalErnings   = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['
 $ytdTotalErnings= ($pdf['emp']->total_reg_ytd * $pdf['emp']->per_hr_rate )  +  ($pdf['emp']->total_stat_ytd * $pdf['emp']->per_hr_rate );
 // Govt Penction
 if($grossPay < $pdf['master']->max_pentionable_earning){
-    $gvtPention     =(($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution);
+    $gvtPention     =((($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution) / 100 );
 }else{
     $gvtPention = 0.00;
 }
@@ -99,17 +99,17 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction );
                         <td>WAGE BC</td>
                         <td class="text-center">0.00</td>
                         <td class="text-center">0.00</td>
-                        <td class="text-center"><?php echo $pdf['emp']->wage_amount ?></td> 
+                        <td class="text-center"><?php echo round($pdf['emp']->wage_amount, 2) ?></td> 
                         <td class="text-center">0.0</td>
-                        <td class="text-center"><?php echo $pdf['emp']->totalWages ?></td> 
+                        <td class="text-center"><?php echo round($pdf['emp']->totalWages,2) ?></td> 
                     </tr>
                     <tr>
                         <td>MISCELLANEOUS <br>AMOUNT</td>
                         <td class="text-center"></td>
                         <td class="text-center"></td>
-                        <td class="text-center"><?php echo $pdf['emp']->miscellaneous_amount ?></td>
+                        <td class="text-center"><?php echo round($pdf['emp']->miscellaneous_amount, 2) ?></td>
                         <td class="text-center"></td> 
-                        <td class="text-center"><?php echo $pdf['emp']->tmiscellaneous ?></td> 
+                        <td class="text-center"><?php echo round($pdf['emp']->tmiscellaneous, 2) ?></td> 
                     </tr>
                    
                     <tr>
@@ -121,7 +121,7 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction );
                             <br><br><br><br>
                         </td>
                         <td class="text-center"></td> 
-                        <td class="text-center"><br><b><?php echo $ytdGrossPay ?></b><br><br><br><br></td> 
+                        <td class="text-center"><br><b><?php echo round($ytdGrossPay, 2) ?></b><br><br><br><br></td> 
                     </tr>
                     <tr class="mt15">
                         <th class="text-left">DEDUCTIONS</th>
