@@ -42,9 +42,14 @@ class Pay_roll_model extends CI_Model{
 
 	function select_where_employee_details($sdate = null, $edate = null, $company = null, $center = null){ 
 		$result = $this->db
-		->where('status', 0)
-		->order_by('id', 'asc')
-		->get('lit_employee_details')
+		->where('e.status', 0)
+		->order_by('e.id', 'asc')
+		->select('e.*')
+		->from('lit_employee_details e')
+		->join('emp_center c', 'c.empid = e.emp_id', 'left')
+		->where('e.company', $company)
+		->where('c.center', $center)
+		->get()
 		->result();
 		
 		
@@ -58,21 +63,21 @@ class Pay_roll_model extends CI_Model{
 	// Get payriol detils
 	public function getPayRoll($id = null, $sdate = null, $edate = null, $company = null, $center = null)
 	{
-		// if(!empty($company)){
-		// 	$this->db->where('e.company');
-		// 	if (!empty($center)) {
-		// 		# code...
-		// 	}
-		// }
 		
 		$this->db->from('lit_payroll p');
 		$this->db->select('p.*');
 		$this->db->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left');
-		return $this->db->where('p.pay_date >=', $sdate)
-		->where('p.pay_date <=', $edate)	
-		->where('p.emp_ids', $id)
-		->order_by('id', 'DESC')
-		->get()->row();
+		if(!empty($company)){
+			$this->db->where('e.company', $company);
+			if (!empty($center)) {
+				$this->db->where('p.center', $center);
+			}
+		}
+		$this->db->where('p.emp_ids', $id);
+		$this->db->where('p.pay_date <=', $edate);	
+		$this->db->where('p.pay_date >=', $sdate);
+		$this->db->order_by('id', 'DESC');
+		return $this->db->get()->row();
 	}
 
 
@@ -111,7 +116,7 @@ class Pay_roll_model extends CI_Model{
 
 	public function updatePayrollByid($data = null, $id = null)
 	{
-		$this->db->where('emp_ids', $data['emp_ids'])->update('lit_payroll', $data);
+		$this->db->where('id', $id)->update('lit_payroll', $data);
 		$this->updateYtd($id, $data, $data['emp_ids']);
 		$this->updateYtds($data['emp_ids'], $data['medical'], $id, $data['vacation_release']);
 		return true;

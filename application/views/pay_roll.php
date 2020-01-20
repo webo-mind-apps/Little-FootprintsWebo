@@ -139,7 +139,7 @@
 								</td>
 								<td  width="18%">
 				   					<label for="">SELECT CENTER</label><br>
-									<select id="centerSelect"> </select>
+									<select id="centerSelect" name="center"> </select>
 								</td>
 								<td width="18%">
 									<label>PAYMENT DATE</label><br>

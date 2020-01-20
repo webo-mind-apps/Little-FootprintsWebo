@@ -43,6 +43,7 @@ class Main_control extends CI_Controller {
 
 			$wage_amount = '';
 			$miscellaneous_amount = '';
+			$checked = '';
 			$regular_hrs  			=  (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
 			$stat_hol 				=  (!empty($row->payRoll->stat_hol) ? $row->payRoll->stat_hol: '');
 			if(isset($row->payRoll->wage_amount)){
@@ -51,10 +52,11 @@ class Main_control extends CI_Controller {
 			if(isset($row->payRoll->miscellaneous_amount)){
 				$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount  || $row->payRoll->miscellaneous_amount == '0'  ) ? $row->payRoll->miscellaneous_amount: '');
 			}
+			if(!empty($row->payRoll->vacation_release)){
+				$checked = ($row->payRoll->vacation_release == 1)? 'checked' : '';
+			}
 			$payrollId 				=  (!empty($row->payRoll->id) ? $row->payRoll->id: '');
 			$rate 					=  (!empty($row->payRoll->per_hr_rate) ? $row->payRoll->per_hr_rate : $row->hour_rate);
-
-			$checked = ($row->payRoll->vacation_release == 1)? 'checked' : '';
 
 			if(!empty($regular_hrs) && !empty($stat_hol)){
 
@@ -118,7 +120,9 @@ class Main_control extends CI_Controller {
 		else:
 			echo '
 				<tr>
-					<td colspan="9" class="text-center"><h3>No result Found</h3></td>
+					<td colspan="9" class="text-center">
+						<img class="img-responsive" src="'.base_url().'my_assets/found.gif"> 
+						</td>
 				</tr>';
 		endif;
 		      
@@ -144,6 +148,7 @@ class Main_control extends CI_Controller {
 				'vacation_release'		=> (isset($post['vacationPay'][$key]))? '1' : '0',
 				'medical'				=> $post['medical'][$key],
 				'vacation'				=> $post['vacation'][$key],
+				'center'				=> $post['center']
 			);
 			$pid = $post['prl_id'][$key];
 			$this->pay_roll_model->updatePayrolls($data, $sDate, $eDate, $pid);

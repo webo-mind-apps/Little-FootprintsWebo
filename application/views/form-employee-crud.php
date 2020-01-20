@@ -77,7 +77,7 @@
 
                            if($this->session->flashdata('insert','Inserted successfully')){
                               ?> 
-                        <div class="alert bg-success alert-styled-left">
+                        <div class="alert bg-success alert-styled-left" style="margin: 0 20px;">
                            <button type="button" class="close" data-dismiss="alert">&times;</button>
                            <span class="text-semibold">Inserts are saved successfully..!</span>
                         </div>
@@ -87,7 +87,7 @@
                         <?php
                            if($this->session->flashdata('update','Updated successfully')){
                               ?> 
-                        <div class="alert bg-success alert-styled-left">
+                        <div class="alert bg-success alert-styled-left" style="margin: 0 20px;">
                            <button type="button" class="close" data-dismiss="alert">&times;</button>
                            <span class="text-semibold">Updates are saved successfully..!</span>
                         </div>
