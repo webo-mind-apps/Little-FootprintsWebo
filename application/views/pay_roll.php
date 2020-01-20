@@ -128,14 +128,6 @@
 
 				  <table class="table ">
 				  			<tr class="table-active table-border-double">
-								<td width="18%">
-									<label>PAYMENT DATE</label><br>
-									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
-								</td>
-								<td   width="18%">
-									<label>PAY END DATE</label><br>
-									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="pay_end_date" name="pay_end_date_val"  style="margin-left:12px;font-size:12px;" autocomplete="off"> 
-								</td>
 								<td  width="18%">
 				   					<label for="">SELECT COMPANY</label><br>
 									<select id="companySelect">
@@ -148,6 +140,15 @@
 				   					<label for="">SELECT CENTER</label><br>
 									<select id="centerSelect"> </select>
 								</td>
+								<td width="18%">
+									<label>PAYMENT DATE</label><br>
+									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
+								</td>
+								<td   width="18%">
+									<label>PAY END DATE</label><br>
+									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="pay_end_date" name="pay_end_date_val"  style="margin-left:12px;font-size:12px;" autocomplete="off"> 
+								</td>
+								
 								
 							</tr>
 				  </table>
@@ -186,7 +187,7 @@
   
   <script>
 	$(document).ready(function () {
-		$('#payment_date , #pay_end_date').change(function(){
+		$('#payment_date , #pay_end_date, #companySelect, #centerSelect').change(function(){
 			payroll_show_function();
 		});
 

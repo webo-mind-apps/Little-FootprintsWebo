@@ -14,8 +14,8 @@ class Main_control extends CI_Controller {
 	}	
 	function pay_roll_dates()
 	{ 	
-		$sdate 	 = $this->input->post('payment_date');
-		$edate 	 = $this->input->post('pay_end_date'); 
+		$sdate 	 = date('Y-m-d', strtotime($this->input->post('payment_date')));
+		$edate 	 = date('Y-m-d', strtotime($this->input->post('pay_end_date'))); 
 		$company = $this->input->post('company');
 		$center  = $this->input->post('center');
 		$result  = $this->pay_roll_model->select_where_employee_details($sdate, $edate, $company, $center);  
@@ -35,20 +35,20 @@ class Main_control extends CI_Controller {
 		if(!empty($result)):
 		  foreach($result as $key => $row) { 
 
-			$regular_hrs  			= (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
+			$regular_hrs  			=  (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
 			$stat_hol 				=  (!empty($row->payRoll->stat_hol) ? $row->payRoll->stat_hol: '');
 			$wage_amount 			=  (!empty($row->payRoll->wage_amount) ? $row->payRoll->wage_amount: '');
 			$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount) ? $row->payRoll->miscellaneous_amount: '');
 			$payrollId 				=  (!empty($row->payRoll->id) ? $row->payRoll->id: '');
+			$rate 					=  (!empty($row->payRoll->per_hr_rate) ? $row->payRoll->per_hr_rate : $row->hour_rate);
 
 
 			if(!empty($regular_hrs) && !empty($stat_hol) && !empty($wage_amount) && !empty($miscellaneous_amount)){
 
-				$btn = '<a href="'.base_url().'download-payroll/'.$payrollId.'" class="pdf-download"><i class="icon-file-download2 ml-2"></i></a>';
+				$btn = '<a target="_blank" href="'.base_url().'download-payroll/'.$payrollId.'" class="pdf-download"><i class="icon-file-download2 ml-2"></i></a>';
 			}else{
 				$btn = '<a  class="pdf-download disableda"><i class="icon-file-download2 ml-2"></i></a>';
 			}
-
 			$table .='     
 			<tr>
 				<td>
@@ -66,7 +66,7 @@ class Main_control extends CI_Controller {
 				</td>
 			 
 				<td>
-					<input type="text" readonly class="form-control" name="rate_hour[]" value="'.$row->hour_rate.'">
+					<input type="text" readonly class="form-control" name="rate_hour[]" value="'.$rate.'">
 				</td>
 			 
 				<td class="text-center">

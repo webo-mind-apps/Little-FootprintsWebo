@@ -45,6 +45,7 @@ class Pay_roll_model extends CI_Model{
 		foreach ($result as $key => $value) {
 			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center);
 		}
+		
 		return $result;
 	}
 
@@ -53,16 +54,18 @@ class Pay_roll_model extends CI_Model{
 	{
 		// if(!empty($company)){
 		// 	$this->db->where('e.company');
+		// 	if (!empty($center)) {
+		// 		# code...
+		// 	}
 		// }
-		if (!empty($center)) {
-			# code...
-		}
+		
 		$this->db->from('lit_payroll p');
 		$this->db->select('p.*');
 		$this->db->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left');
 		return $this->db->where('p.pay_date >=', $sdate)
 		->where('p.pay_date <=', $edate)	
 		->where('p.emp_ids', $id)
+		->order_by('id', 'DESC')
 		->get()->row();
 	}
 
@@ -110,6 +113,8 @@ class Pay_roll_model extends CI_Model{
 
 	public function inserPayroll($data = null, $sDate = null , $eDate = null)
 	{
+		$sDate = date('Y-m-d', strtotime($sDate));
+		$eDate = date('Y-m-d', strtotime($eDate));
 		$data = array_merge($data, array('pay_date' => $sDate, 'pay_end_date' => $eDate));
 		$this->db->insert('lit_payroll', $data);
 		$id = $this->db->insert_id();
@@ -127,8 +132,8 @@ class Pay_roll_model extends CI_Model{
 			$emps->total_reg_ytd = 0;
 			$emps->total_stat_ytd = 0;
 		}
-		$total_reg_ytd 		=  	(float)$emps->total_reg_ytd  + (float)$data['regular_hrs'];
-		$total_stat_ytd 	=   (float)$emps->total_stat_ytd + (float)$data['stat_hol'];
+		$total_reg_ytd 		=  	(float)$emps->total_reg_ytd  + ((float)$data['regular_hrs'] * (float)$data['per_hr_rate']);
+		$total_stat_ytd 	=   (float)$emps->total_stat_ytd + ((float)$data['stat_hol'] * (float)$data['per_hr_rate']);
 		$datas = array(
 			'total_reg_ytd' 	=> $total_reg_ytd, 
 			'total_stat_ytd' 	=> $total_stat_ytd
@@ -149,7 +154,8 @@ class Pay_roll_model extends CI_Model{
 	public function updateYtds($empid = null, $id = null)
 	{
 		$pdf = $this->GetDataForPdf($id);
-		$oldytd = $this->oldYtds($id);
+		$oldytd = $this->oldYtdsforadd($empid);
+		$oldytd1 = $this->oldYtds($id);
 
 		// grosspay 
 		$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount);
@@ -160,9 +166,9 @@ class Pay_roll_model extends CI_Model{
 			$gvtPention = 0.00;
 		}
 		$fedTax       = ($pdf['master']->fed_tax * $grossPay); // fedtax
-		$eiCount      = ($pdf['master']->ei_cont * $grossPay ); // Ei Count
+		$eiCount      = (($pdf['master']->ei_cont * $grossPay ) / 100); // Ei Count
 		$vacation     = ($pdf['emp']->vocation_rate * $grossPay); // vacation
-		if(!empty($oldytd->id)){
+		if(!empty($oldytd1->id)){
 			$inserData = array(
 				'govt_pen' 	=> (float)$gvtPention,
 				'fedl_tax' 	=> (float)$fedTax,
@@ -182,12 +188,13 @@ class Pay_roll_model extends CI_Model{
 			);
 		}
 		
-		if(!empty($oldytd->id)){
+		if(!empty($oldytd1->id)){
+		
 			$this->db->where('payroll_id', $id)->update('lit_yts', $inserData);
 		}else{
+			
 			$this->db->insert('lit_yts', $inserData);
 		}
-		
 		return true;
 	}
 
@@ -206,7 +213,25 @@ class Pay_roll_model extends CI_Model{
 			return $query->row();	
 		}		
 	}
+	public function oldYtdsforadd($id = null)
+	{
+		$query =$this->db->where('empid', $id)->order_by('id', 'DESC')->get('lit_yts');
+	
+		if($query->num_rows() < 1){
+			$query = new stdClass();
+			$query->govt_pen = 0;
+			$query->fedl_tax = 0;
+			$query->ei_count = 0;
+			$query->vacation = 0;
+			return $query;
+		}else{
+			
+			return $query->row();	
+		}		
+	}
 
+
+	
 	// get data for genarate pdf
 	public function GetDataForPdf($id = null)
 	{
@@ -216,6 +241,7 @@ class Pay_roll_model extends CI_Model{
 		$toatalMiscellaneous =  $this->countMiscellaneous($data['emp']->emp_ids);
 		$data['emp']->totalWages = $totlaWages->wage_amount;
 		$data['emp']->tmiscellaneous = $toatalMiscellaneous->miscellaneous_amount;
+
 		return $data;
 	}
 

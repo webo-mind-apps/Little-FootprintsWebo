@@ -223,7 +223,7 @@
                               <div class="form-group">
                                  <label>Phone.No</label>
                                  <div class="input-group">
-                                    <input type="text" id="phone" class="form-control" placeholder="Phone.No" name="phone" maxlength="7" onkeydown="return isNumber();" minlength="7" required>
+                                    <input type="text" id="phone" class="form-control" placeholder="Phone.No" name="phone" maxlength="10" onkeydown="return isNumber();" minlength="10" required>
                                  </div>
                               </div>
                            </div>
@@ -299,8 +299,7 @@
                                        <?php
                                           $i++;
                                           }
-                                          
-                                          
+                                           
                                           ?>
                                     </select>
                                  </div>
@@ -397,7 +396,17 @@
                				}
                				?>
             <script>
-
+         $(document).ready(function () {
+            var slr = <?php echo $centerslist ?>;
+            var selectedValues = new Array();
+            $.each(slr, function (index, value) { 
+               var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
+               selectedValues[index] = value.id;
+            });
+            $('#center-name').val(selectedValues).trigger('change');
+            console.log(selectedValues);
+            
+         });
                
                $('#insert-activate').css("display","none");
                $('#update-activate').css("display","block");
@@ -593,17 +602,7 @@
                }
          center_select_feild();
          
-         $(document).ready(function () {
-            var slr = <?php echo $centerslist ?>;
-            var selectedValues = new Array();
-            $.each(slr, function (index, value) { 
-               var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
-               selectedValues[index] = value.id;
-            });
-            $('#center-name').val(selectedValues).trigger('change');
-            console.log(selectedValues);
-            
-         });
+
       </script>
    </body>
 </html>

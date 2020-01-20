@@ -121,7 +121,7 @@
                               </div>
 
                               <div class="form-group">
-                                 <label>EI amount</label>
+                                 <label>Max Annual Insurable Amount</label>
                                  <div class="input-group">
                                     <input type="text" id="ei-amt"   class="form-control" placeholder="EI Contribution" name="ei_amt" onfocusout="decimal_check_ei_amount();"  minlength="3" required>
                                  </div>

@@ -26,7 +26,6 @@ class summerized extends CI_Controller {
 
 		$this->load->view('summarized-list', $data);
 
-		
 
 	}
 
