@@ -41,7 +41,13 @@ class Pay_roll_model extends CI_Model{
 	} 
 
 	function select_where_employee_details($sdate = null, $edate = null, $company = null, $center = null){ 
-		$result = $this->db->get('lit_employee_details') ->result();
+		$result = $this->db
+		->where('status', 0)
+		->order_by('id', 'asc')
+		->get('lit_employee_details')
+		->result();
+		
+		
 		foreach ($result as $key => $value) {
 			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center);
 		}
@@ -107,7 +113,7 @@ class Pay_roll_model extends CI_Model{
 	{
 		$this->db->where('emp_ids', $data['emp_ids'])->update('lit_payroll', $data);
 		$this->updateYtd($id, $data, $data['emp_ids']);
-		$this->updateYtds($data['emp_ids'], $id);
+		$this->updateYtds($data['emp_ids'], $data['medical'], $id);
 		return true;
 	}
 
@@ -119,7 +125,7 @@ class Pay_roll_model extends CI_Model{
 		$this->db->insert('lit_payroll', $data);
 		$id = $this->db->insert_id();
 		$this->updateYtd($id, $data, $data['emp_ids']);
-		$this->updateYtds($data['emp_ids'], $id);
+		$this->updateYtds($data['emp_ids'], $data['medical'], $id);
 		return true;
 	}
 
@@ -151,7 +157,7 @@ class Pay_roll_model extends CI_Model{
 
 
 	// updateYts
-	public function updateYtds($empid = null, $id = null)
+	public function updateYtds($empid = null, $medical = 0,  $id = null)
 	{
 		$pdf = $this->GetDataForPdf($id);
 		$oldytd = $this->oldYtdsforadd($empid);
@@ -165,8 +171,14 @@ class Pay_roll_model extends CI_Model{
 		}else{
 			$gvtPention = 0.00;
 		}
-		$fedTax       = ($pdf['master']->fed_tax * $grossPay); // fedtax
-		$eiCount      = (($pdf['master']->ei_cont * $grossPay ) / 100); // Ei Count
+		// EI contribution
+		if($grossPay < $pdf['master']->ei_amt){
+			$eiCount        = (($pdf['master']->ei_cont * $grossPay) / 100);
+		}else{
+			$eiCount = 0.00;
+		}
+
+		$fedTax       = ($pdf['master']->fed_tax * $grossPay); // fedl 	Tax
 		$vacation     = ($pdf['emp']->vocation_rate * $grossPay); // vacation
 		if(!empty($oldytd1->id)){
 			$inserData = array(
@@ -176,6 +188,7 @@ class Pay_roll_model extends CI_Model{
 				'vacation' 	=> (float)$vacation,
 				'payroll_id'=> $id,
 				'empid'		=> $empid,
+				'medical'   => (float)$medical
 			);
 		}else{
 			$inserData = array(
@@ -183,6 +196,7 @@ class Pay_roll_model extends CI_Model{
 				'fedl_tax' 	=> (float)$oldytd->fedl_tax 	+ (float)$fedTax,
 				'ei_count' 	=> (float)$oldytd->ei_count 	+ (float)$eiCount,
 				'vacation' 	=> (float)$oldytd->vacation 	+ (float)$vacation,
+				'medical'   => (float)$oldytd->medical     + (float)$medical,
 				'payroll_id'=> $id,
 				'empid'		=> $empid,
 			);

@@ -82,8 +82,9 @@
 			max-width: 75px;
 			margin:auto;
 		}
-
+		.text-center input{margin:auto !important}
 		select, input{font-size: 12px; width: 100%; height: 30px; border-radius: 3px; border: 1px solid #b0b0b0;}
+		input:not([type]), input[type=checkbox]{height: 10px}
 		label{margin-bottom: 0; font-size: 10px;}
 		input{margin:0px !important}
 

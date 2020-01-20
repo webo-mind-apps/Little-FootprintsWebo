@@ -30,20 +30,24 @@ class Main_control extends CI_Controller {
 						<th class="text-center">STAT HOL HRS</th> 
 						<th class="text-center">WAGE AMOUNT</th> 
 						<th class="text-center">MISCELLANEOUS<br>AMOUNT</th> 
+						<th class="text-center">MEDICAL<br>AMOUNT</th> 
+						<th style="width:115px"	 class="text-center">RELEASE <br> VACATION PAY</th>
 						<th class="text-center">ACTION</th> 
 					</tr>';
 		if(!empty($result)):
 		  foreach($result as $key => $row) { 
 
+
+
 			$regular_hrs  			=  (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
 			$stat_hol 				=  (!empty($row->payRoll->stat_hol) ? $row->payRoll->stat_hol: '');
-			$wage_amount 			=  (!empty($row->payRoll->wage_amount) ? $row->payRoll->wage_amount: '');
-			$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount) ? $row->payRoll->miscellaneous_amount: '');
+			$wage_amount 			=  ((!empty($row->payRoll->wage_amount) || $row->payRoll->wage_amount == '0'  )? $row->payRoll->wage_amount: '');
+			$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount  || $row->payRoll->miscellaneous_amount == '0'  ) ? $row->payRoll->miscellaneous_amount: '');
 			$payrollId 				=  (!empty($row->payRoll->id) ? $row->payRoll->id: '');
 			$rate 					=  (!empty($row->payRoll->per_hr_rate) ? $row->payRoll->per_hr_rate : $row->hour_rate);
 
 
-			if(!empty($regular_hrs) && !empty($stat_hol) && !empty($wage_amount) && !empty($miscellaneous_amount)){
+			if(!empty($regular_hrs) && !empty($stat_hol)){
 
 				$btn = '<a target="_blank" href="'.base_url().'download-payroll/'.$payrollId.'" class="pdf-download"><i class="icon-file-download2 ml-2"></i></a>';
 			}else{
@@ -84,6 +88,15 @@ class Main_control extends CI_Controller {
 				<td class="text-center">
 					<input type="text" class="form-control" name="miscellaneous_amount[]" value="'.$miscellaneous_amount.'">
 				</td>
+
+				<td class="text-center">
+					<input type="text" class="form-control" name="medical[]" value="'.$row->medical.'">
+				</td>
+
+				<td class="text-center">
+					<input type="checkbox" class="form-control" name="vacationPay[]" value="1">
+					<input type="hidden" class="form-control" name="vacation[]" value="'.$row->vocation_rate.'">
+				</td>
 			 
 				<td class="text-center">
 					'.$btn.'
@@ -118,7 +131,10 @@ class Main_control extends CI_Controller {
 				'stat_hol' 				=> $post['stat_hol_hrs'][$key], 
 				'wage_amount' 			=> $post['wage_amount'][$key], 
 				'miscellaneous_amount' 	=> $post['miscellaneous_amount'][$key], 
-				'per_hr_rate'			=> $post['rate_hour'][$key]
+				'per_hr_rate'			=> $post['rate_hour'][$key],
+				'vacation_release'		=> (isset($post['vacationPay'][$key]))? '1' : '0',
+				'medical'				=> $post['medical'][$key],
+				'vacation'				=> $post['vacation'][$key],
 			);
 			$pid = $post['prl_id'][$key];
 			$this->pay_roll_model->updatePayrolls($data, $sDate, $eDate, $pid);
