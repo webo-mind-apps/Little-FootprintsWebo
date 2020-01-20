@@ -113,7 +113,7 @@ class Pay_roll_model extends CI_Model{
 	{
 		$this->db->where('emp_ids', $data['emp_ids'])->update('lit_payroll', $data);
 		$this->updateYtd($id, $data, $data['emp_ids']);
-		$this->updateYtds($data['emp_ids'], $data['medical'], $id);
+		$this->updateYtds($data['emp_ids'], $data['medical'], $id, $data['vacation_release']);
 		return true;
 	}
 
@@ -125,7 +125,7 @@ class Pay_roll_model extends CI_Model{
 		$this->db->insert('lit_payroll', $data);
 		$id = $this->db->insert_id();
 		$this->updateYtd($id, $data, $data['emp_ids']);
-		$this->updateYtds($data['emp_ids'], $data['medical'], $id);
+		$this->updateYtds($data['emp_ids'], $data['medical'], $id, $data['vacation_release']);
 		return true;
 	}
 
@@ -157,14 +157,18 @@ class Pay_roll_model extends CI_Model{
 
 
 	// updateYts
-	public function updateYtds($empid = null, $medical = 0,  $id = null)
+	public function updateYtds($empid = null, $medical = 0,  $id = null,  $vrelease = 0)
 	{
 		$pdf = $this->GetDataForPdf($id);
 		$oldytd = $this->oldYtdsforadd($empid);
 		$oldytd1 = $this->oldYtds($id);
 
+		if($vrelease == 1){
+			$vrelease = $yrDeduction->vacation;
+		}
+		
 		// grosspay 
-		$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount);
+		$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount + $vrelease);
 		// Govt Penction
 		if($grossPay < $pdf['master']->max_pentionable_earning){
 			$gvtPention     =((($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution) / 100);
@@ -182,13 +186,13 @@ class Pay_roll_model extends CI_Model{
 		$vacation     = ($pdf['emp']->vocation_rate * $grossPay); // vacation
 		if(!empty($oldytd1->id)){
 			$inserData = array(
-				'govt_pen' 	=> (float)$gvtPention,
-				'fedl_tax' 	=> (float)$fedTax,
-				'ei_count' 	=> (float)$eiCount,
-				'vacation' 	=> (float)$vacation,
+				'govt_pen' 	=> (float)$oldytd->govt_pen,
+				'fedl_tax' 	=> (float)$oldytd->fedl_tax,
+				'ei_count' 	=> (float)$oldytd->ei_count,
+				'vacation' 	=> (float)$oldytd->vacation,
 				'payroll_id'=> $id,
 				'empid'		=> $empid,
-				'medical'   => (float)$medical
+				'medical'   => (float)$oldytd->medical
 			);
 		}else{
 			$inserData = array(
@@ -196,7 +200,7 @@ class Pay_roll_model extends CI_Model{
 				'fedl_tax' 	=> (float)$oldytd->fedl_tax 	+ (float)$fedTax,
 				'ei_count' 	=> (float)$oldytd->ei_count 	+ (float)$eiCount,
 				'vacation' 	=> (float)$oldytd->vacation 	+ (float)$vacation,
-				'medical'   => (float)$oldytd->medical     + (float)$medical,
+				'medical'   => (float)$oldytd->medical      + (float)$medical,
 				'payroll_id'=> $id,
 				'empid'		=> $empid,
 			);
@@ -215,6 +219,7 @@ class Pay_roll_model extends CI_Model{
 	// oldytds
 	public function oldYtds($id = null)
 	{
+		// echo $id; exit;
 		$query =$this->db->where('payroll_id', $id)->get('lit_yts');
 		if($query->num_rows() < 1){
 			$query = new stdClass();
@@ -222,9 +227,10 @@ class Pay_roll_model extends CI_Model{
 			$query->fedl_tax = 0;
 			$query->ei_count = 0;
 			$query->vacation = 0;
+
 			return $query;
 		}else{
-			return $query->row();	
+			return $query->row();
 		}		
 	}
 	public function oldYtdsforadd($id = null)

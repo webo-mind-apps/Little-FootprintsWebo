@@ -31,21 +31,30 @@ class Main_control extends CI_Controller {
 						<th class="text-center">WAGE AMOUNT</th> 
 						<th class="text-center">MISCELLANEOUS<br>AMOUNT</th> 
 						<th class="text-center">MEDICAL<br>AMOUNT</th> 
-						<th style="width:115px"	 class="text-center">RELEASE <br> VACATION PAY</th>
+						<th style="width:115px"	 class="text-center">
+							RELEASE <br> 
+							VACATION PAY <br>
+							<input type="checkbox" class="form-control" id="checkall" value="1">
+						</th>
 						<th class="text-center">ACTION</th> 
 					</tr>';
 		if(!empty($result)):
 		  foreach($result as $key => $row) { 
 
-
-
+			$wage_amount = '';
+			$miscellaneous_amount = '';
 			$regular_hrs  			=  (!empty($row->payRoll->regular_hrs) ? $row->payRoll->regular_hrs: '');
 			$stat_hol 				=  (!empty($row->payRoll->stat_hol) ? $row->payRoll->stat_hol: '');
-			$wage_amount 			=  ((!empty($row->payRoll->wage_amount) || $row->payRoll->wage_amount == '0'  )? $row->payRoll->wage_amount: '');
-			$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount  || $row->payRoll->miscellaneous_amount == '0'  ) ? $row->payRoll->miscellaneous_amount: '');
+			if(isset($row->payRoll->wage_amount)){
+				$wage_amount 			=  ((!empty($row->payRoll->wage_amount) || $row->payRoll->wage_amount == '0'  )? $row->payRoll->wage_amount: '');
+			}
+			if(isset($row->payRoll->miscellaneous_amount)){
+				$miscellaneous_amount 	=  (!empty($row->payRoll->miscellaneous_amount  || $row->payRoll->miscellaneous_amount == '0'  ) ? $row->payRoll->miscellaneous_amount: '');
+			}
 			$payrollId 				=  (!empty($row->payRoll->id) ? $row->payRoll->id: '');
 			$rate 					=  (!empty($row->payRoll->per_hr_rate) ? $row->payRoll->per_hr_rate : $row->hour_rate);
 
+			$checked = ($row->payRoll->vacation_release == 1)? 'checked' : '';
 
 			if(!empty($regular_hrs) && !empty($stat_hol)){
 
@@ -86,7 +95,7 @@ class Main_control extends CI_Controller {
 				</td>
 			 
 				<td class="text-center">
-					<input type="text" class="form-control" name="miscellaneous_amount[]" value="'.$miscellaneous_amount.'">
+					<input type="text" class="form-control"  name="miscellaneous_amount[]" value="'.$miscellaneous_amount.'">
 				</td>
 
 				<td class="text-center">
@@ -94,7 +103,7 @@ class Main_control extends CI_Controller {
 				</td>
 
 				<td class="text-center">
-					<input type="checkbox" class="form-control" name="vacationPay[]" value="1">
+					<input type="checkbox" class="form-control vacchek" '.$checked.' name="vacationPay[]" value="1">
 					<input type="hidden" class="form-control" name="vacation[]" value="'.$row->vocation_rate.'">
 				</td>
 			 

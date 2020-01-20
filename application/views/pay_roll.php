@@ -238,6 +238,14 @@
          });	
 	}
 
+	$(document).on('change', '#checkall', function(){
+		if($(this).prop('checked')){
+			$('.vacchek').prop('checked', true);
+		}else{
+			$('.vacchek').prop('checked', false);
+		}
+	});
+
   </script>
 </body>
 </html>
