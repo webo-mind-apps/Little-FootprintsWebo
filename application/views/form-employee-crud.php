@@ -277,7 +277,7 @@
                               <div class="form-group">
                                  <label>Hour rate</label>
                                  <div class="input-group">
-                                    <input type="text" id="hour-rate" class="form-control" placeholder="Hour rate" name="hour_rate" onkeydown="return isNumber();" maxlength="3" required>
+                                    <input type="text" id="hour-rate" class="form-control" placeholder="Hour rate" name="hour_rate"  maxlength="5" required>
                                  </div>
                               </div>
                            </div>
@@ -310,7 +310,7 @@
                               <div class="form-group">
                                  <label>Medical</label>
                                  <div class="input-group">
-                                    <input type="text" id="medical" class="form-control" placeholder="Medical" name="medical" maxlength="3" onkeydown="return isNumber();" required>
+                                    <input type="text" id="medical" class="form-control" placeholder="Medical" name="medical" maxlength="5"  required>
                                  </div>
                               </div>
                            </div>
@@ -396,17 +396,7 @@
                				}
                				?>
             <script>
-         $(document).ready(function () {
-            var slr = <?php echo $centerslist ?>;
-            var selectedValues = new Array();
-            $.each(slr, function (index, value) { 
-               var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
-               selectedValues[index] = value.id;
-            });
-            $('#center-name').val(selectedValues).trigger('change');
-            console.log(selectedValues);
-            
-         });
+         
                
                $('#insert-activate').css("display","none");
                $('#update-activate').css("display","block");
@@ -602,6 +592,25 @@
                }
          center_select_feild();
          
+         $(document).ready(function () {
+            var slr = <?php echo $centerslist ?>;
+            var selectedValues = new Array();
+            setTimeout(() => {
+               $.each(slr, function (index, value) { 
+                  var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
+                  selectedValues[index] = value.id;
+               });
+               $('#center-name').val(selectedValues).trigger('change');
+            }, 500);
+            
+
+            $('#hour-rate, #vocation-rate, #medical').keyup(function() {
+               var $this = $(this);
+               $this.val($this.val().replace(/[^\d.]/g, ''));  
+               
+            });
+            
+         });
 
       </script>
    </body>
