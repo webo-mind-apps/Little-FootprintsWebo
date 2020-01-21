@@ -91,8 +91,17 @@
 							</a>
 						</li>
 						<li class="nav-item">
+							<a href="<?php echo base_url('send-pay-stub') ?>" class="nav-link">
+								<i class="fa fa-envelope-o" style="font-size:18px;"></i>
+								<span>
+									Mail Pay Stub
+								</span>
+							</a>
+						</li>
+						
+						<li class="nav-item">
 							<a href="<?php echo base_url('summarized-report?year=').date('Y') ?>" class="nav-link">
-								<i class="fa fa-file-text-o"></i>
+								<i class="fa fa-file-text-o" style="font-size:18px;"></i>
 								<span>
 									Summarized Report
 								</span>
@@ -100,7 +109,7 @@
 						</li>
 						<li class="nav-item">
 							<a href="" class="nav-link">
-								<i class="fa fa-suitcase"></i>
+								<i class="fa fa-suitcase" style="font-size:18px;"></i>
 								<span>
 									Record of Employment
 								</span>
@@ -108,7 +117,7 @@
 						</li>
 						<li class="nav-item">
 							<a href="" class="nav-link">
-								<i class="fa fa-file-text-o"></i>
+								<i class="fa fa-file-text-o" style="font-size:18px;"></i>
 								<span>
 									Deduction Report
 								</span>
@@ -116,22 +125,17 @@
 						</li>
 						<li class="nav-item">
 							<a href="" class="nav-link">
-								<i class="icon-gear"></i>
+								<i class="icon-gear" style="font-size:18px;"></i>
 								<span>
 									Settings
 								</span>
 							</a>
 						</li>
-						
-						
 						<!-- /page kits -->
-
 					</ul>
 				</div>
 				<!-- /main navigation -->
-
 			</div>
 			<!-- /sidebar content -->
-			
 		</div>
 <!---- /main sidebar ----------------------------------------->

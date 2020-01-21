@@ -132,7 +132,7 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                    <?php
                     if($pdf['emp']->vacation_release == 1){ ?>
                     <tr>
-                        <td>Vacation</td>
+                        <td>VACATION</td>
                         <td class="text-right"></td>
                         <td class="text-right"></td>
                         <td class="text-right"><?php echo number_format( round($vrelease, 2), 2) ?></td>
@@ -188,7 +188,7 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         
                     </tr>
                     <tr>
-                        <td>Medical</td>
+                        <td>MEDICAL</td>
                         <td></td>
                         <td></td>
                         <td class="text-right"><?php echo number_format( round($medical, 2), 2)  ?></td>
@@ -214,7 +214,7 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         <td class="text-right"><br><b><?php echo number_format( round($ytdNetPay, 2), 2) ?></b></td> 
                     </tr> 
                     <tr>
-                        <td>Vacation</td>
+                        <td>VACATION</td>
                         <td></td>
                         <td></td>
                         <td class="text-right"><?php echo  number_format( round($vacation, 2), 2)?></td>
