@@ -25,8 +25,7 @@ class MailStub extends CI_Controller {
     // payroll
     public function pay_roll_dates(){
         $company = $this->input->post('company');
-        $center = $this->input->post('center');
-        $result = $this->m_payStub->getDates($company, $center);
+        $result  = $this->m_payStub->getDates($company);
         echo json_encode($result);
     }
 
@@ -36,12 +35,10 @@ class MailStub extends CI_Controller {
         $date       = $this->input->post('dates');
         $sliptDate  = explode(' to ', $date);
         $company    = $this->input->post('company');
-        $center     = $this->input->post('center');
         $sdate      = date('Y-m-d', strtotime($sliptDate['0']));
         $edate      = date('Y-m-d', strtotime($sliptDate['1']));
         $data       = array(
                         'company'   => $company, 
-                        'center'    => $center, 
                         'sdate'     => $sdate, 
                         'edate'     => $edate, 
                     );

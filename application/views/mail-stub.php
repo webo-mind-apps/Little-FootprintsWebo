@@ -47,46 +47,26 @@
 	 	
 	 </script>
 	<style type="text/css">
-		.payslip_heading{
-			font-weight:bold;
-			font-size:12px;
-		}
-		.earnings_padding{
-			 padding-top:15px;
-		} 
-		.input-icons i { 
-            position: absolute; 
-        }  
-        .input-icons { 
-            width: 100%; 
-            margin-bottom: 10px; 
-        }  
-        .icon { 
-            padding:5px 0 0 220px; 
-            min-width: 40px; 
-        }  
-        .icon1 { 
-            padding:49px 0 0 220px; 
-            min-width: 40px; 
-        } 
-		.table th {
-			font-weight: 500;
-			font-size: 11px;
-		}
-		#payroll_details tr td {
-			padding-bottom: 0;
-		}
-		#payroll_details tr td input{
-			text-align:center;
-			border-color:#333;
-			max-width: 75px;
-			margin:auto;
-		}
+		.payslip_heading{ font-weight:bold; font-size:12px; }
+		.earnings_padding{ padding-top:15px; } 
+		.input-icons i { position: absolute; } 
+		.input-icons { width: 100%; margin-bottom: 10px; } 
+		.icon { padding:5px 0 0 220px; min-width: 40px; } 
+		.icon1 { padding:49px 0 0 220px; min-width: 40px; } 
+		.table th { font-weight: 500; font-size: 11px; } 
+		#payroll_details tr td { padding-bottom: 0; } 
+		#payroll_details tr td input{ text-align:center; border-color:#333; max-width: 75px; margin:auto; }
 		.text-center input{margin:auto !important}
 		select, input{font-size: 12px; width: 100%; height: 30px; border-radius: 3px; border: 1px solid #b0b0b0;}
 		input:not([type]), input[type=checkbox]{height: 10px}
 		label{margin-bottom: 0; font-size: 10px;}
 		input{margin:0px !important}
+		.action-list { list-style-type: none; text-align:center; padding:0}
+		.action-list li { display: inline-block; position:relative; } 
+		.action-list li a{ padding: 0 9px; color:#333 } 
+		.action-list li a:hover{ color: #1f88b9 } 
+		.action-list li:after { position:absolute; content: '|'; right:0; } 
+		.action-list li:last-child:after { position:absolute; content: ''; right:0; }
 
 	</style>
 </head>
@@ -116,20 +96,30 @@
 		  </div> 
           <div class="card-body">
           	<?php
-   				if($this->session->flashdata('abc','success')){
+   				if($this->session->flashdata('success')){
    			?> 
           			<div class="alert bg-success alert-styled-left">
 					  		<button type="button" class="close" data-dismiss="alert">&times;</button>
-							<span class="text-semibold">Updates are saved successfully..!</span>
+							<span class="text-semibold"><?php echo $this->session->flashdata('success') ?></span>
 					</div>
 		    <?php 
-   				}
-          	?>			
+				   }
+				   if($this->session->flashdata('error')){
+					?> 
+						   <div class="alert bg-danger alert-styled-left">
+								   <button type="button" class="close" data-dismiss="alert">&times;</button>
+								 <span class="text-semibold"><?php echo $this->session->flashdata('error') ?></span>
+						 </div>
+				 <?php 
+						}
+						
+						
+				   ?>			
                   <form action="<?php echo site_url('main_control/save_payroll');?>" method="post"> 
 
 				    <table class="table ">
 				  		<tr class="table-active table-border-double">
-							<td  width="18%">
+							<td   style="width:300px">
 				   				<label for="">SELECT COMPANY</label><br>
 								<select id="companySelect">
 				   					<?php foreach ($company as $key => $value) {
@@ -137,29 +127,31 @@
 									} ?>
 								</select>
 							</td>
-							<td  width="18%">
-				   				<label for="">SELECT CENTER</label><br>
-								<select id="centerSelect" name="center"> </select>
-							</td>
-							<td  width="18%">
+								<!-- <td  width="18%">
+									<label for="">SELECT CENTER</label><br>
+									<select id="centerSelect" name="center"> </select>
+								</td> -->
+							<td  style="width:300px">
                                 <label>PAYMENT DATE</label><br>
 							    <select name="dates" id="dates">
                                         
                                 </select>
                             </td>
+							<td></td>
 								
 						</tr>
 				    </table>
 				    <table class="table " id="payroll_details">
                         <thead>
                             <tr>
-                                <th>SL NO</th>
-                                <th>EMP ID</th>
-                                <th>NAME</th>
-                                <th>GROSS PAY</th>
-                                <th>DEDUCTION</th>
-                                <th>NET PAY</th>
-                                <th>ACTION</th>
+								<th><input type="checkbox" name="selectall" id="selectall"></th>
+                                <th>Sl No</th>
+                                <th>Emp Id</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+								<th>Email Id</th>
+								<th class="text-center">Date</th>
+                                <th class="text-center" style="width:300px">ACTION</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -200,7 +192,8 @@
 
 		// fetch center
 		$('#companySelect').change(function() { 
-			centerList();
+			// centerList();
+			payroll_show_function();
         });
         
         // payslip fetch
@@ -208,7 +201,8 @@
             empPaySlips();
         });
         
-		centerList();
+		// centerList();
+		payroll_show_function();
 	});
 
     // Center list
@@ -231,15 +225,13 @@
     // payroll Dates list
     function payroll_show_function(){ 
 	 	var companySelect= $("#companySelect").val();
-	 	var centerSelect = $("#centerSelect").val();
-	 	if(companySelect != '' && centerSelect != ''){
+	 	if(companySelect != ''){
 			jQuery.ajax({	
                 type:'POST',
                 dataType: 'json',
 				url:"<?php echo base_url();?>"+"mailStub/pay_roll_dates",
 				data:{
 					company 		: 	companySelect,
-					center 			:	centerSelect
 				},
 				success:function(response){							 
                     $("#dates").empty();
@@ -255,14 +247,13 @@
     // employee payslips
     function empPaySlips(){
         var companySelect   =   $("#companySelect").val();
-        var centerSelect    =   $("#centerSelect").val();
+     
         var dates           =   $('#dates').val();
         $.ajax({
             type: "post",
             url: "<?php echo base_url();?>"+"mailStub/pay_slips",
             data: {
                 company : companySelect,
-                center  : centerSelect,
                 dates   : dates,
             },
             dataType: "json",
@@ -272,13 +263,28 @@
                 var content = '';
                 $.each(response, function (i, v) { 
                     content += '<tr>';
+					content += '<td><input type="checkbox" name="sendmail[]" ></td>'
                     content += '<td>'+ (i+1) +'</td>';
                     content += '<td>'+ v.emp_ids +'</td>';
-                    content += '<td>'+ v.name +'</td>';
-                    // content += '<td>'+ v. +'</td>';
-                    content += '<td>'+ (v.govt_pen + v.fedl_tax + v.ei_count + v.vacation) +'</td>';
-                    // content += '<td>'+ v. +'</td>';
-                    // content += '<td>'+  +'</td>';
+                    content += '<td>'+ v.first_name +'</td>';
+                    content += '<td>'+ v.last_name +'</td>';
+                    content += '<td>'+ v.email +'</td>';
+                    content += '<td class="text-center">'+ v.date +'</td>';
+                    content += `<td>
+						<ul class="action-list">
+							<li>
+								<a href="<?php echo base_url('view-paystub/') ?>`+ v.id +`" target="_blank"><i class="far fa-eye"></i> View</a>
+							</li>
+
+							<li>
+								<a href="<?php echo base_url('export-paystub/') ?>`+ v.id +`" ><i class="fas fa-file-export"></i> Export</a>
+							</li>
+
+							<li>
+								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.id +`" ><i class="far fa-paper-plane"></i> Mail</a>
+							</li>
+						</ul>
+					</td>`;
                     content += '<tr>';
                     $('#payroll_details tbody').append(content);
                 });

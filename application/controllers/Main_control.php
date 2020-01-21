@@ -167,12 +167,65 @@ class Main_control extends CI_Controller {
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);
-			$mpdf->Output();
-			//$mpdf->Output('payroll.pdf','D');
+			$mpdf->Output('payroll.pdf','D');
 		}else{
-			redirect('main_control/pay_roll_page');
+			redirect('send-pay-stub');
 		}
-
 	}
+
+	// download payroll on pdf format
+	public function view_payroll($id = null)
+	{
+		if(!empty($id)){
+			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
+			$result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
+			$mpdf = new \Mpdf\Mpdf();
+			$html = $this->load->view('payroll-pdf',$result,true);
+			$mpdf->WriteHTML($html);
+			$mpdf->Output();
+		}else{
+			redirect('send-pay-stub');
+		}
+	}
+
+	// send a as mail
+	public function sendMail($id = null)
+	{
+		if(!empty($id)){
+			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
+			$result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
+			
+			$mpdf = new \Mpdf\Mpdf();
+			$html = $this->load->view('payroll-pdf',$result,true);
+			$mpdf->WriteHTML($html);
+			$content = $mpdf->Output('', 'S');
+
+			$this->load->config('email');
+			$this->load->library('email');
+
+			$from = $this->config->item('smtp_user');
+			$to = 'shahir.webomindapps@gmail.com';
+			$filename = "pay-stub.pdf";
+			$message = $this->load->view('email/paystub',[], TRUE);
+			$subject = 'Pay stub on '. date('d/m/Y', strtotime($result['pdf']['emp']->pay_date)). ' TO '. date('d/m/Y', strtotime($result['pdf']['emp']->pay_end_date));
+
+			$this->email->set_newline("\r\n");
+			$this->email->from($from, 'Little FootPrints Academy');
+			$this->email->to($to);
+			$this->email->subject($subject);
+			$this->email->message($message);
+			$this->email->attach($content, 'attachment', $filename, 'application/pdf');
+
+			if ($this->email->send()) {
+				$this->session->set_flashdata('success', 'Email as been successfully sent');
+				
+			} else {
+				$this->session->set_flashdata('error', 'Server Error Occurred Please Try agin');
+				// show_error($this->email->print_debugger());
+			}
+		}
+		redirect('send-pay-stub');
+	}
+
 
 }
