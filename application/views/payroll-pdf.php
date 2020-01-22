@@ -53,6 +53,10 @@ $netPay         =  $grossPay - $totalDeduction;
 $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
 
 
+echo "<pre>";
+print_r ($pdf);
+echo "</pre>";
+
 
 ?>
     <table >
@@ -102,7 +106,7 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         <td class="text-right"><?php echo $pdf['emp']->per_hr_rate ?></td>
                         <td class="text-right"><?php echo $pdf['emp']->regular_hrs ?></td>
                         <td class="text-right"><?php echo number_format( round(($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ),2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round($pdf['emp']->total_reg_ytd , 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf['emp']->yhruReg , 2), 2) ?></td>
                         <td class="text-right"><?php echo number_format( round(($pdf['emp']->total_reg_ytd ), 2), 2) ?></td>
                     </tr>
                     <tr>
@@ -110,7 +114,7 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         <td class="text-right"><?php echo $pdf['emp']->per_hr_rate ?></td>
                         <td class="text-right"><?php echo $pdf['emp']->stat_hol ?></td>
                         <td class="text-right"><?php echo  number_format( round(($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ), 2), 2)?></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf['emp']->total_stat_ytd, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo  number_format( round($pdf['emp']->yhruStatHol, 2), 2) ?></td> 
                         <td class="text-right"><?php echo  number_format( round(($pdf['emp']->total_stat_ytd), 2), 2) ?></td> 
                     </tr>
                     <tr>

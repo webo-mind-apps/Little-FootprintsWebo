@@ -299,11 +299,17 @@ class Pay_roll_model extends CI_Model{
 	{
 		$data['master'] = $this->getMasterDetails();
 		$data['emp']	= $this->getEmpDetails($id);
-		$totlaWages 	= $this->countWages($data['emp']->emp_ids);
-		$toatalMiscellaneous =  $this->countMiscellaneous($data['emp']->emp_ids);
-		$data['emp']->totalWages = $totlaWages->wage_amount;
-		$data['emp']->tmiscellaneous = $toatalMiscellaneous->miscellaneous_amount;
 
+		$totlaWages 			= $this->countWages($data['emp']->emp_ids);
+		$toatalMiscellaneous 	= $this->countMiscellaneous($data['emp']->emp_ids);
+		$yhruReg 				= $this->yhruReg($data['emp']->emp_ids , $data['emp']->pay_end_date);
+		$yhruStatHol 			= $this->yhruStatHol($data['emp']->emp_ids, $data['emp']->pay_end_date);
+
+
+		$data['emp']->totalWages 		= $totlaWages->wage_amount;
+		$data['emp']->tmiscellaneous 	= $toatalMiscellaneous->miscellaneous_amount;
+		$data['emp']->yhruReg 			= $yhruReg->regular_hrs;
+		$data['emp']->yhruStatHol 		= $yhruStatHol->stat_hol;
 		return $data;
 	}
 
@@ -325,6 +331,24 @@ class Pay_roll_model extends CI_Model{
 		->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left')
 		->get()
 		->row();
+	}
+
+	// count of tottal wages
+	public function yhruReg($id = null, $date = null)
+	{
+		return $this->db->where('emp_ids', $id)
+		->where('pay_end_date <=', $date)
+		->select_sum('regular_hrs')
+		->get('lit_payroll')->row();
+	}
+
+	// count of tottal wages
+	public function yhruStatHol($id = null, $date = null)
+	{
+		return $this->db->where('emp_ids', $id)
+		->where('pay_end_date <=', $date)
+		->select_sum('stat_hol')
+		->get('lit_payroll')->row();
 	}
 
 	// count of tottal wages

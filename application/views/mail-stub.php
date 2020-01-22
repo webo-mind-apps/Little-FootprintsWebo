@@ -286,8 +286,8 @@
 						</ul>
 					</td>`;
                     content += '<tr>';
-                    $('#payroll_details tbody').append(content);
                 });
+                $('#payroll_details tbody').append(content);
             }
         });
     }
