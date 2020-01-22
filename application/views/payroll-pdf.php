@@ -52,12 +52,6 @@ $totalYtdDeduction   = (($yrDeduction->govt_pen + $yrDeduction->fedl_tax + $yrDe
 $netPay         =  $grossPay - $totalDeduction;
 $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
 
-
-echo "<pre>";
-print_r ($pdf);
-echo "</pre>";
-
-
 ?>
     <table >
     

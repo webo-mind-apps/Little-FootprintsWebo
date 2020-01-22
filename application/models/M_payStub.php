@@ -17,14 +17,15 @@ class m_payStub extends CI_Model {
 
     public function empPayslisp($date = null)
     {
-        $this->db->distinct('p.pay_date');
+        $this->db->group_by('p.emp_ids');
+        
+        $this->db->select('p.emp_ids, p.id, e.email');
+        $this->db->select('first_name, last_name, CONCAT(date_format(p.pay_date, "%D %b %Y")," &nbsp; TO &nbsp; ", date_format(pay_end_date,"%D %b %Y")) as date');
+        
         $this->db->where('e.company', $date['company']);   
         $this->db->where('p.pay_date >=', $date['sdate']);
         $this->db->where('p.pay_end_date <=', $date['edate']);
 
-        $this->db->select('p.emp_ids, p.id, e.email');
-        $this->db->select('first_name, last_name, CONCAT(date_format(p.pay_date, "%D %b %Y")," &nbsp; TO &nbsp; ", date_format(pay_end_date,"%D %b %Y")) as date');
-        
         $this->db->from('lit_payroll p');
         // $this->db->join('lit_center c', 'c.id = p.center', 'left');
         $this->db->join('lit_employee_details e', 'e.emp_id = p.emp_ids', 'left');

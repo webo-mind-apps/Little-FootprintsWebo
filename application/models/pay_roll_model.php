@@ -300,16 +300,30 @@ class Pay_roll_model extends CI_Model{
 		$data['master'] = $this->getMasterDetails();
 		$data['emp']	= $this->getEmpDetails($id);
 
-		$totlaWages 			= $this->countWages($data['emp']->emp_ids);
-		$toatalMiscellaneous 	= $this->countMiscellaneous($data['emp']->emp_ids);
-		$yhruReg 				= $this->yhruReg($data['emp']->emp_ids , $data['emp']->pay_end_date);
-		$yhruStatHol 			= $this->yhruStatHol($data['emp']->emp_ids, $data['emp']->pay_end_date);
+		$empid 		= $data['emp']->emp_ids;
+		$endDate 	= $data['emp']->pay_end_date;
+		$startDate  = $data['emp']->pay_date;
+
+		$totalWages 			= $this->countWages($empid);
+		$totalMiscellaneous 	= $this->countMiscellaneous($empid);
+
+		$unitReg  				= $this->countUnitReg($empid, $startDate, $endDate);
+		$unitStat  				= $this->countUnitStat($empid, $startDate, $endDate);
+
+		$yhruReg 				= $this->yhruReg($empid , $endDate);
+		$yhruStatHol 			= $this->yhruStatHol($empid, $endDate);
 
 
-		$data['emp']->totalWages 		= $totlaWages->wage_amount;
-		$data['emp']->tmiscellaneous 	= $toatalMiscellaneous->miscellaneous_amount;
+		$data['emp']->totalWages 		= $totalWages->wage_amount;
+		$data['emp']->tmiscellaneous 	= $totalMiscellaneous->miscellaneous_amount;
 		$data['emp']->yhruReg 			= $yhruReg->regular_hrs;
 		$data['emp']->yhruStatHol 		= $yhruStatHol->stat_hol;
+		$data['emp']->regular_hrs 		= $unitReg->regular_hrs;
+		$data['emp']->stat_hol 			= $unitStat->stat_hol;
+		$data['emp']->total_reg_ytd 	= $unitReg->total_reg_ytd;
+		$data['emp']->total_stat_ytd 	= $unitStat->total_stat_ytd;
+
+	
 		return $data;
 	}
 
@@ -367,9 +381,79 @@ class Pay_roll_model extends CI_Model{
 		->get('lit_payroll')->row();
 	}
 
+	// count of Regular unit
+	public function countUnitReg($empid = null, $startDate = null, $endDate = null)
+	{
+		$edate = date('Y-01-01', strtotime($startDate));
+		return $this->db->where('emp_ids', $empid)
+		->where('pay_date <=', $startDate)
+		->where('pay_end_date >=', $edate)
+		->select_sum('total_reg_ytd')
+		->select_sum('regular_hrs')
+		->get('lit_payroll')
+		->row();;
+	}
+
+
+		// count of stathol unit
+	public function countUnitStat($empid = null, $startDate = null, $endDate = null)
+	{
+		$edate = date('Y-01-01', strtotime($startDate));
+		return $this->db->where('emp_ids', $empid)
+		->where('pay_date <=', $startDate)
+		->where('pay_end_date >=', $edate)
+		->select_sum('stat_hol')
+		->select_sum('total_stat_ytd')
+		->get('lit_payroll')
+		->row();;
+	}
+
+
 	// company list
 	public function companyList()
 	{
 		return $this->db->where('status',1)->get('lit_company')->result();
+	}
+
+	public function AllYtds($data)
+	{
+		$dateResult = $this->dateByIds($data);
+		foreach ($dateResult as $key => $value) {
+			$ytdGet[$key] = $this->ytdGetForPdf($value->id);
+		}
+		$query = new stdClass();
+		$query->govt_pen = 0;
+		$query->fedl_tax = 0;
+		$query->ei_count = 0;
+		$query->vacation = 0;
+		$query->medical  = 0;
+
+		foreach ($ytdGet as $key => $values) {
+			$query->govt_pen += $values->govt_pen;
+			$query->fedl_tax += $values->fedl_tax;
+			$query->ei_count += $values->ei_count;
+			$query->vacation += $values->vacation;
+			$query->medical  += $values->medical;
+		}
+
+		return $query;
+	}
+
+
+	//  date By ids
+	public function dateByIds($data)
+	{
+		return $this->db->where('emp_ids', $data['empid'])
+		->where('pay_date <=', $data['sdate'])
+		// ->where('pay_end_date >=', $data['edate'])
+		->select('id')
+		->get('lit_payroll')
+		->result();
+	}
+
+	// ytdTotal
+	public function ytdGetForPdf($id)
+	{
+		return  $this->db->where('payroll_id', $id)->get('lit_yts')->row();
 	}
 }

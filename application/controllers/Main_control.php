@@ -163,7 +163,7 @@ class Main_control extends CI_Controller {
 	{
 		if(!empty($id)){
 			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
-			$result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
+			$result['yrDeduction'] = $this->pay_roll_model->AllYtds($id);
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);
@@ -178,7 +178,14 @@ class Main_control extends CI_Controller {
 	{
 		if(!empty($id)){
 			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
-			$result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
+
+			$data = array(
+				'empid' => $result['pdf']['emp']->emp_ids, 
+				'sdate' => $result['pdf']['emp']->pay_date, 
+				'edate' => $result['pdf']['emp']->pay_end_date, 
+			);
+			
+			$result['yrDeduction'] = $this->pay_roll_model->AllYtds($data);
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);
@@ -193,7 +200,8 @@ class Main_control extends CI_Controller {
 	{
 		if(!empty($id)){
 			$result['pdf']= $this->pay_roll_model->GetDataForPdf($id);
-			$result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
+			// $result['yrDeduction'] = $this->pay_roll_model->oldYtds($id);
+			$result['yrDeduction'] = $this->pay_roll_model->AllYtds($id);
 			
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
