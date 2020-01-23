@@ -23,7 +23,7 @@ class Payroll extends CI_Controller {
 		$company = $this->input->post('company');
 		$center  = $this->input->post('center');
 		$result  = $this->m_payroll->employeeDetailDate($sdate, $edate, $company, $center);  
-        
+		
 		$table = '';
 		$table .= '<tr> 
 						<th>SL.NO</th> 
@@ -45,41 +45,21 @@ class Payroll extends CI_Controller {
 		if(!empty($result)):
 		  foreach($result as $key => $row) { 
             $checked = '';
-            if(!empty($row->payRoll->is_vacation_release)){
-				$checked = ($row->payRoll->is_vacation_release == 1)? 'checked' : '';
+            if(!empty($row->payRoll->is_vacation)){
+				$checked = ($row->payRoll->is_vacation == 1)? 'checked' : '';
             }
-            $payrollId      = '';
-            $payrollId      = (!empty($row->payRoll->id)) ? $row->payRoll->id : "";
-            $rate 			= (!empty($row->payRoll->hour_rate) ? $row->payRoll->per_hr_rate : $row->hour_rate);
-			if(empty($row->payRoll->reg_rate)){
-				$reg ="";
-			}else{
-				$reg = ($row->payRoll->reg_rate != 0) ? $row->payRoll->reg_rate : 0;
-			}
-
-			if(empty($row->payRoll->stat_rate)){
-				$stat_rate ="";
-			}else{
-				$stat_rate = ($row->payRoll->stat_rate != 0) ? $row->payRoll->stat_rate : 0;
-			}
-
-			if(empty($row->payRoll->wages)){
-				$wages =0;
-			}else{
-				$wages = ($row->payRoll->wages != 0) ? $row->payRoll->wages : 0;
-			}
-
-			if(empty($row->payRoll->miscellaneous)){
-				$miscellaneous =0;
-			}else{
-				$miscellaneous = ($row->payRoll->miscellaneous != 0 ) ?  $row->payRoll->miscellaneous : 0;
-			}
-
+			
+			$rate   		= (!empty($row->payRoll->rate)? $row->payRoll->rate : $row->hour_rate);
+			$reg			= (!empty($row->payRoll->reg_unit)? $row->payRoll->reg_unit : '');
+			$stat_rate		= (!empty($row->payRoll->stat_unit)?  $row->payRoll->stat_unit : '');
+			$wages			= (!empty($row->payRoll->wages)? $row->payRoll->wages : 0);
+			$miscellaneous	= (!empty($row->payRoll->miscellaneous)?  $row->payRoll->miscellaneous : 0);
+			$medical		= (!empty($row->payRoll->medical)?  $row->payRoll->medical : 0);
 
 			$table .='     
 			<tr>
 				<td>
-					<input type="hidden"  name="prl_id[]" value="'.$payrollId.'" >
+					<input type="hidden"  name="prl_id[]" value="'.(!empty($row->payRoll->id)? $row->payRoll->id :  "" ).'" >
 					<input type="hidden"  name="emp_ids[]" value="'.$row->emp_id.'" >
 					'.($key + 1).'
 				</td>
@@ -165,7 +145,6 @@ class Payroll extends CI_Controller {
 			$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
 			
         }
-       
 		$this->session->set_flashdata('abc','success');
 		redirect('main_control/pay_roll_page');
     }
