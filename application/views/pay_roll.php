@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>Limitless - Responsive Web Application Kit by Eugene Kopyov</title>
+	<title>Little Footprints Academy</title>
 
 	<!-- Global stylesheets -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
@@ -125,13 +125,13 @@
 		    <?php 
    				}
           	?>			
-                  <form action="<?php echo site_url('main_control/save_payroll');?>" method="post"> 
+                  <form action="<?php echo site_url('payroll/save_payroll');?>" method="post"> 
 
 				  <table class="table ">
 				  			<tr class="table-active table-border-double">
 								<td  width="18%">
 				   					<label for="">SELECT COMPANY</label><br>
-									<select id="companySelect">
+									<select id="companySelect" name="company">
 				   						<?php foreach ($company as $key => $value) {
 											echo '<option value="'.$value->id.'" >'.$value->name.'</option>';
 										} ?>
@@ -207,7 +207,7 @@
 	 	if(payment_date != '' && pay_end_date != '' && companySelect != '' && centerSelect != ''){
 			jQuery.ajax({	
 				type:'POST',
-				url:"<?php echo base_url();?>"+"main_control/pay_roll_dates",
+				url:"<?php echo base_url();?>"+"payroll/pay_roll_dates",
 				data:{
 					payment_date	:	payment_date,
 					pay_end_date	:	pay_end_date,

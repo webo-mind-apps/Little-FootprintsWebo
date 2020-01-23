@@ -4,7 +4,7 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>Limitless - Responsive Web Application Kit by Eugene Kopyov</title>
+	<title>Little Footprints Academy</title>
 
 	<!-- Global stylesheets -->
 	<link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
@@ -92,7 +92,7 @@
 	<!-- Multiple row inputs (horizontal) -->
         <div class="card" >
 		  <div class="card-header header-elements-inline">
-				<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYEES PAYROLL</h6> 
+				<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYEES PAYROLLS</h6> 
 		  </div> 
           <div class="card-body">
           	<?php
@@ -273,15 +273,15 @@
                     content += `<td>
 						<ul class="action-list">
 							<li>
-								<a href="<?php echo base_url('view-paystub/') ?>`+ v.id +`" target="_blank"><i class="far fa-eye"></i> View</a>
+								<a href="<?php echo base_url('view-paystub/') ?>`+ v.emp_ids +`?sdate=`+v.pay_start+`&edate=`+v.pay_end+`" target="_blank"><i class="far fa-eye"></i> View</a>
 							</li>
 
 							<li>
-								<a href="<?php echo base_url('export-paystub/') ?>`+ v.id +`" ><i class="fas fa-file-export"></i> Export</a>
+								<a href="<?php echo base_url('export-paystub/') ?>`+ v.emp_ids +`?sdate=`+v.pay_start+`&edate=`+v.pay_end+`" ><i class="fas fa-file-export"></i> Export</a>
 							</li>
 
 							<li>
-								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.id +`" ><i class="far fa-paper-plane"></i> Mail</a>
+								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.emp_ids +`?sdate=`+v.pay_start+`&edate=`+v.pay_end+`" ><i class="far fa-paper-plane"></i> Mail</a>
 							</li>
 						</ul>
 					</td>`;

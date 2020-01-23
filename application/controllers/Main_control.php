@@ -185,7 +185,7 @@ class Main_control extends CI_Controller {
 				'edate' => $result['pdf']['emp']->pay_end_date, 
 			);
 			
-			$result['yrDeduction'] = $this->pay_roll_model->AllYtds($data);
+			$result['yrDeduction'] = $this->pay_roll_model->AllYtds($data, $id);
 			$mpdf = new \Mpdf\Mpdf();
 			$html = $this->load->view('payroll-pdf',$result,true);
 			$mpdf->WriteHTML($html);

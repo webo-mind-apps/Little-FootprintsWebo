@@ -333,7 +333,7 @@
     </style>
   </head>
   <body class="">
-    <span class="preheader">Pay stub on <?php echo date('d/m/Y', strtotime($pdf['emp']->pay_date)). ' TO '. date('d/m/Y', strtotime($pdf['emp']->pay_end_date)) ?></span>
+    <span class="preheader">Pay stub on <?php echo date('d/m/Y', strtotime($pdf->pay_start)). ' TO '. date('d/m/Y', strtotime($pdf->pay_end)) ?></span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td>&nbsp;</td>
@@ -358,8 +358,8 @@
                     <tr>
                       <td>
                         <br>
-                        <p>Dear <?php echo $pdf['emp']->fname.' '.$pdf['emp']->lname ?>,</p>
-                        <p>Find the attachment for <?php echo date('d/m/Y', strtotime($pdf['emp']->pay_date)). ' TO '. date('d/m/Y', strtotime($pdf['emp']->pay_end_date)) ?> pay stub.</p>
+                        <p>Dear <?php echo $pdf->first_name.' '.$pdf->last_name ?>,</p>
+                        <p>Find the attachment for <?php echo date('d/m/Y', strtotime($pdf->pay_start)). ' TO '. date('d/m/Y', strtotime($pdf->pay_end)) ?> pay stub.</p>
                         
                         
                         <p>Regards,</p>

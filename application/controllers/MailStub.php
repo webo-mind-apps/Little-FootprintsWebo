@@ -46,6 +46,82 @@ class MailStub extends CI_Controller {
         echo json_encode($result);
     }
 
+    // view payslip
+    public function view_payroll($empid = null)
+    {
+        if(!empty($empid)){
+            $sdate = $this->input->get('sdate');
+            $edate = $this->input->get('edate');
+            $result['pdf'] = $this->m_payStub->PdfGet($empid, $sdate, $edate);
+            
+            $mpdf = new \Mpdf\Mpdf();
+            $html = $this->load->view('payroll-pdf',$result,true);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output();
+        }else{
+			redirect('send-pay-stub');
+		}
+    }
+
+    	// download payroll on pdf format
+	public function download_payroll($id = null)
+	{
+		if(!empty($id)){
+			$sdate = $this->input->get('sdate');
+            $edate = $this->input->get('edate');
+            $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
+       
+            $mpdf = new \Mpdf\Mpdf();
+            $html = $this->load->view('payroll-pdf',$result,true);
+			$mpdf->WriteHTML($html);
+			$mpdf->Output('payroll.pdf','D');
+		}else{
+			redirect('send-pay-stub');
+		}
+    }
+    
+    // send a as mail
+	public function sendMail($id = null)
+	{
+		if(!empty($id)){
+            
+            $sdate = $this->input->get('sdate');
+            $edate = $this->input->get('edate');
+            $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
+
+			$mpdf = new \Mpdf\Mpdf();
+			$html = $this->load->view('payroll-pdf',$result,true);
+			$mpdf->WriteHTML($html);
+			$content = $mpdf->Output('', 'S');
+
+			$this->load->config('email');
+			$this->load->library('email');
+            
+            $name= date('d/m/Y', strtotime($result['pdf']->pay_start)). ' TO '. date('d/m/Y', strtotime($result['pdf']->pay_end));
+
+			$from = $this->config->item('smtp_user');
+			$to = 'shahir.webomindapps@gmail.com';
+			$subject = 'Pay stub on '.$name;
+			$filename = date('d/m/Y', strtotime($result['pdf']->pay_start))."-".date('d/m/Y', strtotime($result['pdf']->pay_end))."_pay-stub.pdf";
+			$message = $this->load->view('email/paystub',$result, TRUE);
+			$this->email->set_newline("\r\n");
+			$this->email->from($from, 'Little FootPrints Academy');
+			$this->email->to($to);
+			$this->email->subject($subject);
+			$this->email->message($message);
+			$this->email->attach($content, 'attachment', $filename, 'application/pdf');
+            
+			if ($this->email->send()) {
+				$this->session->set_flashdata('success', 'Email as been successfully sent');
+				
+			} else {
+				$this->session->set_flashdata('error', 'Server Error Occurred Please Try agin');
+				// show_error($this->email->print_debugger());
+			}
+		}
+		redirect('send-pay-stub');
+	}
+
 
 }
 

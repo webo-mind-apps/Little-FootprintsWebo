@@ -41,23 +41,7 @@ class Pay_roll_model extends CI_Model{
 	} 
 
 	function select_where_employee_details($sdate = null, $edate = null, $company = null, $center = null){ 
-		$result = $this->db
-		->where('e.status', 0)
-		->order_by('e.id', 'asc')
-		->select('e.*')
-		->from('lit_employee_details e')
-		->join('emp_center c', 'c.empid = e.emp_id', 'left')
-		->where('e.company', $company)
-		->where('c.center', $center)
-		->get()
-		->result();
 		
-		
-		foreach ($result as $key => $value) {
-			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center);
-		}
-		
-		return $result;
 	}
 
 	// Get payriol detils
@@ -304,6 +288,8 @@ class Pay_roll_model extends CI_Model{
 		$endDate 	= $data['emp']->pay_end_date;
 		$startDate  = $data['emp']->pay_date;
 
+		$countRow = $this->countRow($empid, $endDate, $startDate);
+		
 		$totalWages 			= $this->countWages($empid);
 		$totalMiscellaneous 	= $this->countMiscellaneous($empid);
 
@@ -318,12 +304,13 @@ class Pay_roll_model extends CI_Model{
 		$data['emp']->tmiscellaneous 	= $totalMiscellaneous->miscellaneous_amount;
 		$data['emp']->yhruReg 			= $yhruReg->regular_hrs;
 		$data['emp']->yhruStatHol 		= $yhruStatHol->stat_hol;
-		$data['emp']->regular_hrs 		= $unitReg->regular_hrs;
-		$data['emp']->stat_hol 			= $unitStat->stat_hol;
+		if($countRow > 1){
+			$data['emp']->regular_hrs 		= $unitReg->regular_hrs;
+			$data['emp']->stat_hol 			= $unitStat->stat_hol;
+		}
 		$data['emp']->total_reg_ytd 	= $unitReg->total_reg_ytd;
 		$data['emp']->total_stat_ytd 	= $unitStat->total_stat_ytd;
 
-	
 		return $data;
 	}
 
@@ -391,7 +378,7 @@ class Pay_roll_model extends CI_Model{
 		->select_sum('total_reg_ytd')
 		->select_sum('regular_hrs')
 		->get('lit_payroll')
-		->row();;
+		->row();
 	}
 
 
@@ -415,28 +402,38 @@ class Pay_roll_model extends CI_Model{
 		return $this->db->where('status',1)->get('lit_company')->result();
 	}
 
-	public function AllYtds($data)
+	public function AllYtds($data = null, $id = null)
 	{
-		$dateResult = $this->dateByIds($data);
-		foreach ($dateResult as $key => $value) {
-			$ytdGet[$key] = $this->ytdGetForPdf($value->id);
-		}
-		$query = new stdClass();
-		$query->govt_pen = 0;
-		$query->fedl_tax = 0;
-		$query->ei_count = 0;
-		$query->vacation = 0;
-		$query->medical  = 0;
 
-		foreach ($ytdGet as $key => $values) {
-			$query->govt_pen += $values->govt_pen;
-			$query->fedl_tax += $values->fedl_tax;
-			$query->ei_count += $values->ei_count;
-			$query->vacation += $values->vacation;
-			$query->medical  += $values->medical;
+		$countRow = $this->countRow($data['empid'],  $data['edate'], $data['sdate']);
+
+		if($countRow > 1){
+			$dateResult = $this->dateByIds($data);
+			foreach ($dateResult as $key => $value) {
+				$ytdGet[$key] = $this->ytdGetForPdf($value->id);
+			}
+			$query = new stdClass();
+			$query->govt_pen = 0;
+			$query->fedl_tax = 0;
+			$query->ei_count = 0;
+			$query->vacation = 0;
+			$query->medical  = 0;
+
+			foreach ($ytdGet as $key => $values) {
+				$query->govt_pen += $values->govt_pen;
+				$query->fedl_tax += $values->fedl_tax;
+				$query->ei_count += $values->ei_count;
+				$query->vacation += $values->vacation;
+				$query->medical  += $values->medical;
+			}
+			return $query;
+		}
+		else{
+			$query =$this->db->where('payroll_id', $id)->get('lit_yts');
+			return $query->row();
 		}
 
-		return $query;
+		
 	}
 
 
@@ -455,5 +452,17 @@ class Pay_roll_model extends CI_Model{
 	public function ytdGetForPdf($id)
 	{
 		return  $this->db->where('payroll_id', $id)->get('lit_yts')->row();
+	}
+
+	// count of row
+	public function countRow($empid, $endDate, $startDate)
+	{
+		$edate = date('Y-01-01', strtotime($startDate));
+		$query =  $this->db->where('emp_ids', $empid)
+		->where('pay_date <=', $startDate)
+		->where('pay_end_date >=', $endDate)
+		->select('id')
+		->get('lit_payroll');
+		return $query->num_rows();
 	}
 }

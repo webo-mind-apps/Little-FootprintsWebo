@@ -9,50 +9,14 @@
 </head>
 <body>
 <?php
-$vrelease = 0;
-if($pdf['emp']->vacation_release == 1){
-    $vrelease = $yrDeduction->vacation;
-}
+    $totalDeduction = $pdf->govt_pen + $pdf->fedl + $pdf->eicount + $pdf->medical;
+    $totalYtdDeduction = $pdf->govt_pen_ytd + $pdf->fedl_ytd + $pdf->eicount_ytd + $pdf->medical_ytd;
 
-// grosspay 
-$grossPay       = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ) + ($pdf['emp']->miscellaneous_amount) + ($pdf['emp']->wage_amount + $vrelease);
-$ytdGrossPay    = ($pdf['emp']->total_reg_ytd )  +  ($pdf['emp']->total_stat_ytd ) + ($pdf['emp']->tmiscellaneous) + ($pdf['emp']->totalWages + $vrelease);
-// Total earnings
-$totalErnings   = ($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ) +  ($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate );
-$ytdTotalErnings= ($pdf['emp']->total_reg_ytd * $pdf['emp']->per_hr_rate )  +  ($pdf['emp']->total_stat_ytd * $pdf['emp']->per_hr_rate );
-// Govt Penction
-if($grossPay < $pdf['master']->max_pentionable_earning){
-    $gvtPention     =((($grossPay - ($pdf['master']->basic_exemption_amt / $pdf['master']->no_pay_period)) * $pdf['master']->emp_contribution) / 100 );
-}else{
-    $gvtPention = 0.00;
-}
-if($grossPay < $pdf['master']->ei_amt){
-    $eiCount        = (($pdf['master']->ei_cont * $grossPay) / 100);
-    $ytdEiCount     = (($pdf['master']->ei_cont * $ytdGrossPay)  / 100);
-}else{
-    $eiCount = 0.00;
-    $ytdEiCount = $pdf['master']->ei_cont;
-}
-
-// fedtax
-$fedTax         = ($pdf['master']->fed_tax * $grossPay);
-$ytdFedtax      = ($pdf['master']->fed_tax * $ytdGrossPay);
-
-// medical
-$medical = $pdf['emp']->medical;
-$ytdMedical = $yrDeduction->medical;
-
-// vacation
-$vacation       = ($pdf['emp']->vocation_rate * $grossPay);
-$ytVacation     = ($pdf['emp']->vocation_rate * $ytdGrossPay);
-// deduction
-$totalDeduction = (($gvtPention + $fedTax + $eiCount + $medical));
-$totalYtdDeduction   = (($yrDeduction->govt_pen + $yrDeduction->fedl_tax + $yrDeduction->ei_count + $ytdMedical));
-// net Pay
-$netPay         =  $grossPay - $totalDeduction;
-$ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
+    $netPay = $pdf->gross - $totalDeduction;
+    $ytdNetPay =$pdf->gross_ytd - $totalYtdDeduction;
 
 ?>
+
     <table >
     
         <tr>
@@ -69,13 +33,13 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                 <div >
                     <div>
                         <span class="bold"><b>PAYMENT DATE:</b></span>
-                        <span ><?php echo date('d-m-Y', strtotime($pdf['emp']->pay_date)) ?></span>
+                        <span ><?php echo date('d-m-Y', strtotime($pdf->pay_start)) ?></span>
                        
                     </div>
                     <br>
                     <div>
                         <span class="bold"><b>PAY END DATE:</b></span>
-                        <span><?php echo date('d-m-Y', strtotime($pdf['emp']->pay_end_date)) ?> <br> </span>
+                        <span><?php echo date('d-m-Y', strtotime($pdf->pay_end)) ?> <br> </span>
                     </div>
                 </div>
                 
@@ -97,57 +61,60 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                     </tr>
                     <tr>
                         <td>REGULAR</td>
-                        <td class="text-right"><?php echo $pdf['emp']->per_hr_rate ?></td>
-                        <td class="text-right"><?php echo $pdf['emp']->regular_hrs ?></td>
-                        <td class="text-right"><?php echo number_format( round(($pdf['emp']->regular_hrs * $pdf['emp']->per_hr_rate ),2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round($pdf['emp']->yhruReg , 2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round(($pdf['emp']->total_reg_ytd ), 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->per_hr_rate,2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->reg_rate,2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->reg_amt ,2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->reg_unit , 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->reg_ytd , 2), 2) ?></td>
                     </tr>
                     <tr>
                         <td>STAT HOL </td>
-                        <td class="text-right"><?php echo $pdf['emp']->per_hr_rate ?></td>
-                        <td class="text-right"><?php echo $pdf['emp']->stat_hol ?></td>
-                        <td class="text-right"><?php echo  number_format( round(($pdf['emp']->per_hr_rate * $pdf['emp']->stat_hol ), 2), 2)?></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf['emp']->yhruStatHol, 2), 2) ?></td> 
-                        <td class="text-right"><?php echo  number_format( round(($pdf['emp']->total_stat_ytd), 2), 2) ?></td> 
+                        <td class="text-right"><?php echo  number_format( round($pdf->per_hr_rate,2), 2) ?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->stat_rate,2), 2) ?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->stat_amt, 2), 2)?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->stat_unit, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo  number_format( round($pdf->stat_ytd, 2), 2) ?></td> 
                     </tr>
                     <tr>
                         <td>WAGE BC</td>
                         <td class="text-right">0.00</td>
+                        <td class="text-right">0</td>
+                        <td class="text-right"><?php echo number_format( round($pdf->wages, 2), 2) ?></td> 
                         <td class="text-right">0.00</td>
-                        <td class="text-right"><?php echo number_format( round($pdf['emp']->wage_amount, 2), 2) ?></td> 
-                        <td class="text-right">0.0</td>
-                        <td class="text-right"><?php echo number_format( round($pdf['emp']->totalWages,2), 2) ?></td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->wages_ytd,2), 2) ?></td> 
                     </tr>
                     <tr>
                         <td>MISCELLANEOUS <br>AMOUNT</td>
-                        <td class="text-right"></td>
-                        <td class="text-right"></td>
-                        <td class="text-right"><?php echo number_format( round($pdf['emp']->miscellaneous_amount, 2), 2) ?></td>
-                        <td class="text-right"></td> 
-                        <td class="text-right"><?php echo number_format( round($pdf['emp']->tmiscellaneous, 2), 2) ?></td> 
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0</td>
+                        <td class="text-right"><?php echo number_format( round($pdf->miscellaneous, 2), 2) ?></td>
+                        <td class="text-right">0.00</td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->miscellaneous_ytd, 2), 2) ?></td> 
                     </tr>
                    <?php
-                    if($pdf['emp']->vacation_release == 1){ ?>
+                    $bvacation = 0;
+                    if($pdf->is_vacation_release == 1){ ?>
                     <tr>
                         <td>VACATION</td>
                         <td class="text-right"></td>
                         <td class="text-right"></td>
-                        <td class="text-right"><?php echo number_format( round($vrelease, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->vacation, 2), 2) ?></td>
                         <td class="text-right"></td> 
-                        <td class="text-right"><?php echo number_format( round($vrelease, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->vacation_release, 2), 2) ?></td> 
                     </tr>
-                    <?php } ?>
+                    <?php }else{
+                        $bvacation = $pdf->vacation;
+                    } ?>
                     <tr>
                         <td><br><b>TOTAL GROSS</b> <br><br><br><br></td>
                         <td class="text-right"></td>
                         <td class="text-right"></td>
                         <td class="text-right"><br>
-                            <b><?php echo  number_format( round($grossPay, 2), 2) ?></b>
+                            <b><?php echo  number_format( round($pdf->gross, 2), 2) ?></b>
                             <br><br><br><br>
                         </td>
                         <td class="text-right"></td> 
-                        <td class="text-right"><br><b><?php echo number_format( round($ytdGrossPay, 2), 2) ?></b><br><br><br><br></td> 
+                        <td class="text-right"><br><b><?php echo number_format( round($pdf->gross_ytd, 2), 2) ?></b><br><br><br><br></td> 
                     </tr>
                     <tr class="mt15">
                         <th class="text-left">DEDUCTIONS</th>
@@ -161,9 +128,9 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         <td >GOVT PEN</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($gvtPention, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->govt_pen, 2), 2) ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($yrDeduction->govt_pen, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->govt_pen_ytd, 2), 2) ?></td>
                        
                         
                     </tr>
@@ -171,27 +138,27 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         <td>FEDL TAX</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($fedTax, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->fedl, 2), 2)  ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($yrDeduction->fedl_tax, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->fedl_ytd, 2), 2)  ?></td>
                         
                     </tr>
                     <tr>
                         <td>EI  CONT</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($eiCount, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->eicount, 2), 2)  ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($yrDeduction->ei_count, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->eicount_ytd, 2), 2)  ?></td>
                         
                     </tr>
                     <tr>
                         <td>MEDICAL</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($medical, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->medical, 2), 2)  ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($ytdMedical, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->medical_ytd, 2), 2)  ?></td>
                         
                     </tr>
                     
@@ -215,17 +182,17 @@ $ytdNetPay      = ($ytdGrossPay - $totalYtdDeduction);
                         <td>VACATION</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo  number_format( round($vacation, 2), 2)?></td>
+                        <td class="text-right"><?php echo  number_format( round($bvacation, 2), 2)?></td>
                         <td></td>
-                        <td class="text-right"><?php echo  number_format( round($ytVacation, 2), 2) ?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->vacation_release, 2), 2) ?></td>
                     </tr>
                 </table>
 
                 <table class="mr-350">
-                    <tr><th class="text-left"><?php echo $pdf['emp']->fname.' '.$pdf['emp']->lname ?></th></tr>
-                    <tr><td><?php echo $pdf['emp']->city ?></td></tr>
-                    <tr><td><?php echo $pdf['emp']->address ?></td></tr>
-                    <tr><td><?php echo $pdf['emp']->pincode ?></td></tr>
+                    <tr><th class="text-left"><?php echo $pdf->first_name.' '.$pdf->last_name ?></th></tr>
+                    <tr><td><?php echo $pdf->city ?></td></tr>
+                    <tr><td><?php echo $pdf->address1 ?></td></tr>
+                    <tr><td><?php echo $pdf->pincode ?></td></tr>
                    
                 </table>
             </td>
