@@ -106,61 +106,26 @@ class m_payStub extends CI_Model {
             $sum['medical']        = 0;
             $sum['vacation']       = 0;
 
-        foreach($empYtd as $item) {
-            $sum['reg_unit']        += $item->reg_unit;
-            $sum['stat_unit']       += $item->stat_unit;
-            $sum['reg_amt']         += $item->reg_amt;
-            $sum['stat_amt']        += $item->stat_amt;
-            $sum['wages']           += $item->wages;
-            $sum['miscellaneous']   += $item->miscellaneous;
-            $sum['govt_pen']        += $item->govt_pen;
-            $sum['fedl']            += $item->fedl;
-            $sum['eicount']         += $item->eicount;
-            $sum['medical']         += $item->medical;
-            $sum['vacation']        += $item->vacation;
+        if(!empty($empYtd)){
+            foreach($empYtd as $item) {
+                $sum['reg_unit']        += $item->reg_unit;
+                $sum['stat_unit']       += $item->stat_unit;
+                $sum['reg_amt']         += $item->reg_amt;
+                $sum['stat_amt']        += $item->stat_amt;
+                $sum['wages']           += $item->wages;
+                $sum['miscellaneous']   += $item->miscellaneous;
+                $sum['govt_pen']        += $item->govt_pen;
+                $sum['fedl']            += $item->fedl;
+                $sum['eicount']         += $item->eicount;
+                $sum['medical']         += $item->medical;
+                $sum['vacation']        += $item->vacation;
+            }
         }
+        
        return $sum;
     }
 
 
-    public function PdfGet1($empid = null, $sdate = null, $edate = null)
-    {
-        $this->db->from('paystub p');
-        $this->db->join('lit_employee_details  e', 'e.emp_id = p.emp_ids', 'left');
-        
-        $this->db->where('p.emp_ids', $empid);
-        $this->db->where('p.pay_start >=', $sdate);
-        $this->db->where('p.pay_end <=', $edate);
-
-        $this->db->select('e.first_name, e.last_name, e.address1, e.city, e.pincode, e.phone, p.is_vacation_release, p.pay_start, p.pay_end, p.per_hr_rate');
-        // $this->db->select_sum('p.per_hr_rate');
-        $this->db->select_sum('p.reg_rate');
-        $this->db->select_sum('p.stat_rate');
-        $this->db->select_sum('p.reg_amt');
-        $this->db->select_sum('p.stat_amt');
-        $this->db->select_sum('p.reg_unit');
-        $this->db->select_sum('p.stat_unit');
-        $this->db->select_sum('p.reg_ytd');
-        $this->db->select_sum('p.stat_ytd');
-        $this->db->select_sum('p.wages');
-        $this->db->select_sum('p.miscellaneous');
-        $this->db->select_sum('p.wages_ytd');
-        $this->db->select_sum('p.miscellaneous_ytd');
-        $this->db->select_sum('p.vacation');
-        $this->db->select_sum('p.govt_pen');
-        $this->db->select_sum('p.fedl');
-        $this->db->select_sum('p.eicount');
-        $this->db->select_sum('p.medical');
-        $this->db->select_sum('p.govt_pen_ytd');
-        $this->db->select_sum('p.fedl_ytd');
-        $this->db->select_sum('p.eicount_ytd');
-        $this->db->select_sum('p.medical_ytd');
-        $this->db->select_sum('p.gross');
-        $this->db->select_sum('p.gross_ytd');
-        $this->db->select_sum('p.vacation_release');
-        
-        return $this->db->get()->row();
-    }
-
+    
 }
 /* End of file m_payStub.php */

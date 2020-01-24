@@ -33,7 +33,7 @@
 					<div class="sidebar-user-material-body">
 						<div class="card-body text-center">
 							<a href="#">
-								<img src="<?php echo base_url();?>my_assets/global_assets/images/foot-print-logo.png" class="img-fluid  shadow-1 mb-3" width="60%" style="padding-top: 8%;" alt="">
+								<img src="<?php echo base_url();?>my_assets/global_assets/images/foot-print-logo.png" class="img-fluid   mb-3" width="60%" style="padding-top: 8%;" alt="">
 							</a>
 							<h6 class="mb-0 ">Admin</h6>
 							<span class="font-size-sm ">Canada</span>

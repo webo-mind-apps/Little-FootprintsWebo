@@ -187,8 +187,10 @@
 <body>
 <?php
 
-$gross = ($pdf->wages + $pdf->miscellaneous + $pdf->payrolls['reg'] + $pdf->payrolls['stahol']);
-$deductions = ($pdf->ytds->govt_pen + $pdf->ytds->fedl_tax + $pdf->ytds->ei_count + $pdf->ytds->vacation);
+$gross = ($pdf->empYtd['wages'] + $pdf->empYtd['miscellaneous'] + $pdf->empYtd['reg_amt'] + $pdf->empYtd['stat_amt']);
+
+$deductions = ($pdf->empYtd['govt_pen'] + $pdf->empYtd['fedl'] + $pdf->empYtd['eicount'] + $pdf->empYtd['medical']);
+
 $eiammount = ($gross <= $pdf->master->ei_amt)? $gross : $pdf->master->ei_amt;
 $cppamount = ($gross <= $pdf->master->max_pentionable_earning)? $gross : $pdf->master->max_pentionable_earning;
 ?>
@@ -201,14 +203,14 @@ $cppamount = ($gross <= $pdf->master->max_pentionable_earning)? $gross : $pdf->m
         <p class="empt-tax-deduction-1"><?php echo sprintf("%.2f",$deductions) ?></p>
         <p class="accno-1"><?php echo $pdf->ac_num ?></p>
         <p class="province-1">BC</p>
-        <p class="cpp-1"><?php echo sprintf("%.2f",$pdf->ytds->govt_pen) ?></p>
+        <p class="cpp-1"><?php echo sprintf("%.2f",$pdf->empYtd['govt_pen']) ?></p>
         <p class="insurable-1"><?php echo sprintf("%.2f",$eiammount) ?></p>
         <p class="social-insurance-1"><?php echo $pdf->empsin ?></p>
         <p class="cpp-qpp-1"><?php echo sprintf("%.2f",$cppamount) ?></p>
         <p class="lastname-1"><?php echo strtoupper($pdf->first_name) ?></p>
         <p class="fname-1"><?php echo strtoupper($pdf->last_name) ?></p>
         <p class="address"><?php echo $pdf->city.'<br>'. $pdf->address2.'<br>'.$pdf->pincode ?></p>
-        <p class="premiums"><?php echo sprintf("%.2f",$pdf->ytds->ei_count) ?></p>
+        <p class="premiums"><?php echo sprintf("%.2f",$pdf->empYtd['eicount']) ?></p>
 
         <p class="empr-name2 font8" >
             <?php echo $pdf->name ?><br>
@@ -218,14 +220,14 @@ $cppamount = ($gross <= $pdf->master->max_pentionable_earning)? $gross : $pdf->m
         <p class="empt-tax-deduction-2"><?php echo sprintf("%.2f",$deductions) ?></p>
         <p class="accno-2"><?php echo $pdf->ac_num ?></p>
         <p class="province-2">BC</p>
-        <p class="cpp-2"><?php echo sprintf("%.2f",$pdf->ytds->govt_pen) ?></p>
+        <p class="cpp-2"><?php echo sprintf("%.2f",$pdf->empYtd['govt_pen']) ?></p>
         <p class="insurable-2"><?php echo sprintf("%.2f",$eiammount) ?></p>
         <p class="social-insurance-2"><?php echo $pdf->empsin ?></p>
         <p class="cpp-qpp-2"><?php echo sprintf("%.2f",$cppamount) ?></p>
         <p class="lastname-2"><?php echo strtoupper($pdf->first_name) ?></p>
         <p class="fname-2"><?php echo strtoupper($pdf->last_name) ?></p>
         <p class="address-2"><?php echo $pdf->city.'<br>'. $pdf->address2.'<br>'.$pdf->pincode ?></p>
-        <p class="premiums-2"><?php echo sprintf("%.2f",$pdf->ytds->ei_count) ?></p>
+        <p class="premiums-2"><?php echo sprintf("%.2f",$pdf->empYtd['eicount']) ?></p>
 
 </body>
 </html>

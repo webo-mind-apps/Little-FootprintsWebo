@@ -102,26 +102,33 @@
                               <th class="text-right">Fedl Tax</th>
                               <th class="text-right">EI Count</th>
                               <th class="text-right">Vacation Rate</th>
+                              <th class="text-right">Medical</th>
+                              <th class="text-right">Net Pay</th>
                               <th>Action</th>
                         </thead>
                         <tbody>
-                            <?php
+                             <?php
                                 $year = $this->input->get('year');
-                                foreach ($emp as $key => $value) { ?>
+                                if(!empty($emp)){
+                                foreach ($emp as $key => $value) { 
+                                    $netPay =($value->ytds['govt_pen'] + $value->ytds['fedl']+ $value->ytds['eicount']+ $value->ytds['medical']);
+                                ?>
                                     <tr>
                                         <td><?php echo $key+1 ?></td>
                                         <td><?php echo $value->emp_id ?></td>
                                         <td><?php echo $value->first_name ?></td>
                                         <td><?php echo $value->last_name ?></td>
-                                        <td class="text-right"><?php echo  (!empty($value->ytds->govt_pen)) ? round($value->ytds->govt_pen, 2) : '' ?></td>
-                                        <td class="text-right"><?php echo  (!empty($value->ytds->fedl_tax)) ? round($value->ytds->fedl_tax, 2) : '' ?></td>
-                                        <td class="text-right"><?php echo  (!empty($value->ytds->ei_count)) ? round($value->ytds->ei_count, 2) : '' ?></td>
-                                        <td class="text-right"><?php echo  (!empty($value->ytds->vacation)) ? round($value->ytds->vacation, 2) : '' ?></td>
+                                        <td class="text-right"><?php echo  (!empty($value->ytds['govt_pen'])) ?  number_format(round($value->ytds['govt_pen'], 2), 2) : '0' ?></td>
+                                        <td class="text-right"><?php echo  (!empty($value->ytds['fedl'])) ?      number_format(round($value->ytds['fedl'], 2), 2) : '0' ?></td>
+                                        <td class="text-right"><?php echo  (!empty($value->ytds['eicount'])) ?   number_format(round($value->ytds['eicount'], 2), 2) : '0' ?></td>
+                                        <td class="text-right"><?php echo  (!empty($value->ytds['vacation'])) ?  number_format(round($value->ytds['vacation'], 2), 2) : '0' ?></td>
+                                        <td class="text-right"><?php echo  (!empty($value->ytds['medical'])) ?   number_format(round($value->ytds['medical'], 2), 2) : '0' ?></td>
+                                        <td class="text-right"><?php echo  number_format(round($netPay, 2), 2) ?></td>
                                         <td>
-                                            <a target="_blank" href="<?php echo base_url('summarized-report/').$value->id.'?year='.$year ?>"><i class="icon-file-download2 ml-2"></i></a>
+                                            <a target="_blank" href="<?php echo base_url('summarized-report/').$value->emp_id.'?year='.$year ?>"><i class="icon-file-download2 ml-2"></i></a>
                                         </td>
                                     </tr>
-                            <?php    } ?>
+                            <?php    }  }?> 
                         </tbody>
                      </table>
                   </form>

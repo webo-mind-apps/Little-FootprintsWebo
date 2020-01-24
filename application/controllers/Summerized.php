@@ -21,12 +21,8 @@ class summerized extends CI_Controller {
 	{
 
 		$year = $this->input->get('year');
-
 		$data['emp'] = $this->m_summarized->getEmployees($year);
-
 		$this->load->view('summarized-list', $data);
-
-
 	}
 
 
