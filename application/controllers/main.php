@@ -352,7 +352,9 @@ class Main extends CI_Controller {
         {
             if($this->session->userdata('admin_login'))
             {
-            $data['comapny_fetch']=$this->db_model->company_master();
+			$data['comapny_fetch']=$this->db_model->company_master();
+			
+			
             $this->load->view('company_master',$data);
             }
             else

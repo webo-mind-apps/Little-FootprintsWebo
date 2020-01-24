@@ -473,7 +473,8 @@ function emp_ei_insert()
 	
 		$company_name=$_POST['comp_name'];
 		$at_num=$_POST['at_num'];
-		$data = array('name' =>$company_name,'ac_num' =>$at_num);
+		$num_pay=$_POST['num_pay'];
+		$data = array('name' =>$company_name,'ac_num' =>$at_num, 'no_pay_period' => $num_pay);
 			
 				 if($this->db->insert('lit_company',$data))
 				 {
@@ -491,7 +492,8 @@ function emp_ei_insert()
 		$id=$_POST['emp_id'];
 		$company_name=$_POST['comp_name'];
 		$at_num=$_POST['at_num'];
-		$data = array('name' =>$company_name,'ac_num' =>$at_num);
+		$num_pay=$_POST['num_pay'];
+		$data = array('name' =>$company_name,'ac_num' =>$at_num, 'no_pay_period' => $num_pay);
 		$this->db->where(array('id'=>$id));
 			
 				 if($this->db->update('lit_company',$data))

@@ -104,10 +104,17 @@
                               <div class="form-group">
                                  <label>Employeer A/c number</label>
                                  <div class="input-group">
-                                    <input type="text" id="at-num" class="form-control" placeholder="Employeer A/c number" name="at_num" onkeypress="return isNumber();"  required>
+                                    <input type="text"  id="at-num" class="form-control" placeholder="Employeer A/c number" name="at_num" onkeypress="return isNumber();"  required>
                                  </div>
                               </div>
-                              
+
+                              <div class="form-group">
+                                 <label>Number of payment</label>
+                                 <div class="input-group">
+                                    <input type="text"  id="num-pay" class="form-control" placeholder="Number of payment per year" name="num_pay" onkeypress="return isNumber();"  required>
+                                 </div>
+                              </div>
+
                               <input type="hidden" id="emp-id" name="emp_id">
                               <div class="text-right" style="display:block;" id="insert-activate">
                                  <button  type="submit" id="insert-button" name="insert_button" class="insert btn btn-primary" onclick="">Submit<i class="icon-paperplane ml-2"></i></button>
@@ -133,6 +140,7 @@
                            <th>Delete</th>
                            <th>Company&nbspName</th>
                            <th>A/c&npsbnumber</th>
+                           <th>Number of payment</th>
                            <th></th>
                      </thead>
                      <tbody>
@@ -149,6 +157,7 @@
                            </td>
                            <td><?php echo $row['name'];?></td>
                            <td><?php echo $row['ac_num'];?></td>
+                           <td><?php echo $row['no_pay_period'];?></td>
                            <td></td>
                         </tr>
                         <?php
@@ -169,14 +178,16 @@
                					$id=$row['id'];
                                 $name= $row['name'];
                                 $at_num= $row['ac_num'];
+                                $num_pay = $row['no_pay_period'];
                                }
                				?>
             <script>
                $('#insert-activate').css("display","none");
                $('#update-activate').css("display","block");
                $("#emp-id").val("<?php echo $id;?>");
-                $("#comp-name").val("<?php echo $name;?>");
-                $("#at-num").val("<?php echo $at_num;?>");
+               $("#comp-name").val("<?php echo $name;?>");
+               $("#at-num").val("<?php echo $at_num;?>");
+               $("#num-pay").val("<?php echo $num_pay;?>");
               
             </script>
             <?php				
