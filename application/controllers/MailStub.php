@@ -53,7 +53,7 @@ class MailStub extends CI_Controller {
             $sdate = $this->input->get('sdate');
             $edate = $this->input->get('edate');
             $result['pdf'] = $this->m_payStub->PdfGet($empid, $sdate, $edate);
-            
+
             $mpdf = new \Mpdf\Mpdf();
             $html = $this->load->view('payroll-pdf',$result,true);
             $mpdf->WriteHTML($html);
@@ -100,7 +100,7 @@ class MailStub extends CI_Controller {
             $name= date('d/m/Y', strtotime($result['pdf']->pay_start)). ' TO '. date('d/m/Y', strtotime($result['pdf']->pay_end));
 
 			$from = $this->config->item('smtp_user');
-			$to = 'shahir.webomindapps@gmail.com';
+			$to = $result['pdf']->email;
 			$subject = 'Pay stub on '.$name;
 			$filename = date('d/m/Y', strtotime($result['pdf']->pay_start))."-".date('d/m/Y', strtotime($result['pdf']->pay_end))."_pay-stub.pdf";
 			$message = $this->load->view('email/paystub',$result, TRUE);

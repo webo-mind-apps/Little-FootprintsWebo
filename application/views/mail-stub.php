@@ -247,7 +247,6 @@
     // employee payslips
     function empPaySlips(){
         var companySelect   =   $("#companySelect").val();
-     
         var dates           =   $('#dates').val();
         $.ajax({
             type: "post",
@@ -265,7 +264,7 @@
                     content += '<tr>';
 					content += '<td><input type="checkbox" name="sendmail[]" ></td>'
                     content += '<td>'+ (i+1) +'</td>';
-                    content += '<td>'+ v.emp_ids +'</td>';
+                    content += '<td>'+ v.empid +'</td>';
                     content += '<td>'+ v.first_name +'</td>';
                     content += '<td>'+ v.last_name +'</td>';
                     content += '<td>'+ v.email +'</td>';
@@ -273,15 +272,15 @@
                     content += `<td>
 						<ul class="action-list">
 							<li>
-								<a href="<?php echo base_url('view-paystub/') ?>`+ v.emp_ids +`?sdate=`+v.pay_start+`&edate=`+v.pay_end+`" target="_blank"><i class="far fa-eye"></i> View</a>
+								<a href="<?php echo base_url('view-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" target="_blank"><i class="far fa-eye"></i> View</a>
 							</li>
 
 							<li>
-								<a href="<?php echo base_url('export-paystub/') ?>`+ v.emp_ids +`?sdate=`+v.pay_start+`&edate=`+v.pay_end+`" ><i class="fas fa-file-export"></i> Export</a>
+								<a href="<?php echo base_url('export-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" ><i class="fas fa-file-export"></i> Export</a>
 							</li>
 
 							<li>
-								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.emp_ids +`?sdate=`+v.pay_start+`&edate=`+v.pay_end+`" ><i class="far fa-paper-plane"></i> Mail</a>
+								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" ><i class="far fa-paper-plane"></i> Mail</a>
 							</li>
 						</ul>
 					</td>`;

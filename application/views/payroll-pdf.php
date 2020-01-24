@@ -9,11 +9,15 @@
 </head>
 <body>
 <?php
-    $totalDeduction = $pdf->govt_pen + $pdf->fedl + $pdf->eicount + $pdf->medical;
-    $totalYtdDeduction = $pdf->govt_pen_ytd + $pdf->fedl_ytd + $pdf->eicount_ytd + $pdf->medical_ytd;
+    $gross      = ($pdf->currentUnit->reg_amt + $pdf->currentUnit->stat_amt + $pdf->currentUnit->wages + $pdf->currentUnit->miscellaneous);
+    $grossYtd   = ($pdf->empYtd['reg_amt'] + $pdf->empYtd['stat_amt'] + $pdf->empYtd['wages'] + $pdf->empYtd['miscellaneous']);
 
-    $netPay = $pdf->gross - $totalDeduction;
-    $ytdNetPay =$pdf->gross_ytd - $totalYtdDeduction;
+
+    $totalDeduction = $pdf->currentUnit->govt_pen + $pdf->currentUnit->fedl  + $pdf->currentUnit->eicount + $pdf->currentUnit->medical;
+    $totalYtdDeduction = $pdf->empYtd['govt_pen'] + $pdf->empYtd['fedl']  + $pdf->empYtd['eicount'] + $pdf->empYtd['medical'];
+
+    $netPay = $gross - $totalDeduction;
+    $ytdNetPay =$grossYtd - $totalYtdDeduction;
 
 ?>
 
@@ -33,13 +37,13 @@
                 <div >
                     <div>
                         <span class="bold"><b>PAYMENT DATE:</b></span>
-                        <span ><?php echo date('d-m-Y', strtotime($pdf->pay_start)) ?></span>
+                        <span ><?php echo date('d-m-Y', strtotime($pdf->start_on)) ?></span>
                        
                     </div>
                     <br>
                     <div>
                         <span class="bold"><b>PAY END DATE:</b></span>
-                        <span><?php echo date('d-m-Y', strtotime($pdf->pay_end)) ?> <br> </span>
+                        <span><?php echo date('d-m-Y', strtotime($pdf->end_on)) ?> <br> </span>
                     </div>
                 </div>
                 
@@ -61,37 +65,37 @@
                     </tr>
                     <tr>
                         <td>REGULAR</td>
-                        <td class="text-right"><?php echo number_format( round($pdf->per_hr_rate,2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->reg_rate,2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->reg_amt ,2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->reg_unit , 2), 2) ?></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->reg_ytd , 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->rate,2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->reg_unit,2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->reg_amt ,2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['reg_unit'] , 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['reg_amt'] , 2), 2) ?></td>
                     </tr>
                     <tr>
                         <td>STAT HOL </td>
-                        <td class="text-right"><?php echo  number_format( round($pdf->per_hr_rate,2), 2) ?></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf->stat_rate,2), 2) ?></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf->stat_amt, 2), 2)?></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf->stat_unit, 2), 2) ?></td> 
-                        <td class="text-right"><?php echo  number_format( round($pdf->stat_ytd, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo  number_format( round($pdf->currentUnit->rate,2), 2) ?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->currentUnit->stat_unit,2), 2) ?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->currentUnit->stat_amt, 2), 2)?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->empYtd['stat_unit'], 2), 2) ?></td> 
+                        <td class="text-right"><?php echo  number_format( round($pdf->empYtd['stat_amt'], 2), 2) ?></td> 
                     </tr>
                     <tr>
                         <td>WAGE BC</td>
                         <td class="text-right">0.00</td>
                         <td class="text-right">0</td>
-                        <td class="text-right"><?php echo number_format( round($pdf->wages, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->wages, 2), 2) ?></td> 
                         <td class="text-right">0.00</td>
-                        <td class="text-right"><?php echo number_format( round($pdf->wages_ytd,2), 2) ?></td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['wages'],2), 2) ?></td> 
                     </tr>
                     <tr>
                         <td>MISCELLANEOUS <br>AMOUNT</td>
                         <td class="text-right">0.00</td>
                         <td class="text-right">0</td>
-                        <td class="text-right"><?php echo number_format( round($pdf->miscellaneous, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->miscellaneous, 2), 2) ?></td>
                         <td class="text-right">0.00</td> 
-                        <td class="text-right"><?php echo number_format( round($pdf->miscellaneous_ytd, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['miscellaneous'], 2), 2) ?></td> 
                     </tr>
-                   <?php
+                   <?php /*
                     $bvacation = 0;
                     if($pdf->is_vacation_release == 1){ ?>
                     <tr>
@@ -104,17 +108,17 @@
                     </tr>
                     <?php }else{
                         $bvacation = $pdf->vacation;
-                    } ?>
+                    } */?>
                     <tr>
                         <td><br><b>TOTAL GROSS</b> <br><br><br><br></td>
                         <td class="text-right"></td>
                         <td class="text-right"></td>
                         <td class="text-right"><br>
-                            <b><?php echo  number_format( round($pdf->gross, 2), 2) ?></b>
+                            <b><?php echo  number_format( round($gross, 2), 2) ?></b>
                             <br><br><br><br>
                         </td>
                         <td class="text-right"></td> 
-                        <td class="text-right"><br><b><?php echo number_format( round($pdf->gross_ytd, 2), 2) ?></b><br><br><br><br></td> 
+                        <td class="text-right"><br><b><?php echo number_format( round($grossYtd, 2), 2) ?></b><br><br><br><br></td> 
                     </tr>
                     <tr class="mt15">
                         <th class="text-left">DEDUCTIONS</th>
@@ -128,9 +132,9 @@
                         <td >GOVT PEN</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->govt_pen, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->govt_pen, 2), 2) ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->govt_pen_ytd, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['govt_pen'], 2), 2) ?></td>
                        
                         
                     </tr>
@@ -138,27 +142,27 @@
                         <td>FEDL TAX</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->fedl, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->fedl, 2), 2)  ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->fedl_ytd, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['fedl'], 2), 2)  ?></td>
                         
                     </tr>
                     <tr>
                         <td>EI  CONT</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->eicount, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->eicount, 2), 2)  ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->eicount_ytd, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['eicount'], 2), 2)  ?></td>
                         
                     </tr>
                     <tr>
                         <td>MEDICAL</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->medical, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->medical, 2), 2)  ?></td>
                         <td></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->medical_ytd, 2), 2)  ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['medical'], 2), 2)  ?></td>
                         
                     </tr>
                     
@@ -182,9 +186,9 @@
                         <td>VACATION</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo  number_format( round($bvacation, 2), 2)?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->currentUnit->vacation, 2), 2)?></td>
                         <td></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf->vacation_release, 2), 2) ?></td>
+                        <td class="text-right"><?php echo  number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td>
                     </tr>
                 </table>
 
