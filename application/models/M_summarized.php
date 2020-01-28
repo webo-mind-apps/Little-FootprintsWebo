@@ -36,9 +36,13 @@ class m_summarized extends CI_Model {
         $this->load->model('m_payStub');
 
         $this->db->from('lit_employee_details e');
-        $this->db->where('e.id', $id);
+        $this->db->where('e.emp_id', $id);
         $this->db->join('lit_company c ', 'c.id = e.company', 'left');
         $value = $this->db->get()->row();
+      
+        if (is_null($value) || !is_object($value)) {
+            $value = new stdClass();
+        }
 
         $value->empYtd = $this->m_payStub->empYtd($id, $sdate, $edate);
         $value->master = $this->master($year);

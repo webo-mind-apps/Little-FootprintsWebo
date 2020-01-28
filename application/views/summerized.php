@@ -186,13 +186,18 @@
 </head>
 <body>
 <?php
-
+$gross = 0; 
 $gross = ($pdf->empYtd['wages'] + $pdf->empYtd['miscellaneous'] + $pdf->empYtd['reg_amt'] + $pdf->empYtd['stat_amt']);
 
 $deductions = ($pdf->empYtd['govt_pen'] + $pdf->empYtd['fedl'] + $pdf->empYtd['eicount'] + $pdf->empYtd['medical']);
+if(!empty($pdf->master)){
+    $eiammount = ($gross <= $pdf->master->ei_amt)? $gross : $pdf->master->ei_amt;
+    $cppamount = ($gross <= $pdf->master->max_pentionable_earning)? $gross : $pdf->master->max_pentionable_earning;
+}else{
+    $eiammount = 0;
+    $cppamount = 0;
+}
 
-$eiammount = ($gross <= $pdf->master->ei_amt)? $gross : $pdf->master->ei_amt;
-$cppamount = ($gross <= $pdf->master->max_pentionable_earning)? $gross : $pdf->master->max_pentionable_earning;
 ?>
     <div class="fx_background"></div>
         <p class="empr-name1 font8" >

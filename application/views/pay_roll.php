@@ -231,6 +231,7 @@
          	dataType:'json',
          	data:{company_name:company_name},
          	success:function(data){
+				$("#centerSelect").empty();
             	$.each(data, function (index, value) { 
                		$('#centerSelect').append('<option value="'+value.id+'">'+value.center_name+'</option>');
             	});

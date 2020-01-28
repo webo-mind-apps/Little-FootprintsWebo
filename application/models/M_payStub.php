@@ -90,10 +90,12 @@ class m_payStub extends CI_Model {
         ->select('id')
         ->get('lit_payroll_root')
         ->result();
-
         foreach ($payrolls as $key => $value) {
             $empYtd[$key] =  $this->currentUnit($value->id);
         }
+        
+
+
             $sum['reg_unit']       = 0;
             $sum['stat_unit']      = 0;
             $sum['reg_amt']        = 0;
@@ -121,7 +123,7 @@ class m_payStub extends CI_Model {
                 $sum['vacation']        += $item->vacation;
             }
         }
-        
+
        return $sum;
     }
 
