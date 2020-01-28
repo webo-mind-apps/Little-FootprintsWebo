@@ -12,8 +12,9 @@ class M_payroll extends CI_Model {
     }
     
     // employee data by date
-    public function employeeDetailDate($sdate = null, $edate = null, $company = null, $center = null)
+    public function employeeDetailDate($sdate = null, $edate = null, $company = null, $center = null, $date = null)
     {
+        
         $result = $this->db
 		->where('e.status', 0)
 		->order_by('e.id', 'asc')
@@ -27,15 +28,22 @@ class M_payroll extends CI_Model {
 		
 		
 		foreach ($result as $key => $value) {
-			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center);
+			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center, $date);
         }
        
         return $result;
     }
 
-    public function getPayRoll($empid = null, $sdate= null, $edate = null, $company = null, $center = null)
+    public function getPayRoll($empid = null, $sdate= null, $edate = null, $company = null, $center = null, $date = null)
     {
         $year = date('Y', strtotime($sdate));
+        
+        if (!empty($date)) {
+            $dates = date('Y-m-d 1:00:00', strtotime($date));
+            $datee = date('Y-m-d 23:59:00', strtotime($date));
+            $this->db->where('created_on >=', $dates);
+            $this->db->where('created_on <=', $datee);
+        }
         return $this->db->from('lit_payroll_root r')
         ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.miscellaneous, p.medical')
         ->where('r.empid', $empid)
@@ -55,6 +63,7 @@ class M_payroll extends CI_Model {
         if(empty($pid)){
             $pid = $this->insertPayroll($data);
         }
+        $this->insertPayroll($data);
         $master = $this->getMasterDetails($data['pay_start']);
         $rates  = $this->calculateData($data, $master, $pid);
         $this->updatePayroll($rates); 
@@ -65,12 +74,14 @@ class M_payroll extends CI_Model {
     public function insertPayroll($data = null)
     {
         
+       
         $year = date('Y', strtotime($data['pay_start']));
         $newArray = array(
             'empid'     => $data['emp_ids'], 
             'start_on'  => $data['pay_start'], 
             'end_on'    => $data['pay_end'], 
             'year'      => $year, 
+            'is_vacation' => $data['is_vacation_release'],
         );
         $this->db->where('empid', $newArray['empid']);
         $this->db->where('start_on', $newArray['start_on']);
@@ -79,7 +90,14 @@ class M_payroll extends CI_Model {
         $query = $this->db->get('lit_payroll_root');
         
         if($query->num_rows() > 0){
-            return $query->row()->id;
+            $pid =  $query->row()->id;
+            $this->db->where('empid', $newArray['empid']);
+            $this->db->where('start_on', $newArray['start_on']);
+            $this->db->where('end_on', $newArray['end_on']);
+            $this->db->where('year', $newArray['year']);
+            $this->db->update('lit_payroll_root', $newArray);
+            return $pid;
+            
         }else{
             $this->db->insert('lit_payroll_root', $newArray);
             return $this->db->insert_id();
@@ -92,7 +110,6 @@ class M_payroll extends CI_Model {
     {
         $numpay = $this->db->where('id', $data['company'])->select('no_pay_period')->get('lit_company')->row()->no_pay_period;
         
-
         $rates = (object) array(
             'reg_unit'      => 0 , 
             'stat_unit'     => 0 , 
@@ -110,10 +127,11 @@ class M_payroll extends CI_Model {
             'root_id'       => 0 , 
             'center'        => 0 , 
             'company'       => 0 , 
-            'emp_id'        => 0
+            'emp_id'        => 0 ,
+            'medical_contribution'  => 0 ,
+
         );
 
-        
 
         $rates->reg_unit        =  $data['reg_rate'];
         $rates->stat_unit       =  $data['stat_rate'];
@@ -121,6 +139,7 @@ class M_payroll extends CI_Model {
         $rates->wages           =  $data['wages'];
         $rates->miscellaneous   =  $data['miscellaneous'];
         $rates->is_vacation     =  $data['is_vacation_release'];
+        $rates->medical_contribution =  $data['medical_contribution'];
 
         $rates->root_id         =  $pid;
         $rates->center          =  $data['center'];
@@ -131,9 +150,12 @@ class M_payroll extends CI_Model {
         $rates->stat_amt  = (float)$rates->stat_unit * (float)$rates->rate;
 
         $gross = (float)$rates->reg_amt + (float)$rates->stat_amt + (float)$rates->wages + (float)$rates->miscellaneous; 
-
-        $rates->fedl     = (float)$gross * (float)$master->fed_tax;
+        
         $rates->vacation = (float)$gross * (float)$data['vacation'];
+        if($rates->is_vacation):
+            $gross =  $gross +  $rates->vacation;
+        endif;
+        $rates->fedl     = (float)$gross * (float)$master->fed_tax;
         $rates->medical  = $data['medical'];
         
         if($gross <= $master->max_pentionable_earning):

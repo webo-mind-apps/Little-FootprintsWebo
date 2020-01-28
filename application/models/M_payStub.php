@@ -76,6 +76,7 @@ class m_payStub extends CI_Model {
         ->select_sum('eicount')
         ->select_sum('medical')
         ->select_sum('vacation')
+        ->select_sum('medical_contribution')
         ->select('rate', 'is_vacation')
         ->get('lit_payroll')->row();
     }
@@ -107,6 +108,7 @@ class m_payStub extends CI_Model {
             $sum['eicount']        = 0;
             $sum['medical']        = 0;
             $sum['vacation']       = 0;
+            $sum['medical_contribution']       = 0;
 
         if(!empty($empYtd)){
             foreach($empYtd as $item) {
@@ -121,6 +123,7 @@ class m_payStub extends CI_Model {
                 $sum['eicount']         += $item->eicount;
                 $sum['medical']         += $item->medical;
                 $sum['vacation']        += $item->vacation;
+                $sum['medical_contribution'] += $item->medical_contribution;
             }
         }
 

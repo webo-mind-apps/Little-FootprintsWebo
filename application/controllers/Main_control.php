@@ -28,9 +28,10 @@ class Main_control extends CI_Controller {
 						<th>PER HR RATE($)</th> 
 						<th class="text-center">REGULAR HRS</th> 
 						<th class="text-center">STAT HOL HRS</th> 
-						<th class="text-center">WAGE AMOUNT</th> 
-						<th class="text-center">MISCELLANEOUS<br>AMOUNT</th> 
-						<th class="text-center">MEDICAL<br>AMOUNT</th> 
+						<th class="text-center">WAGE </th> 
+						<th class="text-center">MISCELLANEOUS<b></th> 
+						<th class="text-center">MEDICAL</th> 
+						<th class="text-center">MEDICAL <br/> CONTRIBUTION</th> 
 						<th style="width:115px"	 class="text-center">
 							RELEASE <br> 
 							VACATION PAY <br>
@@ -102,6 +103,10 @@ class Main_control extends CI_Controller {
 
 				<td class="text-center">
 					<input type="text" class="form-control" name="medical[]" value="'.$row->medical.'">
+				</td>
+
+				<td class="text-center">
+					<input type="text" class="form-control" name="medical[]" value="'.$row->medical_contribution.'">
 				</td>
 
 				<td class="text-center">

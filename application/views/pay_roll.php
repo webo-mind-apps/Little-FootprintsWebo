@@ -152,7 +152,7 @@
 
 								<td width="18%">
 									<label>PAYMENT DATE</label><br>
-									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date_on" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
+									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date_on" name="pay_date"  style="margin-left:5px;font-size:12px;" autocomplete="off">
 								</td>
 								
 								
@@ -193,7 +193,7 @@
   
   <script>
 	$(document).ready(function () {
-		$('#payment_date , #pay_end_date, #companySelect, #centerSelect').change(function(){
+		$('#payment_date , #pay_end_date, #companySelect, #centerSelect, #payment_date_on').change(function(){
 			payroll_show_function();
 		});
 
@@ -209,6 +209,7 @@
 	 	var pay_end_date = $("#pay_end_date").val();
 	 	var companySelect= $("#companySelect").val();
 	 	var centerSelect = $("#centerSelect").val();
+	 	var date 		 = $("#payment_date_on").val();
 	 	if(payment_date != '' && pay_end_date != '' && companySelect != '' && centerSelect != ''){
 			jQuery.ajax({	
 				type:'POST',
@@ -217,7 +218,8 @@
 					payment_date	:	payment_date,
 					pay_end_date	:	pay_end_date,
 					company 		: 	companySelect,
-					center 			:	centerSelect
+					center 			:	centerSelect,
+					pay_date		:	date,
 				},
 				success:function(response){							 
 					$("#payroll_details").empty();

@@ -311,6 +311,7 @@
                                  <label>Medical</label>
                                  <div class="input-group">
                                     <input type="text" id="medical" class="form-control" placeholder="Medical" name="medical" maxlength="5"  required>
+                                    <input type="text" id="medicalcontr" class="form-control" placeholder="Employer Medical Contribution" name="medical_contr" maxlength="5"  required>
                                  </div>
                               </div>
                            </div>

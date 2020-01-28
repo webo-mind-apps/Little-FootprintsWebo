@@ -20,9 +20,10 @@ class Payroll extends CI_Controller {
 	{ 	
 		$sdate 	 = date('Y-m-d', strtotime($this->input->post('payment_date')));
 		$edate 	 = date('Y-m-d', strtotime($this->input->post('pay_end_date'))); 
+		$date 	 = $this->input->post('pay_date'); 
 		$company = $this->input->post('company');
 		$center  = $this->input->post('center');
-		$result  = $this->m_payroll->employeeDetailDate($sdate, $edate, $company, $center);  
+		$result  = $this->m_payroll->employeeDetailDate($sdate, $edate, $company, $center, $date);  
 		
 		$table = '';
 		$table .= '<tr> 
@@ -32,9 +33,10 @@ class Payroll extends CI_Controller {
 						<th>PER HR RATE($)</th> 
 						<th class="text-center">REGULAR HRS</th> 
 						<th class="text-center">STAT HOL HRS</th> 
-						<th class="text-center">WAGE AMOUNT</th> 
-						<th class="text-center">MISCELLANEOUS<br>AMOUNT</th> 
-						<th class="text-center">MEDICAL<br>AMOUNT</th> 
+						<th class="text-center">WAGES</th> 
+						<th class="text-center">MISCELLANEOUS</th> 
+						<th class="text-center">MEDICAL</th> 
+						<th class="text-center">MEDICAL <br/> CONTRIBUTION</th> 
 						<th style="width:115px"	 class="text-center">
 							RELEASE <br> 
 							VACATION PAY <br>
@@ -55,7 +57,7 @@ class Payroll extends CI_Controller {
 			$wages			= (!empty($row->payRoll->wages)? $row->payRoll->wages : 0);
 			$miscellaneous	= (!empty($row->payRoll->miscellaneous)?  $row->payRoll->miscellaneous : 0);
 			$medical		= (!empty($row->payRoll->medical)?  $row->payRoll->medical : 0);
-
+			
 			$table .='     
 			<tr>
 				<td>
@@ -95,7 +97,10 @@ class Payroll extends CI_Controller {
 				<td class="text-center">
 					<input type="text" class="form-control"  autocomplete="off" name="medical[]" value="'.$row->medical.'">
 				</td>
-
+				<td class="text-center">
+					<input type="text" class="form-control"  autocomplete="off" name="medicalcontr[]" value="'.$row->medical_contribution.'">
+				</td>
+				
 				<td class="text-center">
 					<input type="checkbox" class="form-control vacchek" '.$checked.' name="vacationPay[]" value="1">
 					<input type="hidden" class="form-control"  autocomplete="off" name="vacation[]" value="'.$row->vocation_rate.'">
@@ -139,7 +144,8 @@ class Payroll extends CI_Controller {
                 'company'			=> $post['company'],
                 'pay_start'         => date('Y-m-d', strtotime($sDate)),
                 'pay_end'           => date('Y-m-d', strtotime($eDate)),
-                'updateOn'          => date('Y-m-d H:i:s')
+				'updateOn'          => date('Y-m-d H:i:s'),
+				'medical_contribution'=> $post['medicalcontr'][$key]
 			);
 			$pid = $post['prl_id'][$key];
 			$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);

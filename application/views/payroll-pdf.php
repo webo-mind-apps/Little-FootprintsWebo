@@ -5,13 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Payroll</title>
-    <style> body{ background:#fff; } *{ font-family:  arial; font-size: 14px; } .img-responsive{ max-width:100% }.text-right{ text-align:right} .text-center{ text-align:center; } p, span{ font-size:24px; font-family:  arial; letter-spacing:1px; } .bold{font-weight:900} .text-right{text-align:right} .date-box{ border:1px solid #000; padding:10px} table tr th{ font-size: 70%; font-family:  arial; padding-bottom:10px } table tr td{ font-family:  arial; font-size: 70%; padding-bottom:8px; } .text-left{ text-align:left } .border-table{ border: 1px solid black; margin-top:5px; padding-top:25px; padding-right:20px; padding-bottom:15px; } .mr-350{ margin-top:350px; } h3{ font-size:34px; } .mt15{ margin-top:25px; padding-top: 25px; position:relative; top:20px; } </style>
+    <style> 
+        body{ background:#fff; } 
+        *{ font-family:  arial; font-size: 14px; } 
+        .img-responsive{ max-width:100% }
+        .text-right{ text-align:right} 
+        .text-center{ text-align:center; } 
+        p, span{  font-family:  arial; letter-spacing:1px; } 
+        /* .bold{font-weight:700}  */
+        .text-right{text-align:right} 
+        .date-box{ border:1px solid #000; padding:10px} 
+        table tr th{ font-size: 70%; font-family:  arial; padding-bottom:10px } 
+        table tr td{ font-family:  arial; font-size: 70%; padding-bottom:8px; } 
+        .text-left{ text-align:left } 
+        .border-table{ border: 1px solid black; margin-top:5px; padding-top:25px; padding-right:20px; padding-bottom:15px; } 
+        .mr-50{ margin-top:50px; } 
+        h4{ font-size:25px; } 
+        .mt15{ margin-top:25px; padding-top: 25px; position:relative; top:20px; } 
+        p{ font-size:30px }
+        span.bold{
+            font-size:15px;
+            letter-spacing:0px;
+        }
+        span.span-date{font-size:14px; letter-spacing:0px;}
+    </style>
 </head>
 <body>
 <?php
-    $gross      = ($pdf->currentUnit->reg_amt + $pdf->currentUnit->stat_amt + $pdf->currentUnit->wages + $pdf->currentUnit->miscellaneous);
-    $grossYtd   = ($pdf->empYtd['reg_amt'] + $pdf->empYtd['stat_amt'] + $pdf->empYtd['wages'] + $pdf->empYtd['miscellaneous']);
+    $gross      = ($pdf->currentUnit->reg_amt + $pdf->currentUnit->stat_amt + $pdf->currentUnit->wages + $pdf->currentUnit->miscellaneous + $pdf->currentUnit->medical_contribution );
+    $grossYtd   = ($pdf->empYtd['reg_amt'] + $pdf->empYtd['stat_amt'] + $pdf->empYtd['wages'] + $pdf->empYtd['miscellaneous'] + $pdf->empYtd['medical_contribution']);
 
+    if ($pdf->is_vacation):
+        $gross      = $gross + $pdf->empYtd['vacation'];
+        $grossYtd   = $grossYtd + $pdf->empYtd['vacation'];
+    endif;
 
     $totalDeduction = $pdf->currentUnit->govt_pen + $pdf->currentUnit->fedl  + $pdf->currentUnit->eicount + $pdf->currentUnit->medical;
     $totalYtdDeduction = $pdf->empYtd['govt_pen'] + $pdf->empYtd['fedl']  + $pdf->empYtd['eicount'] + $pdf->empYtd['medical'];
@@ -24,26 +51,33 @@
     <table >
     
         <tr>
-            <td width="18%">
+            <td width="25%">
                 <img class="img-responsive" src="<?php echo base_url() ?>my_assets/global_assets/images/foot-print-logo.png" alt="">
             </td>
-            <td class="text-center">
+            <td class="text-center tagtext">
                 <p>Little Footprints Academy</p>
                 <br>
                 <br>
-                <h3>STATEMENT OF EARNINGS AND DEDUCTIONS</h3>
+                <h4>STATEMENT OF EARNINGS AND DEDUCTIONS</h4>
             </td>
-            <td class="date-box" width="22%">
+            <td class="date-box" width="24%">
                 <div >
                     <div>
                         <span class="bold"><b>PAYMENT DATE:</b></span>
-                        <span ><?php echo date('d-m-Y', strtotime($pdf->start_on)) ?></span>
+                        <span class="span-date"><?php echo date('d-m-Y', strtotime($pdf->start_on)) ?></span>
+                       
+                    </div>
+                    <br>
+
+                    <div>
+                        <span class="bold"><b>PAY PERIOD START DATE:</b></span>
+                        <span class="span-date"><?php echo date('d-m-Y', strtotime($pdf->start_on)) ?></span>
                        
                     </div>
                     <br>
                     <div>
-                        <span class="bold"><b>PAY END DATE:</b></span>
-                        <span><?php echo date('d-m-Y', strtotime($pdf->end_on)) ?> <br> </span>
+                        <span class="bold"><b>PAY PERIOD END DATE:</b></span>
+                        <span class="span-date" ><?php echo date('d-m-Y', strtotime($pdf->end_on)) ?> <br> </span>
                     </div>
                 </div>
                 
@@ -95,20 +129,25 @@
                         <td class="text-right">0.00</td> 
                         <td class="text-right"><?php echo number_format( round($pdf->empYtd['miscellaneous'], 2), 2) ?></td> 
                     </tr>
-                   <?php /*
-                    $bvacation = 0;
-                    if($pdf->is_vacation_release == 1){ ?>
+                    <tr>
+                        <td>Employer Medical <br> Contribution</td>
+                        <td class="text-right">0.00</td>
+                        <td class="text-right">0</td>
+                        <td class="text-right"><?php echo number_format( round($pdf->currentUnit->medical_contribution, 2), 2) ?></td>
+                        <td class="text-right">0.00</td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['medical_contribution'], 2), 2) ?></td> 
+                    </tr>
+                   <?php 
+                    if($pdf->is_vacation == 1){ ?>
                     <tr>
                         <td>VACATION</td>
                         <td class="text-right"></td>
                         <td class="text-right"></td>
-                        <td class="text-right"><?php echo number_format( round($pdf->vacation, 2), 2) ?></td>
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td>
                         <td class="text-right"></td> 
-                        <td class="text-right"><?php echo number_format( round($pdf->vacation_release, 2), 2) ?></td> 
+                        <td class="text-right"><?php echo number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td> 
                     </tr>
-                    <?php }else{
-                        $bvacation = $pdf->vacation;
-                    } */?>
+                    <?php }?>
                     <tr>
                         <td><br><b>TOTAL GROSS</b> <br><br><br><br></td>
                         <td class="text-right"></td>
@@ -186,13 +225,19 @@
                         <td>VACATION</td>
                         <td></td>
                         <td></td>
-                        <td class="text-right"><?php echo  number_format( round($pdf->currentUnit->vacation, 2), 2)?></td>
+                        <td class="text-right"><?php 
+                        if($pdf->is_vacation):
+                            echo '0.00';
+                        else:
+                            echo  number_format( round($pdf->currentUnit->vacation, 2), 2);
+                        endif;
+                        ?></td>
                         <td></td>
                         <td class="text-right"><?php echo  number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td>
                     </tr>
                 </table>
 
-                <table class="mr-350">
+                <table class="mr-50">
                     <tr><th class="text-left"><?php echo $pdf->first_name.' '.$pdf->last_name ?></th></tr>
                     <tr><td><?php echo $pdf->city ?></td></tr>
                     <tr><td><?php echo $pdf->address1 ?></td></tr>
