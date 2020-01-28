@@ -142,12 +142,17 @@
 									<select id="centerSelect" name="center"> </select>
 								</td>
 								<td width="18%">
-									<label>PAYMENT DATE</label><br>
+									<label>PAY PERIOD START DATE</label><br>
 									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
 								</td>
 								<td   width="18%">
-									<label>PAY END DATE</label><br>
+									<label>PAY PERIOD END DATE</label><br>
 									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="pay_end_date" name="pay_end_date_val"  style="margin-left:12px;font-size:12px;" autocomplete="off"> 
+								</td>
+
+								<td width="18%">
+									<label>PAYMENT DATE</label><br>
+									<input type="text" onchange="payment_date_empty()" class="payment_date_js" id="payment_date_on" name="pay_date_val"  style="margin-left:5px;font-size:12px;" autocomplete="off">
 								</td>
 								
 								

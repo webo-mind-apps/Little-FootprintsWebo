@@ -73,32 +73,32 @@ class Payroll extends CI_Controller {
 				</td>
 			 
 				<td>
-					<input type="text" readonly class="form-control" name="rate_hour[]" value="'.$rate.'">
+					<input type="text" readonly class="form-control"  autocomplete="off" name="rate_hour[]" value="'.$rate.'">
 				</td>
 			 
 				<td class="text-center">
-					<input type="text" class="form-control" name="regular_hrs[]" value="'.$reg.'">
+					<input type="text" class="form-control"  autocomplete="off" name="regular_hrs[]" value="'.$reg.'">
 				</td>
 			 
 				<td class="text-center">
-					<input type="text" class="form-control" name="stat_hol_hrs[]" value="'.$stat_rate.'" >
+					<input type="text" class="form-control"  autocomplete="off" name="stat_hol_hrs[]" value="'.$stat_rate.'" >
 				</td>
 			 
 				<td class="text-center">
-					<input type="text" class="form-control" name="wage_amount[]" value="'.$wages.'">
+					<input type="text" class="form-control"  autocomplete="off" name="wage_amount[]" value="'.$wages.'">
 				</td>
 			 
 				<td class="text-center">
-					<input type="text" class="form-control"  name="miscellaneous_amount[]" value="'.$miscellaneous.'">
+					<input type="text" class="form-control"  autocomplete="off"  name="miscellaneous_amount[]" value="'.$miscellaneous.'">
 				</td>
 
 				<td class="text-center">
-					<input type="text" class="form-control" name="medical[]" value="'.$row->medical.'">
+					<input type="text" class="form-control"  autocomplete="off" name="medical[]" value="'.$row->medical.'">
 				</td>
 
 				<td class="text-center">
 					<input type="checkbox" class="form-control vacchek" '.$checked.' name="vacationPay[]" value="1">
-					<input type="hidden" class="form-control" name="vacation[]" value="'.$row->vocation_rate.'">
+					<input type="hidden" class="form-control"  autocomplete="off" name="vacation[]" value="'.$row->vocation_rate.'">
 				</td>
 			 
 				
