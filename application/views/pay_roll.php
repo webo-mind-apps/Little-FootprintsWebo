@@ -87,7 +87,7 @@
 		input:not([type]), input[type=checkbox]{height: 10px}
 		label{margin-bottom: 0; font-size: 10px;}
 		input{margin:0px !important}
-
+		#import-btn-group{display:none}
 	</style>
 </head>
 
@@ -113,6 +113,11 @@
         <div class="card" >
 		  <div class="card-header header-elements-inline">
 				<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYEES PAYROLL</h6> 
+				<div class="right" id="import-btn-group">
+					<button class=" btn btn-small btn-primary" id="import-btn">Import &nbsp;&nbsp;&nbsp;<i class="fa fa-download" aria-hidden="true"></i></button>
+					<br>
+					<a href="<?php echo base_url() ?>my_assets/payroll-format.xlsx" target="_blank">Download Format</a>
+				</div>
 		  </div> 
           <div class="card-body">
           	<?php
@@ -124,9 +129,24 @@
 					</div>
 		    <?php 
    				}
-          	?>			
-                  <form action="<?php echo site_url('payroll/save_payroll');?>" method="post"> 
+          	?>
 
+			<?php if($this->session->flashdata('success')){ ?> 
+          			<div class="alert bg-success alert-styled-left">
+					  		<button type="button" class="close" data-dismiss="alert">&times;</button>
+							<span class="text-semibold"><?php echo $this->session->flashdata('success') ?></span>
+					</div>
+		    <?php } ?>			
+
+			<?php if($this->session->flashdata('error')){ ?> 
+          			<div class="alert bg-danger alert-styled-left">
+					  		<button type="button" class="close" data-dismiss="alert">&times;</button>
+							<span class="text-semibold"><?php echo $this->session->flashdata('error') ?></span>
+					</div>
+		    <?php } ?>	
+
+                  <form action="<?php echo site_url('payroll/save_payroll');?>" method="post" id="import-form" enctype="multipart/form-data"> 
+				  	<input style="display:none" type="file" name="import" id="import-file" accept=".xls, .xlt, .xlm, .xlsx, .xlsm, .xltx, .xltm, .xlsb, .xla, .xlam, .xll, .xlw">
 				  <table class="table ">
 				  			<tr class="table-active table-border-double">
 								<td  width="18%">
@@ -170,7 +190,7 @@
 					        <hr style="margin-top:0px">           
                     <div class="text-left col-sm-12">
 
-                    	<a href="#"><button type="button" class="btn btn-primary">Generate Payslip<i class="icon-book ml-2"></i></button></a>
+                    	<a href="<?php echo base_url('summarized-report?year=2020') ?>"><button type="button" class="btn btn-primary">Generate Payslip<i class="icon-book ml-2"></i></button></a>
 
                     	<button type="submit" class="btn btn-primary" style="float:right;">Save<i class="icon-download ml-2"></i></button>
                      
@@ -211,6 +231,7 @@
 	 	var centerSelect = $("#centerSelect").val();
 	 	var date 		 = $("#payment_date_on").val();
 	 	if(payment_date != '' && pay_end_date != '' && companySelect != '' && centerSelect != ''){
+			$('#import-btn-group').show();
 			jQuery.ajax({	
 				type:'POST',
 				url:"<?php echo base_url();?>"+"payroll/pay_roll_dates",
@@ -227,6 +248,8 @@
 				}
 			}); 
 			$(".pay_roll_dropdown").css("display","block");
+		}else{
+			$('#import-btn-group').hide();
 		}
 	}
 
@@ -252,6 +275,18 @@
 		}else{
 			$('.vacchek').prop('checked', false);
 		}
+	});
+
+	$(document).ready(function () {
+		$('#import-btn').click(function (e) { 
+			e.preventDefault();
+			$('#import-file').trigger('click');
+		});
+
+		$('#import-file').change(function (e) { 
+			e.preventDefault();
+			$('#import-form').submit();
+		});
 	});
 
   </script>

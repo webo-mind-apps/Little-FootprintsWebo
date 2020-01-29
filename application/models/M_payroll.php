@@ -52,7 +52,7 @@ class M_payroll extends CI_Model {
         ->where('r.year', $year)
         ->where('p.company ', $company)
         ->where('p.center ', $center)
-        ->join('lit_payroll p', 'p.emp_id = r.empid', 'left')
+        ->join('lit_payroll p', 'p.root_id = r.id', 'left')
         ->get()
         ->row();
     }
@@ -203,6 +203,11 @@ class M_payroll extends CI_Model {
 		->row();
     }
 
+    // Get Employee Details
+    public function getEmpDetail($id = null)
+    {
+        return  $this->db->where('emp_id', $id)->select('medical,medical_contribution, hour_rate, vocation_rate')->get('lit_employee_details')->row();
+    }
    
 
  }

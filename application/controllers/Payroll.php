@@ -1,6 +1,9 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class Payroll extends CI_Controller {
 
     public function __construct(){
@@ -126,32 +129,142 @@ class Payroll extends CI_Controller {
     // save Payroll
     public function save_payroll()
     {
-        $post = $this->input->post();
-		$sDate = $post['pay_date_val'];
-		$eDate = $post['pay_end_date_val'];
-		foreach ($post['emp_ids'] as $key => $value) {
-			$data = array(
-				'emp_ids' 		    => $post['emp_ids'][$key], 
-				'reg_rate' 			=> $post['regular_hrs'][$key], 
-				'stat_rate' 		=> $post['stat_hol_hrs'][$key], 
-				'wages' 			=> $post['wage_amount'][$key], 
-				'miscellaneous' 	=> $post['miscellaneous_amount'][$key], 
-				'per_hr_rate'		=> $post['rate_hour'][$key],
-				'is_vacation_release'=> (isset($post['vacationPay'][$key]))? '1' : '0',
-				'medical'			=> $post['medical'][$key],
-				'vacation'			=> $post['vacation'][$key],
-				'center'			=> $post['center'],
-                'company'			=> $post['company'],
-                'pay_start'         => date('Y-m-d', strtotime($sDate)),
-                'pay_end'           => date('Y-m-d', strtotime($eDate)),
-				'updateOn'          => date('Y-m-d H:i:s'),
-				'medical_contribution'=> $post['medicalcontr'][$key]
-			);
-			$pid = $post['prl_id'][$key];
-			$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
+		// Load form validation library
+        if(!empty($_FILES['import']['name'])) { 
+			$data = array();
+			// get file extension
+			$valid_extentions = array('xls', 'xlt', 'xlm', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'xla', 'xlam', 'xll', 'xlw');
+			$extension = pathinfo($_FILES['import']['name'], PATHINFO_EXTENSION);
+			$valid = false;
+			foreach ($valid_extentions as $key => $value) {
+				if($extension == $value){
+					$valid = true;
+				}
+			}
+			if($valid){
+				if($extension == 'csv'):
+					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+				elseif($extension == 'xlsx'):
+					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+				else:
+					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+				endif;
+
+				// file path
+				$spreadsheet = $reader->load($_FILES['import']['tmp_name']);
+				$allDataInSheet = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+				$this->savePayrollExcel($allDataInSheet);
+				$this->session->set_flashdata('success', 'Payroll imported successfully!');
+				redirect('payroll','refresh');
+			}
+			else{
+				$this->session->set_flashdata('error', 'Invalid file format!!');
+				redirect('payroll','refresh');
+			}
+		}
+		else{
+			$post = $this->input->post();
+			$sDate = $post['pay_date_val'];
+			$eDate = $post['pay_end_date_val'];
+			foreach ($post['emp_ids'] as $key => $value) {
+				$data = array(
+					'emp_ids' 		    => $post['emp_ids'][$key], 
+					'reg_rate' 			=> $post['regular_hrs'][$key], 
+					'stat_rate' 		=> $post['stat_hol_hrs'][$key], 
+					'wages' 			=> $post['wage_amount'][$key], 
+					'miscellaneous' 	=> $post['miscellaneous_amount'][$key], 
+					'per_hr_rate'		=> $post['rate_hour'][$key],
+					'is_vacation_release'=> (isset($post['vacationPay'][$key]))? '1' : '0',
+					'medical'			=> $post['medical'][$key],
+					'vacation'			=> $post['vacation'][$key],
+					'center'			=> $post['center'],
+					'company'			=> $post['company'],
+					'pay_start'         => date('Y-m-d', strtotime($sDate)),
+					'pay_end'           => date('Y-m-d', strtotime($eDate)),
+					'updateOn'          => date('Y-m-d H:i:s'),
+					'medical_contribution'=> $post['medicalcontr'][$key]
+				);
+				$pid = $post['prl_id'][$key];
+				$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
+				
+			}
+			$this->session->set_flashdata('abc','success');
+			redirect('main_control/pay_roll_page');
+		}
+	}
+	
+	// pdfImport
+	public function import_payroll()
+	{
+		// Load form validation library
+        if(!empty($_FILES['import']['name'])) { 
+			$data = array();
+			// get file extension
+			$valid_extentions = array('xls', 'xlt', 'xlm', 'xlsx', 'xlsm', 'xltx', 'xltm', 'xlsb', 'xla', 'xlam', 'xll', 'xlw');
+			$extension = pathinfo($_FILES['import']['name'], PATHINFO_EXTENSION);
+			$valid = false;
+			foreach ($valid_extentions as $key => $value) {
+				if($extension == $value){
+					$valid = true;
+				}
+			}
+
+			if($valid){
+				if($extension == 'csv'):
+					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Csv();
+				elseif($extension == 'xlsx'):
+					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+				else:
+					$reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
+				endif;
+
+				// file path
+				$spreadsheet = $reader->load($_FILES['import']['tmp_name']);
+				$allDataInSheet = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+				$this->savePayrollExcel($allDataInSheet);
+				$this->session->set_flashdata('success', 'Payroll imported successfully!');
+				redirect('payroll','refresh');
+			}
+			else{
+				$this->session->set_flashdata('error', 'Invalid file format!!');
+				redirect('payroll','refresh');
+			}
+		}
+		else{
+			$this->session->set_flashdata('error', 'File is empty');
+			redirect('payroll','refresh');
+		}
+	}
+
+	public function savePayrollExcel($importData = null)
+	{
+		
+		$post = $this->input->post();
+		for ($i=2; $i <= count($importData) ; $i++) { 
+			$empDetail = $this->m_payroll->getEmpDetail($importData[$i]['B']);
+			if(!empty($empDetail)){
+				$data = array(
+					'emp_ids' 		    	=> $importData[$i]['B'],
+					'reg_rate' 				=> $importData[$i]['C'],
+					'stat_rate' 			=> $importData[$i]['D'],
+					'wages' 				=> $importData[$i]['E'],
+					'miscellaneous' 		=> $importData[$i]['F'],
+					'per_hr_rate'			=> $empDetail->hour_rate,
+					'is_vacation_release'	=> $importData[$i]['G'],
+					'medical'				=> $empDetail->medical,
+					'vacation'				=> $empDetail->vocation_rate,
+					'center'				=> $post['center'],
+					'company'				=> $post['company'],
+					'pay_start'         	=> date('Y-m-d', strtotime($post['pay_date_val'])),
+					'pay_end'           	=> date('Y-m-d', strtotime($post['pay_end_date_val'])),
+					'updateOn'          	=> date('Y-m-d H:i:s'),
+					'medical_contribution'	=> $empDetail->medical_contribution,
+				);
+				$this->m_payroll->savePayroll($data, $data['pay_start'], $data['pay_end'], $pid = null);
+			}
 			
-        }
-		$this->session->set_flashdata('abc','success');
-		redirect('main_control/pay_roll_page');
-    }
+			
+		}
+		return true;
+	}
 }

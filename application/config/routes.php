@@ -5,6 +5,7 @@ $route['default_controller']        = 'home';
 $route['download-payroll/(:any)']   = 'main_control/download_payroll/$1';
 
 $route['payroll']                   = 'Payroll';
+$route['import-payroll']            = 'Payroll/import_payroll';
 
 $route['summarized-report']         = 'summerized';
 $route['summarized-report/(:num)']  = 'summerized/report/$1';
