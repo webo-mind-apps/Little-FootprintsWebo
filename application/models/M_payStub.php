@@ -136,6 +136,28 @@ class m_payStub extends CI_Model {
     }
 
 
+/* **********************  NET PAY  *********************** */
+    public function net_pay($data = null)
+    {
+        $year = date('Y', strtotime($data['sdate']));
+        $this->db->group_by('p.empid');
+        $this->db->select('p.*');
+        $this->db->select('first_name, last_name, CONCAT(date_format(p.start_on, "%D %b %Y")," &nbsp; TO &nbsp; ", date_format(p.end_on,"%D %b %Y")) as date');
+        $this->db->where('e.company', $data['company']);   
+        $this->db->where('start_on >=', $data['sdate']);
+        $this->db->where('end_on <=', $data['edate']);
+        $this->db->where('year', $year);
+        $this->db->order_by('e.first_name', 'asc');
+        $this->db->from('lit_payroll_root p');
+        $this->db->join('lit_employee_details e', 'e.emp_id = p.empid', 'left');
+        $result =  $this->db->get()->result();
+        
+        foreach ($result as $key => $value) {
+            $value->empYtd      = $this->empYtd($value->empid, $value->start_on, $value->end_on);
+        }
+       return $result;
+    }
+
     
 }
 /* End of file m_payStub.php */

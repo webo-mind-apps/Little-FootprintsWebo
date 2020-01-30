@@ -121,6 +121,51 @@ class MailStub extends CI_Controller {
 		redirect('send-pay-stub');
 	}
 
+    /* ********************  NET PAY REPORT   *************** */
+    public function net_pay_report()
+    {
+        $this->load->model('pay_roll_model');
+        $data['company'] = $this->pay_roll_model->companyList();
+        $data['title'] = 'Net Pay Report';
+        $this->load->view('netpay', $data);
+    }
+
+    public function net_pay()
+    {
+        $date       = $this->input->post('dates');
+        $sliptDate  = explode(' to ', $date);
+        $company    = $this->input->post('company');
+        $sdate      = date('Y-m-d', strtotime($sliptDate['0']));
+        $edate      = date('Y-m-d', strtotime($sliptDate['1']));
+        $data       = array(
+                        'company'   => $company, 
+                        'sdate'     => $sdate, 
+                        'edate'     => $edate, 
+                    );
+        $result     = $this->m_payStub->net_pay($data);
+        echo json_encode($result);
+    }
+
+    public function export()
+    {
+        $date       = $this->input->get('dates');
+        $sliptDate  = explode(' to ', $date);
+        $company    = $this->input->get('company');
+        $sdate      = date('Y-m-d', strtotime($sliptDate['0']));
+        $edate      = date('Y-m-d', strtotime($sliptDate['1']));
+        $data       = array(
+                        'company'   => $company, 
+                        'sdate'     => $sdate, 
+                        'edate'     => $edate, 
+                    );
+         $result['pdf'] = $this->m_payStub->net_pay($data);
+         
+        $mpdf = new \Mpdf\Mpdf();
+        $html = $this->load->view('netpay-export',$result,true);
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
+         
+    }
 
 }
 

@@ -98,7 +98,14 @@
 								</span>
 							</a>
 						</li>
-						
+						<li class="nav-item">
+							<a href="<?php echo base_url('net-pay-report') ?>" class="nav-link">
+							<i class="fa fa-money" aria-hidden="true" style="font-size:18px;"></i>
+								<span>
+									Net Pay Report
+								</span>
+							</a>
+						</li>
 						<li class="nav-item">
 							<a href="<?php echo base_url('summarized-report?year=').date('Y') ?>" class="nav-link">
 								<i class="fa fa-file-text-o" style="font-size:18px;"></i>
