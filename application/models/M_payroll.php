@@ -82,6 +82,7 @@ class M_payroll extends CI_Model {
             'end_on'    => $data['pay_end'], 
             'year'      => $year, 
             'is_vacation' => $data['is_vacation_release'],
+            'created_on'   => $data['created_on']
         );
         $this->db->where('empid', $newArray['empid']);
         $this->db->where('start_on', $newArray['start_on']);
@@ -149,7 +150,7 @@ class M_payroll extends CI_Model {
         $rates->reg_amt   = (float)$rates->reg_unit  * (float)$rates->rate;
         $rates->stat_amt  = (float)$rates->stat_unit * (float)$rates->rate;
 
-        $gross = (float)$rates->reg_amt + (float)$rates->stat_amt + (float)$rates->wages + (float)$rates->miscellaneous; 
+        $gross = (float)$rates->reg_amt + (float)$rates->stat_amt + (float)$rates->wages + (float)$rates->miscellaneous + (float)$rates->medical_contribution; 
         
         $rates->vacation = (float)$gross * (float)$data['vacation'];
         if($rates->is_vacation):
@@ -208,6 +209,23 @@ class M_payroll extends CI_Model {
     {
         return  $this->db->where('emp_id', $id)->select('medical,medical_contribution, hour_rate, vocation_rate')->get('lit_employee_details')->row();
     }
+
+
+    // for sample pdf
+    public function sampleFormate($company = null, $center = null)
+    {
+        return $this->db
+		->where('e.status', 0)
+		->order_by('e.id', 'asc')
+		->select('e.*')
+		->from('lit_employee_details e')
+		->join('emp_center c', 'c.empid = e.emp_id', 'left')
+		->where('e.company', $company)
+		->where('c.center', $center)
+		->get()
+		->result();
+    }
+
    
 
  }

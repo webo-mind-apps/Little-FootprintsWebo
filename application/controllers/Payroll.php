@@ -4,6 +4,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+
+
 class Payroll extends CI_Controller {
 
     public function __construct(){
@@ -182,6 +184,7 @@ class Payroll extends CI_Controller {
 					'pay_start'         => date('Y-m-d', strtotime($sDate)),
 					'pay_end'           => date('Y-m-d', strtotime($eDate)),
 					'updateOn'          => date('Y-m-d H:i:s'),
+					'created_on'		=> date('Y-m-d H:i:s', strtotime($post['pay_date'])),
 					'medical_contribution'=> $post['medicalcontr'][$key]
 				);
 				$pid = $post['prl_id'][$key];
@@ -241,16 +244,16 @@ class Payroll extends CI_Controller {
 		
 		$post = $this->input->post();
 		for ($i=2; $i <= count($importData) ; $i++) { 
-			$empDetail = $this->m_payroll->getEmpDetail($importData[$i]['B']);
+			$empDetail = $this->m_payroll->getEmpDetail($importData[$i]['D']);
 			if(!empty($empDetail)){
 				$data = array(
-					'emp_ids' 		    	=> $importData[$i]['B'],
-					'reg_rate' 				=> $importData[$i]['C'],
-					'stat_rate' 			=> $importData[$i]['D'],
-					'wages' 				=> $importData[$i]['E'],
-					'miscellaneous' 		=> $importData[$i]['F'],
+					'emp_ids' 		    	=> $importData[$i]['D'],
+					'reg_rate' 				=> $importData[$i]['E'],
+					'stat_rate' 			=> $importData[$i]['F'],
+					'wages' 				=> $importData[$i]['G'],
+					'miscellaneous' 		=> $importData[$i]['H'],
 					'per_hr_rate'			=> $empDetail->hour_rate,
-					'is_vacation_release'	=> $importData[$i]['G'],
+					'is_vacation_release'	=> $importData[$i]['I'],
 					'medical'				=> $empDetail->medical,
 					'vacation'				=> $empDetail->vocation_rate,
 					'center'				=> $post['center'],
@@ -259,7 +262,9 @@ class Payroll extends CI_Controller {
 					'pay_end'           	=> date('Y-m-d', strtotime($post['pay_end_date_val'])),
 					'updateOn'          	=> date('Y-m-d H:i:s'),
 					'medical_contribution'	=> $empDetail->medical_contribution,
+					'created_on'		=> date('Y-m-d H:i:s', strtotime($post['pay_date'])),
 				);
+
 				$this->m_payroll->savePayroll($data, $data['pay_start'], $data['pay_end'], $pid = null);
 			}
 			
@@ -267,4 +272,48 @@ class Payroll extends CI_Controller {
 		}
 		return true;
 	}
+
+	 // sample formate generate
+	 public function sample_formate($var = null)
+	 {
+		$company = $this->input->get('company');
+		$center  = $this->input->get('center');
+		$result  = $this->m_payroll->sampleFormate($company, $center);  
+
+		$alpha = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I');
+		$i = 2;
+		$spreadsheet = new Spreadsheet();
+		$sheet = $spreadsheet->getActiveSheet();
+		$sheet->setCellValue('A1', 'SL No');
+		$sheet->setCellValue('B1', 'FIRST NAME');
+		$sheet->setCellValue('C1', 'LAST NAME');
+		$sheet->setCellValue('D1', 'EMPLOYEE ID');
+		$sheet->setCellValue('E1', 'REGULAR HRS');
+		$sheet->setCellValue('F1', 'STAT HOL HRS');
+		$sheet->setCellValue('G1', 'WAGES');
+		$sheet->setCellValue('H1', 'MISCELLANEOUS');
+		$sheet->setCellValue('I1', 'is_vacation_release(1=pay, 0=not pay)');
+		
+		foreach ($result as $key => $value) {
+			$sheet->setCellValue('A'.$i, $key + 1);
+			$sheet->setCellValue('B'.$i, $value->first_name);
+			$sheet->setCellValue('C'.$i, $value->last_name);
+			$sheet->setCellValue('D'.$i, $value->emp_id);
+			$sheet->setCellValue('E'.$i, '');
+			$sheet->setCellValue('F'.$i, '');
+			$sheet->setCellValue('G'.$i, '');
+			$sheet->setCellValue('H'.$i, '');
+			$sheet->setCellValue('I'.$i, '0');
+			$i += 1;
+		}		
+        
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'payroll_sample';
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"'); 
+        header('Cache-Control: max-age=0');
+        $writer->save('php://output'); // download file 
+		
+	}
+	
 }

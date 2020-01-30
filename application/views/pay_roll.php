@@ -116,7 +116,7 @@
 				<div class="right" id="import-btn-group">
 					<button class=" btn btn-small btn-primary" id="import-btn">Import &nbsp;&nbsp;&nbsp;<i class="fa fa-download" aria-hidden="true"></i></button>
 					<br>
-					<a href="<?php echo base_url() ?>my_assets/payroll-format.xlsx" target="_blank">Download Format</a>
+					<a href="#!" id="generate-download">Download Format</a>
 				</div>
 		  </div> 
           <div class="card-body">
@@ -213,14 +213,16 @@
   
   <script>
 	$(document).ready(function () {
-		$('#payment_date , #pay_end_date, #companySelect, #centerSelect, #payment_date_on').change(function(){
+		$('#companySelect').change(function() { 
+			centerList();
+		});
+
+		$('#payment_date , #pay_end_date, #companySelect, #centerSelect').change(function(){
 			payroll_show_function();
 		});
 
 		// fetch center
-		$('#companySelect').change(function() { 
-			centerList();
-		});
+		
 
 		centerList();
 	});
@@ -229,7 +231,7 @@
 	 	var pay_end_date = $("#pay_end_date").val();
 	 	var companySelect= $("#companySelect").val();
 	 	var centerSelect = $("#centerSelect").val();
-	 	var date 		 = $("#payment_date_on").val();
+	 	var date 		 = '';
 	 	if(payment_date != '' && pay_end_date != '' && companySelect != '' && centerSelect != ''){
 			$('#import-btn-group').show();
 			jQuery.ajax({	
@@ -265,6 +267,7 @@
             	$.each(data, function (index, value) { 
                		$('#centerSelect').append('<option value="'+value.id+'">'+value.center_name+'</option>');
             	});
+				payroll_show_function();
          	}
          });	
 	}
@@ -287,6 +290,18 @@
 			e.preventDefault();
 			$('#import-form').submit();
 		});
+	});
+
+	$('#generate-download').click(function (e) { 
+		e.preventDefault();
+	 	var companySelect= $("#companySelect").val();
+	 	var centerSelect = $("#centerSelect").val();
+	 	if(companySelect != '' && centerSelect != ''){
+			location.replace('<?php echo base_url('payroll/sample_formate?company=') ?>'+companySelect+'&center='+centerSelect)
+		}else{
+			alert('Please Select Company and Center');
+		}
+		
 	});
 
   </script>

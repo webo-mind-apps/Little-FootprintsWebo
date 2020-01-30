@@ -23,7 +23,7 @@ class m_payStub extends CI_Model {
         $year = date('Y', strtotime($data['sdate']));
         
         $this->db->group_by('p.empid');
-        $this->db->select('p.empid, p.id, e.email, p.start_on, p.end_on');
+        $this->db->select('p.empid, p.id, e.email, p.start_on, p.end_on, p.is_mail_sent');
         $this->db->select('first_name, last_name, CONCAT(date_format(p.start_on, "%D %b %Y")," &nbsp; TO &nbsp; ", date_format(p.end_on,"%D %b %Y")) as date');
         $this->db->where('e.company', $data['company']);   
         $this->db->where('start_on >=', $data['sdate']);
@@ -39,11 +39,16 @@ class m_payStub extends CI_Model {
 
     public function PdfGet($id = null, $sdate = null, $edate = null)
     {
-        
         return $payroll = $this->getPayroll($id, $sdate, $edate);
     }
 
 
+    public function updateMailSent($id = null, $sdate = null, $edate = null)
+    {
+        $this->db->where('id', $id);
+        $this->db->update('lit_payroll_root', array('is_mail_sent' => 1));
+        return true;        
+    }
 
 
     public function getPayroll($id = null, $sdate = null, $edate = null)

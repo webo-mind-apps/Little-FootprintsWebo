@@ -92,7 +92,7 @@
 	<!-- Multiple row inputs (horizontal) -->
         <div class="card" >
 		  <div class="card-header header-elements-inline">
-				<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">EMPLOYEES PAYROLLS</h6> 
+				<h6 class="card-title" style="font-weight:bold;font-size:14px;border-bottom:double 2px black;">MAIL &nbsp;EMPLOYEES &nbsp;PAYROLLS</h6> 
 		  </div> 
           <div class="card-body">
           	<?php
@@ -144,14 +144,14 @@
 				    <table class="table " id="payroll_details">
                         <thead>
                             <tr>
-								<th><input type="checkbox" name="selectall" id="selectall"></th>
-                                <th>Sl No</th>
+								<th>SL NO</th>
                                 <th>Emp Id</th>
                                 <th>First Name</th>
                                 <th>Last Name</th>
 								<th>Email Id</th>
 								<th class="text-center">Date</th>
                                 <th class="text-center" style="width:300px">ACTION</th>
+								<th style="width:30px"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -260,9 +260,12 @@
                 $('#payroll_details tbody').empty();
                 console.log(response);
                 var content = '';
+				var sent = '';
                 $.each(response, function (i, v) { 
+					if (v.is_mail_sent == 1) {
+						sent 	= '<i class="fa fa-check text-success" aria-hidden="true"></i>';
+					}
                     content += '<tr>';
-					content += '<td><input type="checkbox" name="sendmail[]" ></td>'
                     content += '<td>'+ (i+1) +'</td>';
                     content += '<td>'+ v.empid +'</td>';
                     content += '<td>'+ v.first_name +'</td>';
@@ -270,7 +273,7 @@
                     content += '<td>'+ v.email +'</td>';
                     content += '<td class="text-center">'+ v.date +'</td>';
                     content += `<td>
-						<ul class="action-list">
+						<ul class="action-list" style="margin-bottom:8px">
 							<li>
 								<a href="<?php echo base_url('view-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" target="_blank"><i class="far fa-eye"></i> View</a>
 							</li>
@@ -284,7 +287,9 @@
 							</li>
 						</ul>
 					</td>`;
+					content += '<td style="padding-left: 0;">'+sent+'</td>';
                     content += '<tr>';
+					sent = '';
                 });
                 $('#payroll_details tbody').append(content);
             }
