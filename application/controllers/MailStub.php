@@ -159,12 +159,14 @@ class MailStub extends CI_Controller {
                         'edate'     => $edate, 
                     );
          $result['pdf'] = $this->m_payStub->net_pay($data);
-         
-        $mpdf = new \Mpdf\Mpdf();
-        $html = $this->load->view('netpay-export',$result,true);
-        $mpdf->WriteHTML($html);
-        $mpdf->Output();
-         
+        if(!empty( $result['pdf'])):
+            $mpdf = new \Mpdf\Mpdf();
+            $html = $this->load->view('netpay-export',$result,true);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('net-pay.pdf','D');
+        else:
+            redirect('net-pay-report','refresh');
+        endif;         
     }
 
 }
