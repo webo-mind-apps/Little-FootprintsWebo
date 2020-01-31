@@ -96,9 +96,10 @@ class Db_model extends CI_Model
 
 	function lit_employee_details_fetch()
 	{
-		$this->db->select('a.*,b.position,b.id as pos_id');
+		$this->db->select('a.*,b.position,b.id as pos_id, c.name as company_name');
 		$this->db->from('lit_employee_details a');
 		$this->db->join('lit_employee_position b','a.emp_position = b.id','left');
+		$this->db->join('lit_company c','c.id = a.company','left');
 		$this->db->order_by('a.id', 'desc');
 		$query=$this->db->get();
 		$result=$query->result_array();

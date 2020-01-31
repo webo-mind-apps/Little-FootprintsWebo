@@ -70,7 +70,7 @@
 							</a>
 						</li>
 						<li class="nav-item nav-item-submenu">
-								<a href="" class="nav-link"><i class="icon-users"></i> <span>Master</span></a>
+								<a href="" class="nav-link"><i class="fa fa-cogs"></i> <span>Master</span></a>
 
 								<ul class="nav nav-group-sub" data-submenu-title="Layouts">
 									<li class="nav-item"><a href="<?php echo base_url();?>main/government_pension/#government-pension" class="nav-link">Government Pension</a></li>
@@ -84,7 +84,7 @@
 
 						<li class="nav-item">
 							<a href="<?php echo base_url('payroll') ?>" class="nav-link">
-								<i class="fa fa-inr" style="font-size:18px;"></i>
+								<i class="fa fa-usd" style="font-size:18px;"></i>
 								<span>
 									Payroll
 								</span>

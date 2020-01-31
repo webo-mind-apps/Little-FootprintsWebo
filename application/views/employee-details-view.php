@@ -84,7 +84,7 @@
                            <tr>
                               <th>S.no</th>
                               <th>Edit&nbsp&nbsp&nbspDelete </th>
-                              <th>EmpId</th>
+                              <th>Company</th>
                               <th>Firstname</th>
                               <th>Lastname</th>
                               <th>Empsin</th>
@@ -109,15 +109,13 @@
                            <?php
                               $i=1;
                               foreach($employee_detail_fetch as $row)
-                              {
-                              	
-                              ?>
+                              {?>
                            <tr>
                               <td><?php echo $i;?></td>
                               <td><a href="<?php echo base_url();?>main/employee_details_fetch_for_update/<?php echo $row['id'];?>"><span  class='edit'  id='edit-<?php echo $row['id'];?>'><i style='color:green' class='icon-pencil' ></i></span></a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                                  <span  class='del' id='delete-<?php echo $row['id'];?>'><i style='color:red' class='icon-trash'></i></span>
                               </td>
-                              <td><?php echo $row['emp_id'];?></td>
+                              <td><?php echo $row['company_name'];?></td>
                               <td><?php echo $row['first_name'];?></td>
                               <td><?php echo $row['last_name'];?></td>
                               <td><?php echo $row['empsin'];?></td>

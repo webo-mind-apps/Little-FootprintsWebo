@@ -103,7 +103,6 @@
                               <th class="text-right">EI Count</th>
                               <th class="text-right">Vacation Rate</th>
                               <th class="text-right">Medical</th>
-                              <th class="text-right">Net Pay</th>
                               <th>Action</th>
                         </thead>
                         <tbody>
@@ -123,7 +122,6 @@
                                         <td class="text-right"><?php echo  (!empty($value->ytds['eicount'])) ?   number_format(round($value->ytds['eicount'], 2), 2) : '0' ?></td>
                                         <td class="text-right"><?php echo  (!empty($value->ytds['vacation'])) ?  number_format(round($value->ytds['vacation'], 2), 2) : '0' ?></td>
                                         <td class="text-right"><?php echo  (!empty($value->ytds['medical'])) ?   number_format(round($value->ytds['medical'], 2), 2) : '0' ?></td>
-                                        <td class="text-right"><?php echo  number_format(round($netPay, 2), 2) ?></td>
                                         <td>
                                             <a target="_blank" href="<?php echo base_url('summarized-report/').$value->emp_id.'?year='.$year ?>"><i class="icon-file-download2 ml-2"></i></a>
                                         </td>

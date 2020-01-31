@@ -319,7 +319,7 @@
                         <div class="row">
                            <div class="col-sm-5" >
                               <div class="form-group">
-                                 <label>vacation rate (format : 0.0004)</label>
+                                 <label>vacation rate</label>
                                  <div class="input-group">
                                     <input type="text" id="vocation-rate" class="form-control" placeholder="Vocation rate" name="vocation_rate" maxlength="6" onfocusout="vocation_rate_check();" required>
                                  </div>
