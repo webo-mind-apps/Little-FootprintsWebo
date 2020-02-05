@@ -126,7 +126,7 @@ td, th{padding:9px 5px; margin:-1px}
                 <td class="text-right"><?php echo number_format( round($pdf->empYtd['miscellaneous'], 2), 2) ?></td> 
             </tr>
             <tr style="background-color:#fff">
-                <td>EMPLOYEE MEDICAL <br> CONTRIBUTION</td>
+                <td>EMPLOYER MEDICAL <br> CONTRIBUTION</td>
                 <td class="text-right">0.00</td>
                 <td class="text-right">0</td>
                 <td class="text-right border-right"><?php echo number_format( round($pdf->currentUnit->medical_contribution, 2), 2) ?></td>

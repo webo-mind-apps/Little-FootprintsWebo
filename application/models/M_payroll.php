@@ -17,7 +17,7 @@ class M_payroll extends CI_Model {
         
         $result = $this->db
 		->where('e.status', 0)
-		->order_by('e.id', 'asc')
+		->order_by('e.first_name', 'asc')
 		->select('e.*')
 		->from('lit_employee_details e')
 		->join('emp_center c', 'c.empid = e.emp_id', 'left')
@@ -45,7 +45,7 @@ class M_payroll extends CI_Model {
             $this->db->where('created_on <=', $datee);
         }
         return $this->db->from('lit_payroll_root r')
-        ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.miscellaneous, p.medical')
+        ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.miscellaneous, p.medical, p.rate')
         ->where('r.empid', $empid)
         ->where('r.start_on >=', $sdate)
         ->where('r.end_on <=', $edate)
@@ -216,7 +216,7 @@ class M_payroll extends CI_Model {
     {
         return $this->db
 		->where('e.status', 0)
-		->order_by('e.id', 'asc')
+		->order_by('e.first_name', 'asc')
 		->select('e.*')
 		->from('lit_employee_details e')
 		->join('emp_center c', 'c.empid = e.emp_id', 'left')

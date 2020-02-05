@@ -359,7 +359,7 @@
                       <td>
                         <br>
                         <p>Dear <?php echo $pdf->first_name.' '.$pdf->last_name ?>,</p>
-                        <p>Find the attachment for <?php echo date('d/m/Y', strtotime($pdf->pay_start)). ' TO '. date('d/m/Y', strtotime($pdf->pay_end)) ?> pay stub.</p>
+                        <p>Find the attachment for <?php echo date('d/m/Y', strtotime($pdf->start_on)). ' TO '. date('d/m/Y', strtotime($pdf->end_on)) ?> pay stub.</p>
                         
                         
                         <p>Regards,</p>

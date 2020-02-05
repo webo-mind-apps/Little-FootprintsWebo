@@ -177,7 +177,7 @@
                               <div class="form-group">
                                  <label>Address1</label>
                                  <div class="input-group">
-                                    <textarea  class="form-control" id="address1" name="address1" cols="45" rows="5" placeholder="Address1" required></textarea>
+                                    <textarea  class="form-control" id="address1" name="address1" cols="45" rows="5" placeholder="Address1" required><?php echo (!empty($employee_detail_fetch[0]['address1'])) ?$employee_detail_fetch[0]['address1']  : '' ?></textarea>
                                  </div>
                               </div>
                            </div>
@@ -186,7 +186,9 @@
                               <div class="form-group">
                                  <label>Address2</label>
                                  <div class="input-group">
-                                    <textarea  class="form-control" id="address2" name="address2" cols="45" rows="5" placeholder="Address2" ></textarea>
+                                    <textarea  class="form-control" id="address2" name="address2" cols="45" rows="5" placeholder="Address2" ><?php echo (!empty($employee_detail_fetch[0]['address2'])) ? $employee_detail_fetch[0]['address2'] : '' ?></textarea>
+                                   
+                                    
                                  </div>
                               </div>
                            </div>
@@ -373,6 +375,9 @@
                   
                				foreach($employee_detail_fetch as $row)
                				{
+
+                              
+                              
                					$id=$row['id'];
                					$emp_id=$row['emp_id'];
                					$first_name=$row['first_name'];
@@ -390,9 +395,11 @@
                					$empcert=$row['empcert'];
                					$hour_rate=$row['hour_rate'];
                					$position=$row['position'];
-               					$medical=$row['medical'];
+                              $medical=$row['medical'];
+                              $medCont    = $row['medical_contribution'];
                					$vocation_rate=$row['vocation_rate'];
-               					$status=$row['status'];
+                              $status=$row['status'];
+                              
                					
                				}
                				?>
@@ -401,11 +408,11 @@
                
                $('#insert-activate').css("display","none");
                $('#update-activate').css("display","block");
-                  	$("#first-name").val("<?php echo $first_name;?>");
+                  	$("#first-name").val(`<?php echo $first_name;?>`);
                
-                  	$("#last-name").val("<?php echo $last_name; ?>");
+                  	$("#last-name").val(`<?php echo $last_name; ?>`);
                
-               $("#emp-id").val("<?php echo $id; ?>");
+               $("#emp-id").val(`<?php echo $id; ?>`);
                var empsin_code="<?php echo $empsin; ?>"
                   	
                var empsin=empsin_code.split("-");
@@ -413,41 +420,39 @@
                $("#empsin2").val(empsin[1]);
                $("#empsin3").val(empsin[2]);
                
-                  	$("#dob").val("<?php echo $dob; ?>");
+                  	$("#dob").val(`<?php echo $dob; ?>`);
                var phone=<?php echo $phone; ?>;
                $("#phone").val(phone);
                
                
-                  	$("#email").val("<?php echo $email; ?>");
+                  	$("#email").val(`<?php echo $email; ?>`);
                
-                  	$("#address1").val("<?php echo $address1; ?>");
+                  	
+                  	$("#city").val(`<?php echo $city; ?>`);
                
-                  	$("#address2").val("<?php echo $address2; ?>");
-               
-                  	$("#city").val("<?php echo $city; ?>");
-               
-                  	$("#pincode").val("<?php echo $pincode; ?>");
-               
+                  	$("#pincode").val(`<?php echo $pincode; ?>`);
+                  	$("#medicalcontr").val(`<?php echo $medCont; ?>`);
+                     
                
                
-                  	$("#hire-date").val("<?php echo $hire_date; ?>");
+                  	$("#hire-date").val(`<?php echo $hire_date; ?>`);
                
-                  	$("#rehire-date").val("<?php echo $rehire_date; ?>");
+                  	$("#rehire-date").val(`<?php echo $rehire_date; ?>`);
                
-                  	$("#empcert").val("<?php echo $empcert; ?>");
+                  	$("#empcert").val(`<?php echo $empcert; ?>`);
                
-                  	$("#hour-rate").val("<?php echo $hour_rate; ?>");
+                  	$("#hour-rate").val(`<?php echo $hour_rate; ?>`);
                
                var position="<?php echo $position; ?>"
                   	$("#position").val(position);
                $(".select select option").filter(function() {
                return $(this).text() == position;
                }).prop('selected', true);
-                  	$("#medical").val("<?php echo $medical; ?>");
+                  	$("#medical").val(`<?php echo $medical; ?>`);
                
-                  	$("#vocation-rate").val("<?php echo $vocation_rate; ?>");
+                  	$("#vocation-rate").val(`<?php echo $vocation_rate; ?>`);
                
-                  	$("#status").val("<?php echo $status; ?>");
+                  	$("#status").val(`<?php echo $status; ?>`);
             </script>
             <?php				
                }				

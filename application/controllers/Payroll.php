@@ -51,6 +51,8 @@ class Payroll extends CI_Controller {
 					</tr>';
 		if(!empty($result)):
 		  foreach($result as $key => $row) { 
+			  
+			
             $checked = '';
             if(!empty($row->payRoll->is_vacation)){
 				$checked = ($row->payRoll->is_vacation == 1)? 'checked' : '';
@@ -100,10 +102,10 @@ class Payroll extends CI_Controller {
 				</td>
 
 				<td class="text-center">
-					<input type="text" class="form-control"  autocomplete="off" name="medical[]" value="'.$row->medical.'">
+					<input type="text" class="form-control" readonly  autocomplete="off" name="medical[]" value="'.$row->medical.'">
 				</td>
 				<td class="text-center">
-					<input type="text" class="form-control"  autocomplete="off" name="medicalcontr[]" value="'.$row->medical_contribution.'">
+					<input type="text" class="form-control" readonly  autocomplete="off" name="medicalcontr[]" value="'.$row->medical_contribution.'">
 				</td>
 				
 				<td class="text-center">

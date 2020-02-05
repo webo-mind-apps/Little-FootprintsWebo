@@ -71,7 +71,7 @@ class MailStub extends CI_Controller {
             $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
        
             $mpdf = new \Mpdf\Mpdf();
-            $html = $this->load->view('payroll-pdf',$result,true);
+            $html = $this->load->view('payroll-pdf1',$result,true);
 			$mpdf->WriteHTML($html);
 			$mpdf->Output('payroll.pdf','D');
 		}else{
@@ -89,19 +89,19 @@ class MailStub extends CI_Controller {
             $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
             $this->m_payStub->updateMailSent($id, $sdate, $edate);
 			$mpdf = new \Mpdf\Mpdf();
-			$html = $this->load->view('payroll-pdf',$result,true);
+			$html = $this->load->view('payroll-pdf1',$result,true);
 			$mpdf->WriteHTML($html);
 			$content = $mpdf->Output('', 'S');
 
 			$this->load->config('email');
 			$this->load->library('email');
             
-            $name= date('d/m/Y', strtotime($result['pdf']->pay_start)). ' TO '. date('d/m/Y', strtotime($result['pdf']->pay_end));
+            $name= date('d/m/Y', strtotime($result['pdf']->start_on)). ' TO '. date('d/m/Y', strtotime($result['pdf']->end_on));
 
 			$from = $this->config->item('smtp_user');
 			$to = $result['pdf']->email;
 			$subject = 'Pay stub on '.$name;
-			$filename = date('d/m/Y', strtotime($result['pdf']->pay_start))."-".date('d/m/Y', strtotime($result['pdf']->pay_end))."_pay-stub.pdf";
+			$filename = date('d/m/Y', strtotime($result['pdf']->start_on))."-".date('d/m/Y', strtotime($result['pdf']->end_on))."_pay-stub.pdf";
 			$message = $this->load->view('email/paystub',$result, TRUE);
 			$this->email->set_newline("\r\n");
 			$this->email->from($from, 'Little FootPrints Academy');
