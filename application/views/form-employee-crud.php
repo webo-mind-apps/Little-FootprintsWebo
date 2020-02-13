@@ -125,7 +125,7 @@
                               <div class="form-group">
                                  <label>Select Center</label>
                                  <div class="input-group">
-                                 <select name="center[]"  id="center-name" class="form-control" required>
+                                 <select   name="center[]"  id="center-name" class="form-control" required>
                                       
                                  </select>  
                                  </div>
@@ -606,7 +606,11 @@
                   var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
                   selectedValues[index] = value.id;
                });
+               if (slr.length > 0) {
+                  $("#center-name").prop("disabled", true);
+               }
                $('#center-name').val(selectedValues).trigger('change');
+               // $("#center-name").prop("disabled", true);
             }, 500);
             
 

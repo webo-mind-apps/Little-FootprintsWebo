@@ -142,7 +142,7 @@ class m_payStub extends CI_Model {
         $year = date('Y', strtotime($data['sdate']));
         $this->db->group_by('p.empid');
         $this->db->select('p.*');
-        $this->db->select('first_name, last_name, CONCAT(date_format(p.start_on, "%D %b %Y")," &nbsp; TO &nbsp; ", date_format(p.end_on,"%D %b %Y")) as date');
+        $this->db->select('first_name, last_name, CONCAT(date_format(p.start_on, "%D %b %Y")," &nbsp; TO &nbsp; ", date_format(p.end_on,"%D %b %Y")) as date, hour_rate');
         $this->db->where('e.company', $data['company']);   
         $this->db->where('start_on >=', $data['sdate']);
         $this->db->where('end_on <=', $data['edate']);

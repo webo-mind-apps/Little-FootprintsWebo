@@ -98,9 +98,11 @@
         <thead>
             <tr>
                 <th>Sl No</th>
-                <th>Employee Id</th>
-                <th>First Name</th>
-                <th>Last Name</th>
+                <th>Emp Id</th>
+                <th>Name</th>
+                <th>Rate P/h</th>
+                <th>Regular Amount</th>
+                <th>Stat hol Amount</th>
                 <th>Gross Pay</th>
                 <th>Deduction</th>
                 <th>Net Pay</th>
@@ -121,11 +123,13 @@
                 <tr>
                     <td><?php echo $key+1  ?></td>
                     <td><?php echo $value->empid    ?></td>
-                    <td><?php echo $value->first_name ?></td>
-                    <td><?php echo $value->last_name  ?></td>
-                    <td><?php echo  number_format( round($gross, 2), 2)?></td>
-                    <td><?php echo  number_format( round($deduction, 2), 2) ?></td>
-                    <td><?php echo  number_format( round($net, 2), 2) ?></td>
+                    <td><?php echo $value->first_name.' '.$value->last_name ?></td>
+                    <td class="text-right"><?php echo  number_format( round($value->hour_rate, 2), 2)?></td>
+                    <td class="text-right"><?php echo  number_format( round($value->empYtd['reg_amt'], 2), 2)?></td>
+                    <td class="text-right"><?php echo  number_format( round($value->empYtd['stat_amt'], 2), 2)?></td>
+                    <td class="text-right"><?php echo  number_format( round($gross, 2), 2) ?></td>
+                    <td class="text-right"><?php echo  number_format( round($deduction, 2), 2) ?></td>
+                    <td class="text-right"><?php echo  number_format( round($net, 2), 2) ?></td>
                 </tr>
             <?php } ?>
         </tbody>
