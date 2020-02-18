@@ -158,6 +158,31 @@ class m_payStub extends CI_Model {
        return $result;
     }
 
+    public function get_deduction($data = null)
+    {
+        
+     
+        $year  = $data['year'];
+        $sdate = date('Y-m-d H:i:s', strtotime($year.'-'.$data['month'].'-01 00:00:00'));
+        $edate =  date('Y-m-t  H:i:s', strtotime($year.'-'.$data['month'].'-20 00:00:00'));
+        $this->db->group_by('p.empid');
+        $this->db->select('p.*');
+        $this->db->select('first_name, last_name, hour_rate');
+        $this->db->where('e.company', $data['company']);   
+        $this->db->where('created_on >=', $sdate);
+        $this->db->where('created_on <=', $edate);
+        $this->db->where('year', $year);
+        $this->db->order_by('e.first_name', 'asc');
+        $this->db->from('lit_payroll_root p');
+        $this->db->join('lit_employee_details e', 'e.emp_id = p.empid', 'left');
+        $result =  $this->db->get()->result();
+        
+        foreach ($result as $key => $value) {
+            $value->empYtd      = $this->empYtd($value->empid, $value->start_on, $value->end_on);
+        }
+       return $result;
+    }
+
     
 }
 /* End of file m_payStub.php */

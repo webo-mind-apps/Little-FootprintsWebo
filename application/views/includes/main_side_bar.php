@@ -115,29 +115,29 @@
 							</a>
 						</li>
 						<li class="nav-item">
+							<a href="<?php echo base_url() ?>deduction-report" class="nav-link">
+								<i class="fa  fa-scissors" style="font-size:18px;"></i>
+								<span>
+									Deduction Report
+								</span>
+							</a>
+						</li>
+						<!-- <li class="nav-item">
 							<a href="" class="nav-link">
 								<i class="fa fa-suitcase" style="font-size:18px;"></i>
 								<span>
 									Record of Employment
 								</span>
 							</a>
-						</li>
-						<li class="nav-item">
-							<a href="" class="nav-link">
-								<i class="fa fa-file-text-o" style="font-size:18px;"></i>
-								<span>
-									Deduction Report
-								</span>
-							</a>
-						</li>
-						<li class="nav-item">
+						</li> -->
+						<!-- <li class="nav-item">
 							<a href="" class="nav-link">
 								<i class="icon-gear" style="font-size:18px;"></i>
 								<span>
 									Settings
 								</span>
 							</a>
-						</li>
+						</li> -->
 						<!-- /page kits -->
 					</ul>
 				</div>

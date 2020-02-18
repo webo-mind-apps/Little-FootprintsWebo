@@ -16,5 +16,9 @@ $route['send-paystub-mail/(:num)']  = 'MailStub/sendMail/$1';
 $route['net-pay-report']            = 'MailStub/net_pay_report';
 $route['export-net-pay']            = 'MailStub/export';
 
+// Deductions
+$route['deduction-report']          = 'deduction';
+$route['export-deductions']         = 'deduction/export';
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
