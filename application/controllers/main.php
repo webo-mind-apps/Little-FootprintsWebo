@@ -527,6 +527,43 @@ class Main extends CI_Controller {
 		  
 			echo json_encode($data);
 			}
-        }
+		}
+		
+
+
+	public function reason()
+	{
+		if(isset($_POST)):
+			$code = $this->input->post('code');
+			$des = $this->input->post('des');
+			if (!empty($code)) {
+				$data = array(
+					'code' => $code,
+					'des' => $des,
+				);
+				$q = $this->db->where('code', $code)->get('leaving_reason');
+				if($q->num_rows() == 0){
+					$this->db->insert('leaving_reason', $data);
+				}
+			}
+		endif;
+		$data['title'] = 'Reason for leaving';
+		$data['reason'] = $this->db->get('leaving_reason')->result();
+		$this->load->view('reason', $data, FALSE);
+	}
+
+	public function reason_delete($id = null)
+	{
+		$id = $this->uri->segment(3);
+		if($this->db->where('id', $id)->delete('leaving_reason')){
+			$this->session->set_flashdata('success', 'Deleted successfully');
+		}else{
+			$this->session->set_flashdata('error', 'Some error occurred. please try agin');
+		}
+		
+		redirect('main/reason','refresh',);
+		
+		
+	}
 
 }

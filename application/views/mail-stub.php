@@ -123,7 +123,11 @@
 				   				<label for="">SELECT COMPANY</label><br>
 								<select id="companySelect">
 				   					<?php foreach ($company as $key => $value) {
-										echo '<option value="'.$value->id.'" >'.$value->name.'</option>';
+										   $select = '';
+										   if($this->input->get('type') == $value->id){
+											   $select = 'selected';
+										   }
+										echo '<option '.$select.' value="'.$value->id.'" >'.$value->name.'</option>';
 									} ?>
 								</select>
 							</td>
@@ -258,7 +262,6 @@
             dataType: "json",
             success: function (response) {
                 $('#payroll_details tbody').empty();
-                console.log(response);
                 var content = '';
 				var sent = '';
                 $.each(response, function (i, v) { 
@@ -275,15 +278,15 @@
                     content += `<td>
 						<ul class="action-list" style="margin-bottom:8px">
 							<li>
-								<a href="<?php echo base_url('view-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" target="_blank"><i class="far fa-eye"></i> View</a>
+								<a href="<?php echo base_url('view-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`&type=`+companySelect+`" target="_blank"><i class="far fa-eye"></i> View</a>
 							</li>
 
 							<li>
-								<a href="<?php echo base_url('export-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" ><i class="fas fa-file-export"></i> Export</a>
+								<a href="<?php echo base_url('export-paystub/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`&type=`+companySelect+`" ><i class="fas fa-file-export"></i> Export</a>
 							</li>
 
 							<li>
-								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`" ><i class="far fa-paper-plane"></i> Mail</a>
+								<a href="<?php echo base_url('send-paystub-mail/') ?>`+ v.id +`?sdate=`+v.start_on+`&edate=`+v.end_on+`&type=`+companySelect+`" ><i class="far fa-paper-plane"></i> Mail</a>
 							</li>
 						</ul>
 					</td>`;

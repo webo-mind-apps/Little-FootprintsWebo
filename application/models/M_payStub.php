@@ -89,6 +89,7 @@ class m_payStub extends CI_Model {
     // get employee ytd
     public function empYtd($empid = null, $sdate = null, $edate = null)
     {
+       
         $year = date('Y', strtotime($sdate));
         $payrolls = $this->db->where('empid', $empid)
         ->where('end_on <=', $edate)
@@ -153,7 +154,7 @@ class m_payStub extends CI_Model {
         $result =  $this->db->get()->result();
         
         foreach ($result as $key => $value) {
-            $value->empYtd      = $this->empYtd($value->empid, $value->start_on, $value->end_on);
+            $value->empYtd      = $this->currentUnit($value->id);
         }
        return $result;
     }
@@ -178,11 +179,136 @@ class m_payStub extends CI_Model {
         $result =  $this->db->get()->result();
         
         foreach ($result as $key => $value) {
-            $value->empYtd      = $this->empYtd($value->empid, $value->start_on, $value->end_on);
+            $value->empYtd      = $this->deductionYtd($value->empid, $sdate, $edate);
         }
        return $result;
     }
 
-    
+    public function deductionYtd($empid = null, $sdate = null, $edate = null)
+    {
+       
+        $year = date('Y', strtotime($sdate));
+        $payrolls = $this->db->where('empid', $empid)
+        ->where('created_on >=', $sdate)
+        ->where('created_on <=', $edate)
+        ->where('year ', $year)
+        ->select('id')
+        ->get('lit_payroll_root')
+        ->result();
+        foreach ($payrolls as $key => $value) {
+            $empYtd[$key] =  $this->currentUnit($value->id);
+        }
+        
+
+
+            $sum['reg_unit']       = 0;
+            $sum['stat_unit']      = 0;
+            $sum['reg_amt']        = 0;
+            $sum['stat_amt']       = 0;
+            $sum['wages']          = 0;
+            $sum['miscellaneous']  = 0;
+            $sum['govt_pen']       = 0;
+            $sum['fedl']           = 0;
+            $sum['eicount']        = 0;
+            $sum['medical']        = 0;
+            $sum['vacation']       = 0;
+            $sum['medical_contribution']       = 0;
+
+        if(!empty($empYtd)){
+            foreach($empYtd as $item) {
+                $sum['reg_unit']        += $item->reg_unit;
+                $sum['stat_unit']       += $item->stat_unit;
+                $sum['reg_amt']         += $item->reg_amt;
+                $sum['stat_amt']        += $item->stat_amt;
+                $sum['wages']           += $item->wages;
+                $sum['miscellaneous']   += $item->miscellaneous;
+                $sum['govt_pen']        += $item->govt_pen;
+                $sum['fedl']            += $item->fedl;
+                $sum['eicount']         += $item->eicount;
+                $sum['medical']         += $item->medical;
+                $sum['vacation']        += $item->vacation;
+                $sum['medical_contribution'] += $item->medical_contribution;
+            }
+        }
+
+       return $sum;
+    }
+
+    /******************** REO  ******************/
+    public function employee($id = null)
+    {
+        return $this->db->where('company', $id)->select('first_name, last_name, emp_id')->get('lit_employee_details')->result();
+    }
+
+    public function reason()
+    {
+        return $this->db->where('status', 1)->get('leaving_reason')->result();
+    }
+
+    public function employee_detail($id = null)
+    {
+        $this->db->where('emp_id', $id);
+        $this->db->select('hire_date');
+        $this->db->from('lit_employee_details');
+        return $this->db->get()->row();
+    }
+
+    public function reo_insert($data = null)
+    {
+        $this->db->where('emp', $data['emp'])->update('reo', $data);
+        if($this->db->affected_rows() > 0):
+            return true;
+        else:
+            $this->db->insert('reo', $data);
+            return true;
+        endif;
+    }
+
+    public function reoReport($data = null)
+    {
+        $this->db->select('c.name, c.ac_num, c.no_pay_period, c.isser,c.address  as caddress,  c.phone, e.*, r.code, r.des, p.position, r.code');
+        $this->db->where('emp_id', $data['emp']);
+        $this->db->from('lit_employee_details e');
+        $this->db->join('lit_company c', 'c.id = e.company', 'left');
+        $this->db->join('reo re', 're.emp = e.emp_id', 'left');
+        $this->db->join('leaving_reason r', 'r.id = re.reason', 'left');
+        $this->db->join('lit_employee_position p', 'p.id = e.emp_position', 'left');
+        $result = $this->db->get()->row();
+        $result->insurable = $this->insurable($result->emp_id);
+        $result->payDetail = $this->payDetail($result->emp_id);
+        return $result;
+    }
+
+    public function payDetail($id = null)
+    {
+        $this->db->order_by('id', 'desc');
+        $this->db->where('empid', $id);
+        $result = $this->db->get('lit_payroll_root', 25)->result();
+        foreach ($result as $key => $value) {
+            $value->lastsPayData = $this->currentUnit($value->id);
+        }
+        return $result;
+    }
+
+    public function insurable($id = null)
+    {
+        $hours = $earning = 0;
+        $this->db->order_by('id', 'desc');
+        $this->db->where('empid', $id);
+        $result = $this->db->get('lit_payroll_root', 13)->result();
+        foreach ($result as $key => $value) {
+            
+            $lastsPayData   = $this->currentUnit($value->id);
+            $hours          += $lastsPayData->reg_unit;
+            $earning        += ($lastsPayData->reg_amt + 
+                                $lastsPayData->stat_amt + 
+                                $lastsPayData->wages + 
+                                $lastsPayData->miscellaneous + 
+                                $lastsPayData->medical_contribution);
+        }
+        
+        return array('hours'=> $hours, 'earning'=> $earning);
+    }
+
 }
 /* End of file m_payStub.php */

@@ -87,7 +87,6 @@
         <thead>
             <tr>
 				<th rowspan="2">SL NO</th>
-                <th rowspan="2">Emp Id</th>
                 <th rowspan="2">First Name</th>
                 <th rowspan="2">Last Name</th>
 				<th class="text-center cols3" style="text-align:center" colspan="3"><h3 style="margin: 0;">DEDUCTIONS</h3></th>
@@ -106,15 +105,14 @@
                 $emprDeduction  =   0;
                 $totalDeduction =   0;
 
-                $cpp            = ($value->empYtd['govt_pen'] * 2);
+                $cpp            =  $value->empYtd['govt_pen'];
                 $ei             = ($value->empYtd['eicount'] * 1.4);
                 $empDeduction   = ($value->empYtd['govt_pen'] + $value->empYtd['fedl'] + $value->empYtd['eicount']);
                 $emprDeduction  = ($cpp + $ei + $value->empYtd['fedl']);
-                $totalDeduction  = $empDeduction + $emprDeduction;
+                $totalDeduction = $empDeduction + $emprDeduction;
             ?>
                 <tr>
                     <td><?php echo $key+1  ?></td>
-                    <td><?php echo $value->empid    ?></td>
                     <td><?php echo $value->first_name?></td>
                     <td><?php echo $value->last_name ?></td>
                     <td class="text-right"><?php echo  number_format( round($empDeduction, 2), 2)?></td>

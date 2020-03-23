@@ -271,7 +271,7 @@
                     if(v.is_vacation == 1){
                         vacation = v.empYtd.vacation;
                     }
-                    gross       = parseFloat(v.empYtd.reg_amt) + parseFloat(v.empYtd.stat_amt) + parseFloat(v.empYtd.wages) + parseFloat(v.empYtd.miscellaneous) + parseFloat(vacation);
+                    gross       = parseFloat(v.empYtd.reg_amt) + parseFloat(v.empYtd.stat_amt) + parseFloat(v.empYtd.wages) + parseFloat(v.empYtd.miscellaneous) + parseFloat(vacation) + parseFloat(v.empYtd.medical_contribution);
                     deduction   = parseFloat(v.empYtd.govt_pen) + parseFloat(v.empYtd.fedl) + parseFloat(v.empYtd.eicount) + parseFloat(v.empYtd.medical);   
                     net         =  parseFloat(gross) -  parseFloat(deduction);
                     

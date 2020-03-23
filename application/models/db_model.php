@@ -473,10 +473,20 @@ function emp_ei_insert()
 	function company_master_insert()
 	{
 	
-		$company_name=$_POST['comp_name'];
-		$at_num=$_POST['at_num'];
-		$num_pay=$_POST['num_pay'];
-		$data = array('name' =>$company_name,'ac_num' =>$at_num, 'no_pay_period' => $num_pay);
+		$company_name	= $_POST['comp_name'];
+		$at_num			= $_POST['at_num'];
+		$num_pay		= $_POST['num_pay'];
+		$issuer			= $_POST['issuer'];
+		$phone			= $_POST['phone'];
+		$address			= $_POST['address'];
+		$data = array(
+			'name' 			=>$company_name,
+			'ac_num' 		=>$at_num, 
+			'no_pay_period' => $num_pay,
+			'isser' 		=> $issuer,
+			'phone' 		=> $phone,
+			'address' 		=> $address,
+		);
 			
 				 if($this->db->insert('lit_company',$data))
 				 {
@@ -492,10 +502,20 @@ function emp_ei_insert()
 	function company_master_update()
 	{
 		$id=$_POST['emp_id'];
-		$company_name=$_POST['comp_name'];
-		$at_num=$_POST['at_num'];
-		$num_pay=$_POST['num_pay'];
-		$data = array('name' =>$company_name,'ac_num' =>$at_num, 'no_pay_period' => $num_pay);
+		$company_name	= $_POST['comp_name'];
+		$at_num			= $_POST['at_num'];
+		$num_pay		= $_POST['num_pay'];
+		$issuer			= $_POST['issuer'];
+		$phone			= $_POST['phone'];
+		$address			= $_POST['address'];
+		$data = array(
+			'name' 			=>$company_name,
+			'ac_num' 		=>$at_num, 
+			'no_pay_period' => $num_pay,
+			'isser' 		=> $issuer,
+			'phone' 		=> $phone,
+			'address' 		=> $address,
+		);
 		$this->db->where(array('id'=>$id));
 			
 				 if($this->db->update('lit_company',$data))

@@ -246,7 +246,7 @@
                    
                     var vacation    = 0;
                     // calculations
-                    $cpp = parseFloat(v.empYtd.govt_pen) * 2;
+                    $cpp = parseFloat(v.empYtd.govt_pen);
                     $ei  = parseFloat(v.empYtd.eicount) * 1.4;
 					empDeduction 	=  parseFloat(v.empYtd.govt_pen) + parseFloat(v.empYtd.fedl)  + parseFloat(v.empYtd.eicount);
 					emprDeduction 	=  $cpp + parseFloat(v.empYtd.fedl)  + $ei;

@@ -83,7 +83,7 @@ class MailStub extends CI_Controller {
 	public function sendMail($id = null)
 	{
 		if(!empty($id)){
-            
+            $type = $this->input->get('type');
             $sdate = $this->input->get('sdate');
             $edate = $this->input->get('edate');
             $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
@@ -114,11 +114,11 @@ class MailStub extends CI_Controller {
 				$this->session->set_flashdata('success', 'Email as been successfully sent');
 				
 			} else {
-				$this->session->set_flashdata('error', 'Server Error Occurred Please Try agin');
-				// show_error($this->email->print_debugger());
+				// $this->session->set_flashdata('error', 'Server Error Occurred Please Try agin');
+				show_error($this->email->print_debugger());
 			}
 		}
-		redirect('send-pay-stub');
+		redirect('send-pay-stub?type='.$type);
 	}
 
     /* ********************  NET PAY REPORT   *************** */
@@ -143,6 +143,7 @@ class MailStub extends CI_Controller {
                         'edate'     => $edate, 
                     );
         $result     = $this->m_payStub->net_pay($data);
+        
         echo json_encode($result);
     }
 

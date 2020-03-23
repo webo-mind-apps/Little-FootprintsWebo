@@ -20,5 +20,8 @@ $route['export-net-pay']            = 'MailStub/export';
 $route['deduction-report']          = 'deduction';
 $route['export-deductions']         = 'deduction/export';
 
+// REO
+$route['reo']                       ='deduction/reo';
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
