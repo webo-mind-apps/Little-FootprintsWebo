@@ -112,7 +112,7 @@
                                     <div class="row">
                                         <div class="col-lg-6">
                                             <div class="form-group">
-                                                <label>Select Company</label>
+                                                <label>Select Company <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <select name="company" require id="company" class="form-control">
                                                         <option  disabled selected>Select Company</option>
@@ -124,7 +124,7 @@
                                             </div><!-- company -->
 
                                             <div class="form-group">
-                                                <label>Select Employee</label>
+                                                <label>Select Employee <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <select name="employee" id="employee" disabled require class="form-control">
                                                         <option value="" disabled selected>Select Employee</option>
@@ -133,12 +133,12 @@
                                             </div><!-- company -->
 
                                             <div class="form-group show-input">
-                                                <label>Reason for leaving </label>
+                                                <label>Reason for leaving <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <select name="reason" id="reason" require class="form-control">
                                                         <option value="" disabled>Select Reason</option>
                                                         <?php foreach ($reason as $val) :
-                                                            echo '<option value="' . $val->id . '">' . $val->code . '</option>';
+                                                            echo '<option value="' . $val->id . '">' . $val->code . '&nbsp;&nbsp;&nbsp; - &nbsp;&nbsp;&nbsp;'.$val->des.'</option>';
                                                         endforeach;
                                                         ?>
                                                     </select>
@@ -146,14 +146,14 @@
                                             </div><!-- reason for leaving  -->
 
                                             <div class="form-group show-input">
-                                                <label>Date of issue </label>
+                                                <label>Date of issue <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <input type="text" id="issued" class="dateformat form-control" placeholder="Date of issue" name="issued" required>
                                                 </div>
                                             </div><!-- Date issued  -->
 
                                             <div class="form-group show-input">
-                                                <label>First work day</label>
+                                                <label>First work day <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <input type="text" id="fwork" class="dateformat form-control" placeholder="First work day" name="fwork" required>
                                                 </div>
@@ -166,14 +166,14 @@
 
                                         <div class="col-lg-6">
                                             <div class="form-group show-input">
-                                                <label>Last  paid date</label>
+                                                <label>Last  paid date <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <input type="text" id="lwork" class="dateformat form-control" placeholder="Last day for which paid" name="lwork" required>
                                                 </div>
                                             </div><!-- Last Work Day  -->
 
                                             <div class="form-group show-input">
-                                                <label>Final pay period ending</label>
+                                                <label>Final pay period ending <span class="text-danger">*</span> </label>
                                                 <div class="input-group">
                                                     <input type="text" id="fnending" class="dateformat form-control" placeholder="Final pay period ending" name="fnending" required>
                                                 </div>
@@ -182,7 +182,7 @@
                                             <div class="form-group show-input">
                                                 <label>Expected date of recall</label>
                                                 <div class="input-group">
-                                                    <input type="text" id="recall" class="dateformat form-control" placeholder="Expected date of recall" name="recall" required>
+                                                    <input type="text" id="recall" class="dateformat form-control" placeholder="Expected date of recall" name="recall"  >
                                                 </div>
                                             </div><!-- Recall  -->
 

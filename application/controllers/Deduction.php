@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
 class deduction extends CI_Controller {
 
     
@@ -90,10 +91,6 @@ class deduction extends CI_Controller {
     {
         $data = $this->m_payStub->reoReport($datas);
         
-        // echo "<pre>";
-        // print_r ($data);
-        // echo "</pre>";
-        // exit;
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -114,42 +111,42 @@ class deduction extends CI_Controller {
         $sheet->setCellValue('B5', $data->address1."\n".$data->city."\n".$data->pincode);
 
         $sheet->setCellValue('A5', 'REASON FOR ISSUING THIS REO');
-        $sheet->setCellValue('B5', $data->code);
-        $spreadsheet->getActiveSheet()->mergeCells('A5:A6');
-        $sheet->setCellValue('B6', "For further information, contact \n".$data->isser." \nTelephone No : ".$data->phone);
+        $sheet->setCellValue('B5', $data->code.' - '.$data->des);
+        // $spreadsheet->getActiveSheet()->mergeCells('A5:A6');
+        // $sheet->setCellValue('B6', "For further information, contact \n".$data->isser." \nTelephone No : ".$data->phone);
 
-        $sheet->setCellValue('A7', 'NAME OF ISSUER');
-        $sheet->setCellValue('B7', $data->isser);
+        // $sheet->setCellValue('A7', 'NAME OF ISSUER');
+        // $sheet->setCellValue('B7', $data->isser);
 
-        $sheet->setCellValue('A8', 'DATE ISSUED');
-        $sheet->setCellValue('B8', $datas['issued']);
+        $sheet->setCellValue('A6', 'DATE ISSUED');
+        $sheet->setCellValue('B6', $datas['issued']);
 
-        $sheet->setCellValue('A9', 'CRA BUSINESS NUMBER (BN)');
-        $sheet->setCellValue('B9', $data->ac_num);
+        $sheet->setCellValue('A7', 'CRA BUSINESS NUMBER (BN)');
+        $sheet->setCellValue('B7', $data->ac_num);
 
-        $sheet->setCellValue('A10', 'SOCIAL INSURABLE NUMBER');
-        $sheet->setCellValue('B10', $data->empsin);
+        $sheet->setCellValue('A8', 'SOCIAL INSURABLE NUMBER');
+        $sheet->setCellValue('B8', $data->empsin);
 
-        $sheet->setCellValue('A11', 'FIRST DAY WORKED');
-        $sheet->setCellValue('B11', $datas['fwork']);
+        $sheet->setCellValue('A9', 'FIRST DAY WORKED');
+        $sheet->setCellValue('B9', $datas['fwork']);
 
-        $sheet->setCellValue('A12', 'LAST DAY FOR WHICH PAID');
-        $sheet->setCellValue('B12', $datas['lwork']);
+        $sheet->setCellValue('A10', 'LAST DAY FOR WHICH PAID');
+        $sheet->setCellValue('B10', $datas['lwork']);
 
-        $sheet->setCellValue('A13', 'FINAL PAY PERIOD ENDING DATE');
-        $sheet->setCellValue('B13', $datas['fnending']);
+        $sheet->setCellValue('A11', 'FINAL PAY PERIOD ENDING DATE');
+        $sheet->setCellValue('B11', $datas['fnending']);
 
-        $sheet->setCellValue('A14', 'OCCUPATION');
-        $sheet->setCellValue('B14', $data->position);
+        $sheet->setCellValue('A12', 'OCCUPATION');
+        $sheet->setCellValue('B12', $data->position);
 
-        $sheet->setCellValue('A15', 'EXPECTED DATE OF RECALL');
-        $sheet->setCellValue('B15', $datas['recall']);
+        $sheet->setCellValue('A13', 'EXPECTED DATE OF RECALL');
+        $sheet->setCellValue('B13', $datas['recall']);
 
-        $sheet->setCellValue('A16', 'TOTAL INSURABLE HOURS');
-        $sheet->setCellValue('B16', $data->insurable['hours']);
+        $sheet->setCellValue('A14', 'TOTAL INSURABLE HOURS');
+        $sheet->setCellValue('B14', round($data->insurable['hours'], 2));
 
-        $sheet->setCellValue('A17', 'TOTAL INSURABLE EARNING');
-        $sheet->setCellValue('B17', $data->insurable['earning']);
+        $sheet->setCellValue('A15', 'TOTAL INSURABLE EARNING');
+        $sheet->setCellValue('B15', round($data->insurable['earning'],2));
 
         $sheet->setCellValue('C2', 'PP');
         $sheet->setCellValue('D2', 'PAY PERIOD ENDING DATE');
@@ -168,7 +165,7 @@ class deduction extends CI_Controller {
 
             $sheet->setCellValue('C'.$row, $key + 1);
             $sheet->setCellValue('D'.$row, date('d-m-Y', strtotime($value->end_on)));
-            $sheet->setCellValue('E'.$row, $gross);
+            $sheet->setCellValue('E'.$row, round($gross, 2));
             $sheet->setCellValue('F'.$row, $value->lastsPayData->reg_unit);
         }
 
@@ -213,12 +210,12 @@ class deduction extends CI_Controller {
         
         $sheet->getStyle('A1:F50')->applyFromArray($styleArray);
 
-        $writer = new Xlsx($spreadsheet);
         $filename = $data->first_name.$data->last_name;
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="'. $filename .'.xls"'); 
-        header('Cache-Control: max-age=0');
-        $writer->save('php://output'); // download file 
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
+        $writer->save("php://output");
+        exit;
     }
 
 }

@@ -333,7 +333,7 @@
     </style>
   </head>
   <body class="">
-    <span class="preheader">Pay stub on <?php echo date('d/m/Y', strtotime($pdf->pay_start)). ' TO '. date('d/m/Y', strtotime($pdf->pay_end)) ?></span>
+    <span class="preheader">Pay stub on <?php echo date('d/m/Y', strtotime($pdf->start_on)). ' TO '. date('d/m/Y', strtotime($pdf->end_on)) ?></span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
       <tr>
         <td>&nbsp;</td>

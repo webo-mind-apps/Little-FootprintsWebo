@@ -266,7 +266,7 @@ class m_payStub extends CI_Model {
 
     public function reoReport($data = null)
     {
-        $this->db->select('c.name, c.ac_num, c.no_pay_period, c.isser,c.address  as caddress,  c.phone, e.*, r.code, r.des, p.position, r.code');
+        $this->db->select('c.name, c.ac_num, c.no_pay_period, c.isser,c.address  as caddress,  c.phone, e.*, r.code, r.des, p.position, r.code, r.des');
         $this->db->where('emp_id', $data['emp']);
         $this->db->from('lit_employee_details e');
         $this->db->join('lit_company c', 'c.id = e.company', 'left');
