@@ -131,6 +131,14 @@
 								</span>
 							</a>
 						</li>
+						<li class="nav-item">
+							<a href="<?php echo base_url() ?>backup" class="nav-link">
+								<i class="fa fa-hdd-o" style="font-size:18px;"></i>
+								<span>
+									Backup
+								</span>
+							</a>
+						</li>
 						<!-- <li class="nav-item">
 							<a href="" class="nav-link">
 								<i class="icon-gear" style="font-size:18px;"></i>

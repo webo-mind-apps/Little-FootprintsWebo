@@ -98,7 +98,10 @@
 			</tr>
         </thead>
         <tbody>
-            <?php foreach ($deduction as $key => $value) { 
+            <?php 
+            
+            $temployee = $temployer = $ttotal = 0;
+            foreach ($deduction as $key => $value) { 
                 $cpp            =   0; 
                 $ei             =   0; 
                 $empDeduction   =   0;
@@ -108,8 +111,12 @@
                 $cpp            =  $value->empYtd['govt_pen'];
                 $ei             = ($value->empYtd['eicount'] * 1.4);
                 $empDeduction   = ($value->empYtd['govt_pen'] + $value->empYtd['fedl'] + $value->empYtd['eicount']);
-                $emprDeduction  = ($cpp + $ei + $value->empYtd['fedl']);
+                $emprDeduction  = ($cpp + $ei );
                 $totalDeduction = $empDeduction + $emprDeduction;
+
+                $temployee  += $empDeduction;
+                $temployer  += $emprDeduction;
+                $ttotal     += $totalDeduction;
             ?>
                 <tr>
                     <td><?php echo $key+1  ?></td>
@@ -120,6 +127,12 @@
                     <td class="text-right"><?php echo  number_format( round($totalDeduction, 2), 2)?></td>
                 </tr>
             <?php } ?>
+            <tr>
+                <th colspan="3" class="text-right"><b>Total</b></th>
+                <th class="text-right"><?php echo number_format( round($temployee, 2), 2) ?></th>
+                <th class="text-right"><?php echo number_format( round($temployer, 2), 2) ?></th>
+                <th class="text-right"><?php echo number_format( round($ttotal, 2), 2) ?></th>
+            </tr>
         </tbody>
     </table>
 </body>

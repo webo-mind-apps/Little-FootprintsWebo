@@ -30,10 +30,51 @@ class deduction extends CI_Controller {
         $data['company']    = $this->input->post('company');
         $data['year']       = $this->input->post('year');
         $data['month']      = $this->input->post('month');
-        $result     = $this->m_payStub->get_deduction($data);
-        echo json_encode($result);
+        $result             = $this->m_payStub->get_deduction1($data);
+        $table['column']    = '';
+        $table['body']      = '';
+        $newDates           = [];
+
+        foreach ($result as $key => $value) {
+            $newDates[$key] = $value->empYtd['edate'];
+            $table['body']      .= '<tr>';
+            $table['body']      .= '<td>'. $key .'</td>';
+            $table['body']      .= '<td>'. $value->empid .'</td>';
+            $table['body']      .= '<td>'. $value->first_name .'</td>';
+            $table['body']      .= '<td>'. $value->last_name .'</td>';
+            $total = 0;
+            foreach($value->empYtd['ytd'] as $row){
+                $empDeduction   = $row->govt_pen + $row->fedl + $row->eicount;
+                $table['body']      .= '<td>'. round($empDeduction, 2).'</td>';
+                $total += $empDeduction;
+            }
+            foreach($value->empYtd['ytd'] as $row){
+                $emprDeduction  = $row->govt_pen  + ($row->eicount * 1.4);
+                $table['body']      .= '<td>'. round($emprDeduction, 2) .'</td>';
+                $total += $emprDeduction;
+            }
+            
+            $table['body']      .= '<td>'.round($total, 2).'</td>';
+            $table['body']      .= '</tr>';
+        }
+
+        $columnDate = array();
+        foreach ($newDates as $key => $value) {
+            $columnDate = array_unique(array_merge($columnDate, $value));
+        }
+        $table['column'] .= '<tr class="trows">';
+        foreach ($columnDate as $key => $value) {
+            $table['column'] .='<td>'.date('d-m-y',strtotime($value)).'</td>';
+        }
+        $table['column'] .= '</tr>';
+
+        $table['col_count'] = count($columnDate);
+
+        
+        echo json_encode($table);
     }
 
+    
     public function export()
     {
         $data['company']    = $this->input->get('company');

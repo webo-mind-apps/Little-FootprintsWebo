@@ -310,10 +310,11 @@
                            <div class="col-sm-1" ></div>
                            <div class="col-sm-5" >
                               <div class="form-group">
-                                 <label>Medical</label>
+                                 <label style="display: block; width: calc(100% / 2); float: left;">Total Medical Contribution</label>
+                                 <label>Employee Medical Contribution</label>
                                  <div class="input-group">
-                                    <input type="text" id="medical" class="form-control" placeholder="Medical" name="medical" maxlength="5"  required>
-                                    <input type="text" id="medicalcontr" class="form-control" placeholder="Employer Medical Contribution" name="medical_contr" maxlength="5"  required>
+                                    <input type="text" id="medical" class="form-control" placeholder="Total Medical Contribution" name="medical" maxlength="5"  required>
+                                    <input type="text" id="medicalcontr" class="form-control" placeholder="Employee Medical Contribution" name="medical_contr" maxlength="5"  required>
                                  </div>
                               </div>
                            </div>

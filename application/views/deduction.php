@@ -54,7 +54,13 @@
 		.icon { padding:5px 0 0 220px; min-width: 40px; } 
 		.icon1 { padding:49px 0 0 220px; min-width: 40px; } 
 		.table th { font-weight: 500; font-size: 11px; } 
-		#payroll_details tr td { padding-bottom: 0; } 
+		#payroll_details tr td { padding-bottom: 0; border-right: 1px solid #c0c0c040;} 
+		#payroll_details tr td:nth-child(1) {
+			border-left: 1px solid #c0c0c040;
+		}
+		#payroll_details th{
+			border: 1px solid #c0c0c040 !important;
+		}
 		#payroll_details tr td input{ text-align:center; border-color:#333; max-width: 75px; margin:auto; }
 		.text-center input{margin:auto !important}
 		select, input{font-size: 12px; width: 100%; height: 30px; border-radius: 3px; border: 1px solid #b0b0b0;}
@@ -75,6 +81,7 @@
 		thead tr:nth-child(2) th{border:transparent  !important}
 		thead tr:nth-child(1){background: #e7e7e7;}
 		thead tr:nth-child(2){background: #ccc;}
+		.sub-table{width:100%}
 
 	</style>
 </head>
@@ -167,19 +174,27 @@
 				    <table class="table " id="payroll_details">
                         <thead>
                             <tr>
-								<th rowspan="2">SL NO</th>
-                                <th rowspan="2">Emp Id</th>
-                                <th rowspan="2">First Name</th>
-                                <th rowspan="2">Last Name</th>
-								<th class="text-center cols3" colspan="3">DEDUCTIONS</th>
+								<th rowspan="3">SL NO</th>
+                                <th rowspan="3">Emp Id</th>
+                                <th rowspan="3">First Name</th>
+                                <th rowspan="3">Last Name</th>
+								<th class="text-center cols3" colspan="5">DEDUCTIONS</th>
                             </tr>
 							<tr>
-								<th class="text-right">Employee</th>
-                                <th class="text-right">Employer</th>
-								<th class="text-right">Total</th>
+								<th class="text-center set-span" colspan="" rowspan="2">
+									<table class="sub-table" id="subTableEmp">
+										<tr><td  class="sub-table-main-heading set-span">Employee</td></tr>
+									</table>
+								</th>
+                                <th class="text-center set-span" colspan="" rowspan="2">
+									<table class="sub-table" id="subTableEmpr">
+										<tr><td  class="sub-table-main-heading set-span">Employer</td></tr>
+									</table>
+								</th>
+								<th class="text-right"  rowspan="2">Total</th>
 							</tr>
                         </thead>
-                        <tbody>
+                        <tbody id="body">
                         </tbody>
 				    </table>
             		<div class="form-group row"> 
@@ -236,36 +251,44 @@
             },
             dataType: "json",
             success: function (response) {
-                $('#payroll_details tbody').empty();
-                var content = '';
-				var empDeduction = 0;
-				var emprDeduction = 0;
-				var totalDeduction = 0;
+				console.log(response);
+				$('.sub-table .trows').remove();
+				$('.set-span').attr('colspan', response.col_count);
+				$('.sub-table').append(response.column);
+				$('#payroll_details tbody#body').empty();
+				$('#payroll_details tbody#body').append(response.body);
+                // var content = '';
+				// var empDeduction = 0;
+				// var emprDeduction = 0;
+				// var totalDeduction = 0;
 
-                $.each(response, function (i, v) { 
-                   
-                    var vacation    = 0;
-                    // calculations
-                    $cpp = parseFloat(v.empYtd.govt_pen);
-                    $ei  = parseFloat(v.empYtd.eicount) * 1.4;
-					empDeduction 	=  parseFloat(v.empYtd.govt_pen) + parseFloat(v.empYtd.fedl)  + parseFloat(v.empYtd.eicount);
-					emprDeduction 	=  $cpp + parseFloat(v.empYtd.fedl)  + $ei;
-					totalDeduction  = empDeduction + emprDeduction;
+                // $.each(response, function (i, v) { 
+                //    console.log(v.empYtd.edate);
+				   
+                //     var vacation    = 0;
+                //     // calculations
+                //     $cpp = parseFloat(v.empYtd.govt_pen);
+                //     $ei  = parseFloat(v.empYtd.eicount) * 1.4;
+				// 	empDeduction 	=  parseFloat(v.empYtd.govt_pen) + parseFloat(v.empYtd.fedl)  + parseFloat(v.empYtd.eicount);
+				// 	emprDeduction 	=  $cpp + parseFloat(v.empYtd.fedl)  + $ei;
+				// 	totalDeduction  = empDeduction + emprDeduction;
 									
-					if (v.is_mail_sent == 1) {
-						sent 	= '<i class="fa fa-check text-success" aria-hidden="true"></i>';
-					}
-                    content += '<tr>';
-                    content += '<td>'+ (i+1) +'</td>';
-                    content += '<td>'+ v.empid +'</td>';
-                    content += '<td>'+ v.first_name +'</td>';
-                    content += '<td>'+ v.last_name +'</td>';
-                    content += '<td class="text-right">'+ empDeduction.toFixed(2) +'</td>';
-                    content += '<td class="text-right">'+ emprDeduction.toFixed(2) +'</td>';  
-					content += '<td class="text-right">'+ totalDeduction.toFixed(2) +'</td>';
-                    content += '<tr>';
-                });
-                $('#payroll_details tbody').append(content);
+				// 	if (v.is_mail_sent == 1) {
+				// 		sent 	= '<i class="fa fa-check text-success" aria-hidden="true"></i>';
+				// 	}
+                //     content += '<tr>';
+                //     content += '<td>'+ (i+1) +'</td>';
+                //     content += '<td>'+ v.empid +'</td>';
+                //     content += '<td>'+ v.first_name +'</td>';
+                //     content += '<td>'+ v.last_name +'</td>';
+                //     content += '<td class="text-right">'+ empDeduction.toFixed(2) +'</td>';
+                //     content += '<td class="text-right">'+ empDeduction.toFixed(2) +'</td>';
+                //     content += '<td class="text-right">'+ emprDeduction.toFixed(2) +'</td>';  
+                //     content += '<td class="text-right">'+ emprDeduction.toFixed(2) +'</td>';  
+				// 	content += '<td class="text-right">'+ totalDeduction.toFixed(2) +'</td>';
+                //     content += '<tr>';
+                // });
+                // $('#payroll_details tbody#body').append(content);
             }
         });
     }

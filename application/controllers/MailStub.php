@@ -1,18 +1,20 @@
-<?php 
+<?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
-class MailStub extends CI_Controller {
+class MailStub extends CI_Controller
+{
 
-    
+
     public function __construct()
     {
         parent::__construct();
-        if($this->session->userdata('admin_login') == false){ redirect('home','refresh'); }
+        if ($this->session->userdata('admin_login') == false) {
+            redirect('home', 'refresh');
+        }
         $this->load->model('m_payStub');
-        
     }
-    
+
     public function index()
     {
         $this->load->model('pay_roll_model');
@@ -23,7 +25,8 @@ class MailStub extends CI_Controller {
     }
 
     // payroll
-    public function pay_roll_dates(){
+    public function pay_roll_dates()
+    {
         $company = $this->input->post('company');
         $result  = $this->m_payStub->getDates($company);
         echo json_encode($result);
@@ -38,10 +41,10 @@ class MailStub extends CI_Controller {
         $sdate      = date('Y-m-d', strtotime($sliptDate['0']));
         $edate      = date('Y-m-d', strtotime($sliptDate['1']));
         $data       = array(
-                        'company'   => $company, 
-                        'sdate'     => $sdate, 
-                        'edate'     => $edate, 
-                    );
+            'company'   => $company,
+            'sdate'     => $sdate,
+            'edate'     => $edate,
+        );
         $result     = $this->m_payStub->empPayslisp($data);
         echo json_encode($result);
     }
@@ -49,77 +52,80 @@ class MailStub extends CI_Controller {
     // view payslip
     public function view_payroll($empid = null)
     {
-        if(!empty($empid)){
+        if (!empty($empid)) {
             $sdate = $this->input->get('sdate');
             $edate = $this->input->get('edate');
             $result['pdf'] = $this->m_payStub->PdfGet($empid, $sdate, $edate);
+
+
             $mpdf = new \Mpdf\Mpdf();
-            $html = $this->load->view('payroll-pdf1',$result,true);
+            $html = $this->load->view('payroll-pdf1', $result, true);
             $mpdf->WriteHTML($html);
             $mpdf->Output();
-        }else{
-			redirect('send-pay-stub');
-		}
+        } else {
+            redirect('send-pay-stub');
+        }
     }
 
-    	// download payroll on pdf format
-	public function download_payroll($id = null)
-	{
-		if(!empty($id)){
-			$sdate = $this->input->get('sdate');
+    // download payroll on pdf format
+    public function download_payroll($id = null)
+    {
+        if (!empty($id)) {
+            $sdate = $this->input->get('sdate');
             $edate = $this->input->get('edate');
             $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
-       
+
             $mpdf = new \Mpdf\Mpdf();
-            $html = $this->load->view('payroll-pdf1',$result,true);
-			$mpdf->WriteHTML($html);
-			$mpdf->Output('payroll.pdf','D');
-		}else{
-			redirect('send-pay-stub');
-		}
+            $html = $this->load->view('payroll-pdf1', $result, true);
+            $mpdf->WriteHTML($html);
+            $mpdf->Output('payroll.pdf', 'D');
+        } else {
+            redirect('send-pay-stub');
+        }
     }
-    
+
     // send a as mail
-	public function sendMail($id = null)
-	{
-		if(!empty($id)){
+    public function sendMail($id = null)
+    {
+        if (!empty($id)) {
             $type = $this->input->get('type');
             $sdate = $this->input->get('sdate');
             $edate = $this->input->get('edate');
             $result['pdf'] = $this->m_payStub->PdfGet($id, $sdate, $edate);
             $this->m_payStub->updateMailSent($id, $sdate, $edate);
-			$mpdf = new \Mpdf\Mpdf();
-			$html = $this->load->view('payroll-pdf1',$result,true);
-			$mpdf->WriteHTML($html);
-			$content = $mpdf->Output('', 'S');
+            $mpdf = new \Mpdf\Mpdf();
+            $html = $this->load->view('payroll-pdf1', $result, true);
+            $mpdf->WriteHTML($html);
+            $content = $mpdf->Output('', 'S');
 
-			$this->load->config('email');
-			$this->load->library('email');
-            
-            $name= date('d/m/Y', strtotime($result['pdf']->start_on)). ' TO '. date('d/m/Y', strtotime($result['pdf']->end_on));
+            $this->load->config('email');
+            $this->load->library('email');
 
-			$from = $this->config->item('smtp_user');
-			$to = $result['pdf']->email;
-			$subject = 'Pay stub on '.$name;
-			$filename = date('d/m/Y', strtotime($result['pdf']->start_on))."-".date('d/m/Y', strtotime($result['pdf']->end_on))."_pay-stub.pdf";
-			$message = $this->load->view('email/paystub',$result, TRUE);
-			$this->email->set_newline("\r\n");
-			$this->email->from($from, 'Little FootPrints Academy');
-			$this->email->to($to);
-			$this->email->subject($subject);
-			$this->email->message($message);
-			$this->email->attach($content, 'attachment', $filename, 'application/pdf');
-            
-			if ($this->email->send()) {
-				$this->session->set_flashdata('success', 'Email as been successfully sent');
-				
-			} else {
-				// $this->session->set_flashdata('error', 'Server Error Occurred Please Try agin');
-				show_error($this->email->print_debugger());
-			}
-		}
-		redirect('send-pay-stub?type='.$type);
-	}
+            $name = date('d/m/Y', strtotime($result['pdf']->start_on)) . ' TO ' . date('d/m/Y', strtotime($result['pdf']->end_on));
+
+            $from = $this->config->item('smtp_user');
+            // $to = 'shahir.webomindapps@gmail.com';
+            $to = $result['pdf']->email;
+
+            $subject = 'Pay stub on ' . $name;
+            $filename = date('d/m/Y', strtotime($result['pdf']->start_on)) . "-" . date('d/m/Y', strtotime($result['pdf']->end_on)) . "_pay-stub.pdf";
+            $message = $this->load->view('email/paystub', $result, TRUE);
+            $this->email->set_newline("\r\n");
+            $this->email->from($from, 'Little FootPrints Academy');
+            $this->email->to($to);
+            $this->email->subject($subject);
+            $this->email->message($message);
+            $this->email->attach($content, 'attachment', $filename, 'application/pdf');
+
+            if ($this->email->send()) {
+                $this->session->set_flashdata('success', 'Email as been successfully sent');
+            } else {
+                // $this->session->set_flashdata('error', 'Server Error Occurred Please Try agin');
+                show_error($this->email->print_debugger());
+            }
+        }
+        redirect('send-pay-stub?type=' . $type);
+    }
 
     /* ********************  NET PAY REPORT   *************** */
     public function net_pay_report()
@@ -138,12 +144,12 @@ class MailStub extends CI_Controller {
         $sdate      = date('Y-m-d', strtotime($sliptDate['0']));
         $edate      = date('Y-m-d', strtotime($sliptDate['1']));
         $data       = array(
-                        'company'   => $company, 
-                        'sdate'     => $sdate, 
-                        'edate'     => $edate, 
-                    );
+            'company'   => $company,
+            'sdate'     => $sdate,
+            'edate'     => $edate,
+        );
         $result     = $this->m_payStub->net_pay($data);
-        
+
         echo json_encode($result);
     }
 
@@ -155,24 +161,22 @@ class MailStub extends CI_Controller {
         $sdate      = date('Y-m-d', strtotime($sliptDate['0']));
         $edate      = date('Y-m-d', strtotime($sliptDate['1']));
         $data       = array(
-                        'company'   => $company, 
-                        'sdate'     => $sdate, 
-                        'edate'     => $edate, 
-                    );
-         $result['pdf'] = $this->m_payStub->net_pay($data);
+            'company'   => $company,
+            'sdate'     => $sdate,
+            'edate'     => $edate,
+        );
+        $result['pdf'] = $this->m_payStub->net_pay($data);
 
-        if(!empty( $result['pdf'])):
+        if (!empty($result['pdf'])) :
             $mpdf = new \Mpdf\Mpdf();
-            $html = $this->load->view('netpay-export',$result,true);
+            $html = $this->load->view('netpay-export', $result, true);
             $mpdf->WriteHTML($html);
             $mpdf->Output();
-            // $mpdf->Output('net-pay.pdf','D');
-        else:
-            redirect('net-pay-report','refresh');
-        endif;         
+        // $mpdf->Output('net-pay.pdf','D');
+        else :
+            redirect('net-pay-report', 'refresh');
+        endif;
     }
-
 }
 
 /* End of file MailStub.php */
-

@@ -561,9 +561,26 @@ class Main extends CI_Controller {
 			$this->session->set_flashdata('error', 'Some error occurred. please try agin');
 		}
 		
-		redirect('main/reason','refresh',);
+		redirect('main/reason','refresh');
 		
 		
+	}
+
+	public function backup()
+	{
+		$this->load->helper('file');
+		$this->load->helper('download');
+		$this->load->library('zip');
+		
+		$this->load->dbutil();
+		$prefs = array('format' => 'zip', 'filename' => 'Database_'.date('y-m-d_H-i'));
+		$backup = $this->dbutil->backup($prefs);
+		if(!write_file('./uploads/backup/DB_backup_'.date('y-m-d_H-i').'.zip', $backup)):
+			$this->session->set_flashdata('error', 'Error while creating auto database backup!');
+		else:
+			force_download('DB_backup_'.date('y-m-d_H-i').'.zip', $backup);
+			$this->session->set_flashdata('success', 'Database backup has been successfully Created');
+		endif;
 	}
 
 }

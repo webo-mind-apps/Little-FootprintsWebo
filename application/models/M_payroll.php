@@ -156,16 +156,22 @@ class M_payroll extends CI_Model {
         if($rates->is_vacation):
             $gross =  $gross +  $rates->vacation;
         endif;
-        $rates->fedl     = (float)$gross * (float)$master->fed_tax;
-        $rates->medical  = $data['medical'];
+        if($gross > 0 ){
+            $rates->fedl     = (float)$gross * (float)$master->fed_tax;
+            $rates->medical  = $data['medical'];
+        }else
+        {
+            $rates->fedl = 0; $rates->medical  = 0;
+        }
         
-        if($gross <= $master->max_pentionable_earning):
+        
+        if($gross <= $master->max_pentionable_earning && $gross > 0):
 			$rates->govt_pen    = ((((float)$gross - ((float)$master->basic_exemption_amt / (float)$numpay)) * (float)$master->emp_contribution) / 100);
         else:
 			$rates->govt_pen    = 0;
         endif;
 
-        if($gross < $master->ei_amt):
+        if($gross < $master->ei_amt && $gross > 0):
 			$rates->eicount = (((float)$master->ei_cont * (float)$gross) / 100);
 		else:
 			$rates->eicount = 0;
