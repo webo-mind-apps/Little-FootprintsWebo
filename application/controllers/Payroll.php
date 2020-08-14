@@ -191,7 +191,9 @@ class Payroll extends CI_Controller
 					'medical_contribution' => $post['medicalcontr'][$key]
 				);
 				$pid = $post['prl_id'][$key];
-				$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
+				if ($data['reg_rate'] > 0 || $data['stat_rate'] > 0) :
+					$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
+				endif;
 			}
 			$this->session->set_flashdata('abc', 'success');
 			redirect('main_control/pay_roll_page');

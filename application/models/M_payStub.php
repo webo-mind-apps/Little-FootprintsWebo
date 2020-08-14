@@ -66,6 +66,7 @@ class m_payStub extends CI_Model
         $payrollDetail->currentUnit = $this->currentUnit($id);
 
         $payrollDetail->empYtd      = $this->empYtd($payrollDetail->empid, $sdate, $edate);
+
         return $payrollDetail;
     }
 
@@ -112,9 +113,6 @@ class m_payStub extends CI_Model
         foreach ($payrolls as $key => $value) {
             $empYtd[$key] =  $this->currentUnit($value->id);
         }
-
-
-
         $sum['reg_unit']       = 0;
         $sum['stat_unit']      = 0;
         $sum['reg_amt']        = 0;
@@ -185,14 +183,13 @@ class m_payStub extends CI_Model
         $this->db->where('e.company', $data['company']);
         // $this->db->where('created_on >=', $sdate);
         // $this->db->where('created_on <=', $edate);
-        $this->db->where('end_on >=', $sdate);
-        $this->db->where('end_on <=', $edate);
+        $this->db->where('created_on >=', $sdate);
+        $this->db->where('created_on <=', $edate);
         $this->db->where('year', $year);
         $this->db->order_by('e.first_name', 'asc');
         $this->db->from('lit_payroll_root p');
         $this->db->join('lit_employee_details e', 'e.emp_id = p.empid', 'left');
         $result =  $this->db->get()->result();
-
 
         foreach ($result as $key => $value) {
             $value->empYtd      = $this->deductionYtd1($value->empid, $sdate, $edate);
@@ -207,10 +204,10 @@ class m_payStub extends CI_Model
         $payrolls = $this->db->where('empid', $empid)
             // ->where('created_on >=', $sdate)
             // ->where('created_on <=', $edate)
-            ->where('end_on >=', $sdate)
-            ->where('end_on <=', $edate)
+            ->where('created_on >=', $sdate)
+            ->where('created_on <=', $edate)
             ->where('year ', $year)
-            ->select('id, start_on, end_on')
+            ->select('id, start_on, end_on, created_on')
             ->get('lit_payroll_root')
             ->result();
         $inc = 0;
@@ -219,7 +216,8 @@ class m_payStub extends CI_Model
             $data =  $this->currentUnit1($value->id);
             if (!empty($data)) :
                 $resultReturn['ytd'][$inc] = $data;
-                $resultReturn['edate'][$inc] = $value->end_on;
+                // $resultReturn['edate'][$inc] = $value->end_on;
+                $resultReturn['created'][$inc] = $value->created_on;
                 $inc += 1;
             endif;
         }

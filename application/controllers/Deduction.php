@@ -1,21 +1,23 @@
-<?php 
+<?php
 
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-class deduction extends CI_Controller {
+class deduction extends CI_Controller
+{
 
-    
+
     public function __construct()
     {
         parent::__construct();
-        if($this->session->userdata('admin_login') == false){ redirect('home','refresh'); }
+        if ($this->session->userdata('admin_login') == false) {
+            redirect('home', 'refresh');
+        }
         $this->load->model('m_payStub');
-        
     }
-    
+
     public function index()
     {
         $this->load->model('pay_roll_model');
@@ -34,56 +36,86 @@ class deduction extends CI_Controller {
         $table['column']    = '';
         $table['body']      = '';
         $newDates           = [];
+        $mcount = 0;
+        $empTotal = [];
+        $emplTotal = [];
+
 
         foreach ($result as $key => $value) {
-            $newDates[$key] = $value->empYtd['edate'];
+            if (count($value->empYtd['created']) > $mcount) :
+                $mcount = count($value->empYtd['created']);
+                $newDates[$key] = $value->empYtd['created'];
+            endif;
+
             $table['body']      .= '<tr>';
-            $table['body']      .= '<td>'. $key .'</td>';
-            $table['body']      .= '<td>'. $value->empid .'</td>';
-            $table['body']      .= '<td>'. $value->first_name .'</td>';
-            $table['body']      .= '<td>'. $value->last_name .'</td>';
+            $table['body']      .= '<td>' . $key . '</td>';
+            $table['body']      .= '<td>' . $value->empid . '</td>';
+            $table['body']      .= '<td>' . $value->first_name . '</td>';
+            $table['body']      .= '<td>' . $value->last_name . '</td>';
             $total = 0;
-            foreach($value->empYtd['ytd'] as $row){
+            foreach ($value->empYtd['ytd'] as $k => $row) {
                 $empDeduction   = $row->govt_pen + $row->fedl + $row->eicount;
-                $table['body']      .= '<td>'. round($empDeduction, 2).'</td>';
+                $table['body']      .= '<td>' . round($empDeduction, 2) . '</td>';
+                // $table['body']      .= '<td>' . $key . '</td>';
+                $empTotal[$k][$key] = $empDeduction;
                 $total += $empDeduction;
             }
-            foreach($value->empYtd['ytd'] as $row){
+            foreach ($value->empYtd['ytd'] as $k => $row) {
                 $emprDeduction  = $row->govt_pen  + ($row->eicount * 1.4);
-                $table['body']      .= '<td>'. round($emprDeduction, 2) .'</td>';
+                $table['body']      .= '<td>' . round($emprDeduction, 2) . '</td>';
+                $emplTotal[$k][$key] = $emprDeduction;
                 $total += $emprDeduction;
             }
-            
-            $table['body']      .= '<td>'.round($total, 2).'</td>';
+
+            $table['body']      .= '<td>' . round($total, 2) . '</td>';
             $table['body']      .= '</tr>';
         }
 
+
         $columnDate = array();
         foreach ($newDates as $key => $value) {
-            $columnDate = array_unique(array_merge($columnDate, $value));
+            // $columnDate = array_unique(array_merge($columnDate, $value));
+            $columnDate = $value;
         }
         $table['column'] .= '<tr class="trows">';
         foreach ($columnDate as $key => $value) {
-            $table['column'] .='<td>'.date('d-m-y',strtotime($value)).'</td>';
+            $table['column'] .= '<td>' . date('d-m-y', strtotime($value)) . '</td>';
         }
+        $gtTotal = 0;
         $table['column'] .= '</tr>';
+        // ====================================
+        $table['body']  .= '<tr style="background:#e0e0e0">';
+        $table['body']  .= '<td colspan="4" style="text-align:right">Total</td>';
+        foreach ($columnDate as $key => $value) {
+            $table['body']  .= '<td >' . round(array_sum($empTotal[$key]), 2) . '</td>';
+            $gtTotal += round(array_sum($empTotal[$key]), 2);
+        }
+        foreach ($columnDate as $key => $value) {
+            $table['body']  .= '<td >' . round(array_sum($emplTotal[$key]), 2) . '</td>';
+            $gtTotal += round(array_sum($emplTotal[$key]), 2);
+        }
+        $table['body']  .= '<td >' . $gtTotal . '</td>';
+        $table['body']  .= '</tr>';
+        // ====================================
+
 
         $table['col_count'] = count($columnDate);
 
-        
+
+
         echo json_encode($table);
     }
 
-    
+
     public function export()
     {
         $data['company']    = $this->input->get('company');
         $data['year']       = $this->input->get('year');
         $data['month']      = $this->input->get('month');
-        $result['deduction']= $this->m_payStub->get_deduction($data);
+        $result['deduction'] = $this->m_payStub->get_deduction($data);
 
         $mpdf = new \Mpdf\Mpdf();
-        $html = $this->load->view('deduction-pdf',$result,true);
+        $html = $this->load->view('deduction-pdf', $result, true);
         $mpdf->WriteHTML($html);
         $mpdf->Output();
     }
@@ -131,7 +163,7 @@ class deduction extends CI_Controller {
     public function exportReo($datas = null)
     {
         $data = $this->m_payStub->reoReport($datas);
-        
+
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
@@ -146,13 +178,13 @@ class deduction extends CI_Controller {
         $sheet->setCellValue('B3', $data->caddress);
 
         $sheet->setCellValue('A4', 'EMPLOYEE NAME');
-        $sheet->setCellValue('B4', $data->first_name.' '. $data->last_name);
+        $sheet->setCellValue('B4', $data->first_name . ' ' . $data->last_name);
 
         $sheet->setCellValue('A5', 'EMPLOYERS ADDRESS');
-        $sheet->setCellValue('B5', $data->address1."\n".$data->city."\n".$data->pincode);
+        $sheet->setCellValue('B5', $data->address1 . "\n" . $data->city . "\n" . $data->pincode);
 
         $sheet->setCellValue('A5', 'REASON FOR ISSUING THIS REO');
-        $sheet->setCellValue('B5', $data->code.' - '.$data->des);
+        $sheet->setCellValue('B5', $data->code . ' - ' . $data->des);
         // $spreadsheet->getActiveSheet()->mergeCells('A5:A6');
         // $sheet->setCellValue('B6', "For further information, contact \n".$data->isser." \nTelephone No : ".$data->phone);
 
@@ -187,7 +219,7 @@ class deduction extends CI_Controller {
         $sheet->setCellValue('B14', round($data->insurable['hours'], 2));
 
         $sheet->setCellValue('A15', 'TOTAL INSURABLE EARNING');
-        $sheet->setCellValue('B15', round($data->insurable['earning'],2));
+        $sheet->setCellValue('B15', round($data->insurable['earning'], 2));
 
         $sheet->setCellValue('C2', 'PP');
         $sheet->setCellValue('D2', 'PAY PERIOD ENDING DATE');
@@ -195,19 +227,17 @@ class deduction extends CI_Controller {
         $sheet->setCellValue('F2', 'INSURABLE HOURS');
 
         foreach ($data->payDetail as $key => $value) {
-            $gross  =   (
-                            $value->lastsPayData->reg_amt +
-                            $value->lastsPayData->stat_amt +
-                            $value->lastsPayData->wages +
-                            $value->lastsPayData->miscellaneous +
-                            $value->lastsPayData->medical_contribution
-                        );
+            $gross  =   ($value->lastsPayData->reg_amt +
+                $value->lastsPayData->stat_amt +
+                $value->lastsPayData->wages +
+                $value->lastsPayData->miscellaneous +
+                $value->lastsPayData->medical_contribution);
             $row = $key + 3;
 
-            $sheet->setCellValue('C'.$row, $key + 1);
-            $sheet->setCellValue('D'.$row, date('d-m-Y', strtotime($value->end_on)));
-            $sheet->setCellValue('E'.$row, round($gross, 2));
-            $sheet->setCellValue('F'.$row, $value->lastsPayData->reg_unit);
+            $sheet->setCellValue('C' . $row, $key + 1);
+            $sheet->setCellValue('D' . $row, date('d-m-Y', strtotime($value->end_on)));
+            $sheet->setCellValue('E' . $row, round($gross, 2));
+            $sheet->setCellValue('F' . $row, $value->lastsPayData->reg_unit);
         }
 
         // styling
@@ -225,7 +255,7 @@ class deduction extends CI_Controller {
             ]
         ];
         $highestColumn = $sheet->getHighestColumn();
-        $sheet->getStyle('A1:' . $highestColumn . '1' )->applyFromArray($styleArrayFirstRow);
+        $sheet->getStyle('A1:' . $highestColumn . '1')->applyFromArray($styleArrayFirstRow);
 
         $bold = [
             'font' => [
@@ -248,16 +278,14 @@ class deduction extends CI_Controller {
                 ],
             ],
         ];
-        
+
         $sheet->getStyle('A1:F50')->applyFromArray($styleArray);
 
-        $filename = $data->first_name.$data->last_name;
+        $filename = $data->first_name . $data->last_name;
         $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment; filename="'.$filename.'.xlsx"');
+        header('Content-Disposition: attachment; filename="' . $filename . '.xlsx"');
         $writer->save("php://output");
         exit;
     }
-
 }
-
