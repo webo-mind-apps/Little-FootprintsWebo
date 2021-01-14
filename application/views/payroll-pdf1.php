@@ -138,9 +138,9 @@ td, th{padding:9px 5px; margin:-1px}
                     <td>VACATION</td>
                     <td class="text-right"></td>
                     <td class="text-right"></td>
-                    <td class="text-right border-right"><?php echo number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td>
+                    <td class="text-right border-right"><?php echo number_format( round($pdf->currentUnit->vacation_release, 2), 2) ?></td>
                     <td class="text-right "></td> 
-                    <td class="text-right"><?php echo number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td> 
+                    <td class="text-right"><?php echo number_format( round($pdf->currentUnit->vacation_accrued, 2), 2) ?></td> 
                 </tr>
             <?php }?>
             
@@ -210,7 +210,7 @@ td, th{padding:9px 5px; margin:-1px}
                     echo  number_format( round($pdf->currentUnit->vacation, 2), 2);
                 endif;
                 ?></td>
-                <td class="text-right"><?php echo  number_format( round($pdf->empYtd['vacation'], 2), 2) ?></td>
+                <td class="text-right"><?php echo  number_format( round($pdf->currentUnit->vacation_accrued, 2), 2) ?></td>
             </tr>
         </tbody>
     </table>

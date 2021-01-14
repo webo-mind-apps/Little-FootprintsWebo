@@ -9,11 +9,11 @@ class m_payStub extends CI_Model
         $this->db->select('CONCAT(date_format(r.start_on, "%d-%m-%Y")," to ", date_format(r.end_on,"%d-%m-%Y")) as date');
 
         $this->db->group_by('r.start_on');
-        $this->db->where('c.company_name', $company);
+        $this->db->where('c.id', $company);
 
         $this->db->from('lit_payroll_root r');
         $this->db->join('lit_payroll p', 'p.root_id = r.id', 'left');
-        $this->db->join('lit_center c', 'c.id = p.center', 'left');
+        $this->db->join('lit_company c', 'c.id = p.company', 'left');
 
         $this->db->order_by('r.id', 'desc');
         return $this->db->get()->result();
@@ -85,15 +85,19 @@ class m_payStub extends CI_Model
             ->select_sum('medical')
             ->select_sum('vacation')
             ->select_sum('medical_contribution')
-            ->select('rate', 'is_vacation')
+			->select('rate', 'is_vacation')
+			->select('vacation_release')
+			->select('vacation_accrued')
             ->get('lit_payroll')->row();
     }
-    public function currentUnit1($id = null)
+    public function currentUnit1($id = null, $created = null)
     {
         $query = $this->db->where('root_id', $id)
             ->get('lit_payroll');
         if ($query->num_rows() > 0) {
-            return $query->row();
+            $result =  $query->row();
+            $result->created = $created;
+            return $result;
         } else {
             return null;
         }
@@ -212,14 +216,19 @@ class m_payStub extends CI_Model
             ->result();
         $inc = 0;
         $resultReturn = [];
+
+
+     
+
         foreach ($payrolls as $key => $value) {
-            $data =  $this->currentUnit1($value->id);
+            $data =  $this->currentUnit1($value->id, $value->created_on);
             if (!empty($data)) :
                 $resultReturn['ytd'][$inc] = $data;
                 // $resultReturn['edate'][$inc] = $value->end_on;
                 $resultReturn['created'][$inc] = $value->created_on;
                 $inc += 1;
             endif;
+
         }
 
 

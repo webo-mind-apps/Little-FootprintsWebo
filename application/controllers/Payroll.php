@@ -13,6 +13,7 @@ class Payroll extends CI_Controller
 	{
 		parent::__construct();
 		$this->load->model('m_payroll');
+		$this->load->model('m_payStub');
 		if ($this->session->userdata('admin_login') == false) {
 			redirect('home', 'refresh');
 		}
@@ -31,9 +32,9 @@ class Payroll extends CI_Controller
 		$edate 	 = date('Y-m-d', strtotime($this->input->post('pay_end_date')));
 		$date 	 = $this->input->post('pay_date');
 		$company = $this->input->post('company');
-		$center  = $this->input->post('center');
-		$result  = $this->m_payroll->employeeDetailDate($sdate, $edate, $company, $center, $date);
-
+		// $center  = $this->input->post('center');
+		$result  = $this->m_payroll->employeeDetailDate($sdate, $edate, $company,  $date);
+		
 		$table = '';
 		$table .= '<tr> 
 						<th>SL.NO</th> 
@@ -44,6 +45,8 @@ class Payroll extends CI_Controller
 						<th class="text-center">STAT HOL HRS</th> 
 						<th class="text-center">WAGES</th> 
 						<th class="text-center">MISCELLANEOUS</th> 
+						<th class="text-center" width="115px" style="width:115px">Vacation Accrued</th>
+						<th class="text-center">Vacation Release</th>
 						<th class="text-center">MEDICAL</th> 
 						<th class="text-center">MEDICAL <br/> CONTRIBUTION</th> 
 						<th style="width:115px"	 class="text-center">
@@ -54,6 +57,11 @@ class Payroll extends CI_Controller
 						
 					</tr>';
 		if (!empty($result)) :
+
+			// echo '<pre>';
+			// print_r($result);
+			// echo '</pre>';
+			// exit();
 			foreach ($result as $key => $row) {
 
 
@@ -68,6 +76,8 @@ class Payroll extends CI_Controller
 				$wages			= (!empty($row->payRoll->wages) ? $row->payRoll->wages : 0);
 				$miscellaneous	= (!empty($row->payRoll->miscellaneous) ?  $row->payRoll->miscellaneous : 0);
 				$medical		= (!empty($row->payRoll->medical) ?  $row->payRoll->medical : 0);
+
+				
 
 				$table .= '     
 			<tr>
@@ -103,6 +113,14 @@ class Payroll extends CI_Controller
 			 
 				<td class="text-center">
 					<input type="text" class="form-control"  autocomplete="off"  name="miscellaneous_amount[]" value="' . $miscellaneous . '">
+				</td>
+
+				<td class="text-center">
+					<input type="text" class="form-control"  autocomplete="off"  name="vacation_accrued[]" value="'  . (!empty($row->payRoll) ? round($row->payRoll->vacation_accrued, 2, 2) :  round($row->vacation_accrued->vacation_accrued, 2, 2)). '">
+				</td>
+
+				<td class="text-center">
+					<input type="text" class="form-control"  autocomplete="off"  name="vacation_release[]" value="'. (!empty($row->payRoll) ? round($row->payRoll->vacation_release, 2, 2) : '0') .'">
 				</td>
 
 				<td class="text-center">
@@ -173,23 +191,25 @@ class Payroll extends CI_Controller
 			$eDate = $post['pay_end_date_val'];
 			foreach ($post['emp_ids'] as $key => $value) {
 				$data = array(
-					'emp_ids' 		    => $post['emp_ids'][$key],
-					'reg_rate' 			=> $post['regular_hrs'][$key],
-					'stat_rate' 		=> $post['stat_hol_hrs'][$key],
-					'wages' 			=> $post['wage_amount'][$key],
-					'miscellaneous' 	=> $post['miscellaneous_amount'][$key],
-					'per_hr_rate'		=> $post['rate_hour'][$key],
-					'is_vacation_release' => (isset($post['vacationPay'][$key])) ? '1' : '0',
-					'medical'			=> $post['medical'][$key],
-					'vacation'			=> $post['vacation'][$key],
-					'center'			=> $post['center'],
-					'company'			=> $post['company'],
-					'pay_start'         => date('Y-m-d', strtotime($sDate)),
-					'pay_end'           => date('Y-m-d', strtotime($eDate)),
-					'updateOn'          => date('Y-m-d H:i:s'),
-					'created_on'		=> date('Y-m-d H:i:s', strtotime($post['pay_date'])),
-					'medical_contribution' => $post['medicalcontr'][$key]
+					'emp_ids' 		    	=> $post['emp_ids'][$key],
+					'reg_rate' 				=> $post['regular_hrs'][$key],
+					'stat_rate' 			=> $post['stat_hol_hrs'][$key],
+					'wages' 				=> $post['wage_amount'][$key],
+					'miscellaneous' 		=> $post['miscellaneous_amount'][$key],
+					'per_hr_rate'			=> $post['rate_hour'][$key],
+					'medical'				=> $post['medical'][$key],
+					'company'				=> $post['company'],
+					'pay_start'         	=> date('Y-m-d', strtotime($sDate)),
+					'pay_end'           	=> date('Y-m-d', strtotime($eDate)),
+					'updateOn'          	=> date('Y-m-d H:i:s'),
+					'created_on'			=> date('Y-m-d H:i:s', strtotime($post['pay_date'])),
+					'medical_contribution' 	=> $post['medicalcontr'][$key],
+					'vacation'				=> $post['vacation'][$key],
+					'is_vacation_release' 	=> (isset($post['vacationPay'][$key])) ? '1' : '0',
+					'vacation_release'		=> $post['vacation_release'][$key],
+					'vacation_accrued'		=> $post['vacation_accrued'][$key]
 				);
+				
 				$pid = $post['prl_id'][$key];
 				if ($data['reg_rate'] > 0 || $data['stat_rate'] > 0) :
 					$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
@@ -314,5 +334,10 @@ class Payroll extends CI_Controller
 		header('Cache-Control: max-age=0');
 		$writer->save('php://output'); // download file 
 
+	}
+
+	public function vacationAdding()
+	{
+		$this->m_payroll->vacationAdding();
 	}
 }

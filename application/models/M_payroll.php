@@ -13,29 +13,31 @@ class M_payroll extends CI_Model
     }
 
     // employee data by date
-    public function employeeDetailDate($sdate = null, $edate = null, $company = null, $center = null, $date = null)
+    public function employeeDetailDate($sdate = null, $edate = null, $company = null,  $date = null)
     {
 
-        $result = $this->db
-            ->where('e.status', 0)
+        $result = $this->db->where('e.status', 0)
             ->order_by('e.first_name', 'asc')
             ->select('e.*')
             ->from('lit_employee_details e')
             ->join('emp_center c', 'c.empid = e.emp_id', 'left')
             ->where('e.company', $company)
-            ->where('c.center', $center)
+            // ->where('c.center', $center)
             ->get()
             ->result();
 
 
         foreach ($result as $key => $value) {
-            $value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company, $center, $date);
+			$value->payRoll = $this->getPayRoll($value->emp_id, $sdate, $edate, $company,  $date);
+			if(empty($value->payRoll)){
+				$value->vacation_accrued = $this->db->from('lit_payroll')->where('emp_id' , $value->emp_id)->select('vacation_accrued')->order_by('id', 'DESC')->get()->row();
+			}
         }
-
+		
         return $result;
     }
 
-    public function getPayRoll($empid = null, $sdate = null, $edate = null, $company = null, $center = null, $date = null)
+    public function getPayRoll($empid = null, $sdate = null, $edate = null, $company = null,  $date = null)
     {
         $year = date('Y', strtotime($sdate));
 
@@ -44,18 +46,22 @@ class M_payroll extends CI_Model
             $datee = date('Y-m-d 23:59:00', strtotime($date));
             $this->db->where('created_on >=', $dates);
             $this->db->where('created_on <=', $datee);
-        }
-        return $this->db->from('lit_payroll_root r')
-            ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.miscellaneous, p.medical, p.rate')
+		}
+		
+		
+        return  $this->db->from('lit_payroll_root r')
+            ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.miscellaneous, p.medical, p.rate, p.vacation_release, p.vacation_accrued')
             ->where('r.empid', $empid)
             ->where('r.start_on >=', $sdate)
             ->where('r.end_on <=', $edate)
             ->where('r.year', $year)
             ->where('p.company ', $company)
-            ->where('p.center ', $center)
+            // // ->where('p.center ', $center)
             ->join('lit_payroll p', 'p.root_id = r.id', 'left')
             ->get()
-            ->row();
+			->row();
+			
+		
     }
 
     // Save payroll Details
@@ -122,11 +128,13 @@ class M_payroll extends CI_Model
             'eicount'       => 0,
             'medical'       => 0,
             'vacation'      => 0,
-            'is_vacation'   => 0,
             'root_id'       => 0,
             'center'        => 0,
             'company'       => 0,
             'emp_id'        => 0,
+            'is_vacation'   => 0,
+			'vacation_release' => $data['vacation_release'],
+			'vacation_accrued' => $data['vacation_accrued'],
             'medical_contribution'  => 0,
 
         );
@@ -141,7 +149,6 @@ class M_payroll extends CI_Model
         $rates->medical_contribution =  $data['medical_contribution'];
 
         $rates->root_id         =  $pid;
-        $rates->center          =  $data['center'];
         $rates->company         =  $data['company'];
         $rates->emp_id          =  $data['emp_ids'];
 
@@ -150,7 +157,7 @@ class M_payroll extends CI_Model
 
         $gross = (float) $rates->reg_amt + (float) $rates->stat_amt + (float) $rates->wages + (float) $rates->miscellaneous + (float) $rates->medical_contribution;
 
-        $rates->vacation = (float) $gross * (float) $data['vacation'];
+        $rates->vacation = ((float) $gross - (float) $rates->medical_contribution ) * (float) $data['vacation'];
         if ($rates->is_vacation) :
             $gross =  $gross +  $rates->vacation;
         endif;
@@ -174,28 +181,35 @@ class M_payroll extends CI_Model
             $rates->eicount = (((float) $master->ei_cont * (float) $gross) / 100);
         else :
             $rates->eicount = 0;
-        endif;
-
+		endif;
+		
+		
         return $rates;
     }
 
     // update Data
     public function updatePayroll($data = null)
     {
-        $insert  = json_decode(json_encode($data), true);
+		$insert  = json_decode(json_encode($data), true);
+
         $this->db->where('emp_id', $data->emp_id);
         $this->db->where('company', $data->company);
-        $this->db->where('center', $data->center);
+        // $this->db->where('center', $data->center);
         $this->db->where('root_id', $data->root_id);
         $query = $this->db->get('lit_payroll');
 
         if ($query->num_rows() > 0) :
             $this->db->where('emp_id', $data->emp_id);
             $this->db->where('company', $data->company);
-            $this->db->where('center', $data->center);
+            // $this->db->where('center', $data->center);
             $this->db->where('root_id', $data->root_id);
             $this->db->update('lit_payroll', $insert);
-        else :
+		else :
+			if ($data->is_vacation == 0) {
+				$data->vacation_accrued = $data->vacation_accrued + $data->vacation;
+			}
+
+			$insert  = json_decode(json_encode($data), true);
             $this->db->insert('lit_payroll', $insert);
         endif;
         return true;
@@ -217,7 +231,7 @@ class M_payroll extends CI_Model
 
 
     // for sample pdf
-    public function sampleFormate($company = null, $center = null)
+    public function sampleFormate($company = null)
     {
         return $this->db
             ->where('e.status', 0)
@@ -226,10 +240,54 @@ class M_payroll extends CI_Model
             ->from('lit_employee_details e')
             ->join('emp_center c', 'c.empid = e.emp_id', 'left')
             ->where('e.company', $company)
-            ->where('c.center', $center)
+            // ->where('c.center', $center)
             ->get()
             ->result();
-    }
+	}
+	
+	public function empVacationAmount($id = null, $sdate = null, $edate = null, $company = null,  $date = null)
+	{
+		$year = date('Y', strtotime($sdate));
+
+		if (!empty($date)) {
+			$dates = date('Y-m-d 1:00:00', strtotime($date));
+			$datee = date('Y-m-d 23:59:00', strtotime($date));
+			$this->db->where('created_on >=', $dates);
+			$this->db->where('created_on <=', $datee);
+		}
+
+		return $this->db->from('lit_payroll_root r')
+		->select_sum('p.vacation')
+		->where('r.empid', $id)
+			->where('r.start_on >=', $sdate)
+			->where('r.end_on <=', $edate)
+			->where('r.year', $year)
+			->where('p.company ', $company)
+			// ->where('p.center ', $center)
+			->join('lit_payroll p', 'p.root_id = r.id', 'left')
+			->get()
+			->row();
+	}
+
+	public function vacationAdding()
+	{
+		$allEmp = $this->db->from('lit_payroll_root');
+
+		$emp = $this->db->select('emp_id, company, vacation, id')->get('lit_payroll')->result();
+
+		foreach ($emp as $key => $value) {
+			$getRow[$key] = $this->db->where('id <', $value->id)->where('emp_id', $value->emp_id)->where('company', $value->company)->get('lit_payroll')->row();
+		}
+
+		// echo '<pre>';
+		// print_r($getRow);
+		// echo '</pre>';
+
+		echo '<pre>';
+		print_r($emp);
+		echo '</pre>';
+		exit();
+	}
 }
 
 /* End of file M_payroll.php */

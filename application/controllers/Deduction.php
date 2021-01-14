@@ -39,13 +39,20 @@ class deduction extends CI_Controller
         $mcount = 0;
         $empTotal = [];
         $emplTotal = [];
-
+        $tgross = [];
+      
 
         foreach ($result as $key => $value) {
             if (count($value->empYtd['created']) > $mcount) :
                 $mcount = count($value->empYtd['created']);
                 $newDates[$key] = $value->empYtd['created'];
             endif;
+        }
+
+        foreach ($result as $key => $value) {
+            $gross = 0;
+            $vacation = 0;
+            
 
             $table['body']      .= '<tr>';
             $table['body']      .= '<td>' . $key . '</td>';
@@ -53,24 +60,41 @@ class deduction extends CI_Controller
             $table['body']      .= '<td>' . $value->first_name . '</td>';
             $table['body']      .= '<td>' . $value->last_name . '</td>';
             $total = 0;
+            
             foreach ($value->empYtd['ytd'] as $k => $row) {
+                
+                // if($row->created != $newDates[0][$k]){
+                //     $table['body'] .= '<td></td>';
+                // }
+
                 $empDeduction   = $row->govt_pen + $row->fedl + $row->eicount;
-                $table['body']      .= '<td>' . round($empDeduction, 2) . '</td>';
+                $table['body']      .= '<td align="right">' . round($empDeduction, 2) . '</td>';
                 // $table['body']      .= '<td>' . $key . '</td>';
                 $empTotal[$k][$key] = $empDeduction;
                 $total += $empDeduction;
+                
+                if($row->is_vacation == 1){
+                    $vacation =  $row->vacation;
+                }
+                // echo '<br>' . $gross;
+
+                $gross +=  $row->reg_amt + $row->stat_amt + $row->wages + $row->miscellaneous + $row->medical_contribution + $vacation;
+                $tgross[$k][$key] = $gross;
             }
+            
             foreach ($value->empYtd['ytd'] as $k => $row) {
+                
+              
                 $emprDeduction  = $row->govt_pen  + ($row->eicount * 1.4);
-                $table['body']      .= '<td>' . round($emprDeduction, 2) . '</td>';
+                $table['body']      .= '<td align="right">' . round($emprDeduction, 2) . '</td>';
                 $emplTotal[$k][$key] = $emprDeduction;
                 $total += $emprDeduction;
             }
-
-            $table['body']      .= '<td>' . round($total, 2) . '</td>';
+           
+            $table['body']  .= '<td align="right">' .  round( $gross, 2) . '</td>';
+            $table['body']      .= '<td align="right">' . round($total, 2) . '</td>';
             $table['body']      .= '</tr>';
         }
-
 
         $columnDate = array();
         foreach ($newDates as $key => $value) {
@@ -82,19 +106,26 @@ class deduction extends CI_Controller
             $table['column'] .= '<td>' . date('d-m-y', strtotime($value)) . '</td>';
         }
         $gtTotal = 0;
+        $ttgross = 0;
+        
         $table['column'] .= '</tr>';
         // ====================================
         $table['body']  .= '<tr style="background:#e0e0e0">';
         $table['body']  .= '<td colspan="4" style="text-align:right">Total</td>';
         foreach ($columnDate as $key => $value) {
-            $table['body']  .= '<td >' . round(array_sum($empTotal[$key]), 2) . '</td>';
+            $table['body']  .= '<td align="right">' . round(array_sum($empTotal[$key]), 2) . '</td>';
             $gtTotal += round(array_sum($empTotal[$key]), 2);
         }
         foreach ($columnDate as $key => $value) {
-            $table['body']  .= '<td >' . round(array_sum($emplTotal[$key]), 2) . '</td>';
+            $table['body']  .= '<td align="right">' . round(array_sum($emplTotal[$key]), 2) . '</td>';
             $gtTotal += round(array_sum($emplTotal[$key]), 2);
+            $ttgross += round(array_sum($tgross[$key]), 2);
         }
-        $table['body']  .= '<td >' . $gtTotal . '</td>';
+
+
+        
+        $table['body']  .= '<td align="right">'. $ttgross.'</td>';
+        $table['body']  .= '<td align="right">' . $gtTotal . '</td>';
         $table['body']  .= '</tr>';
         // ====================================
 
@@ -113,6 +144,8 @@ class deduction extends CI_Controller
         $data['year']       = $this->input->get('year');
         $data['month']      = $this->input->get('month');
         $result['deduction'] = $this->m_payStub->get_deduction($data);
+        // $this->load->view('deduction-pdf', $result, FALSE);
+
 
         $mpdf = new \Mpdf\Mpdf();
         $html = $this->load->view('deduction-pdf', $result, true);

@@ -120,7 +120,7 @@
                                  </div>
                               </div>
                            </div>
-                           <div class="col-sm-1" ></div>
+                           <!-- <div class="col-sm-1" ></div>
                            <div class="col-sm-5" >
                               <div class="form-group">
                                  <label>Select Center</label>
@@ -130,7 +130,7 @@
                                  </select>  
                                  </div>
                               </div>
-                           </div>
+                           </div> -->
                         </div>
                         <div class="row">
                            <div class="col-sm-5" >
@@ -324,7 +324,7 @@
                               <div class="form-group">
                                  <label>vacation rate</label>
                                  <div class="input-group">
-                                    <input type="text" id="vocation-rate" class="form-control" placeholder="Vocation rate" name="vocation_rate" maxlength="6" onfocusout="vocation_rate_check();" required>
+                                    <input type="text" id="vocation-rate" class="form-control" placeholder="Vacation rate" name="vocation_rate" maxlength="6" onfocusout="vocation_rate_check();" required>
                                  </div>
                               </div>
                            </div>
@@ -358,10 +358,10 @@
             <!-- /content area --> 
             <script>
                  $(document).ready(function () {
-                  $('#center-name').select2({
-                     placeholder: "Select  Centers",
-                     multiple: true,
-                  });
+                  // $('#center-name').select2({
+                  //    placeholder: "Select  Centers",
+                  //    multiple: true,
+                  // });
                });
             </script>
             <?php
@@ -582,37 +582,37 @@
                function center_select_feild()
                {
 
-                  var company_name=$('#company-name').val();
-                  jQuery.ajax({
-              				url:"<?php echo base_url();?>main/center_select_feild?use=<?php echo $this->uri->segment(3) ?>",
-              				type:"POST",	
-                        dataType:'json',
-              				data:{company_name:company_name},
-              				success:function(data){
-                           $('#center-name').empty();
-                           $.each(data, function (index, value) { 
-                              $('#center-name').append('<option value="'+value.id+'">'+value.center_name+'</option>');
-                           });
-              				}
-              			 });	
+                  // var company_name=$('#company-name').val();
+                  // jQuery.ajax({
+              		// 		url:"<?php echo base_url();?>main/center_select_feild?use=<?php echo $this->uri->segment(3) ?>",
+              		// 		type:"POST",	
+                  //       dataType:'json',
+              		// 		data:{company_name:company_name},
+              		// 		success:function(data){
+                  //          $('#center-name').empty();
+                  //          $.each(data, function (index, value) { 
+                  //             $('#center-name').append('<option value="'+value.id+'">'+value.center_name+'</option>');
+                  //          });
+              		// 		}
+              		// 	 });	
 
                }
          center_select_feild();
          
          $(document).ready(function () {
-            var slr = <?php echo $centerslist ?>;
-            var selectedValues = new Array();
-            setTimeout(() => {
-               $.each(slr, function (index, value) { 
-                  var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
-                  selectedValues[index] = value.id;
-               });
-               if (slr.length > 0) {
-                  $("#center-name").prop("disabled", true);
-               }
-               $('#center-name').val(selectedValues).trigger('change');
-               // $("#center-name").prop("disabled", true);
-            }, 500);
+            // var slr = <?php echo $centerslist ?>;
+            // var selectedValues = new Array();
+            // setTimeout(() => {
+            //    $.each(slr, function (index, value) { 
+            //       var values =  $('#center-name option[value='+value.id+']').attr('selected', 'selected');
+            //       selectedValues[index] = value.id;
+            //    });
+            //    if (slr.length > 0) {
+            //       $("#center-name").prop("disabled", true);
+            //    }
+            //    $('#center-name').val(selectedValues).trigger('change');
+            //    // $("#center-name").prop("disabled", true);
+            // }, 500);
             
 
             $('#hour-rate, #vocation-rate, #medical').keyup(function() {
