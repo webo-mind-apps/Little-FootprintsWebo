@@ -64,7 +64,30 @@ class Db_model extends CI_Model
 					}
 				}
 				
-				$data = array('company'=> $company , 'medical_contribution' => $medical_contr,  'emp_id' =>$emp_new_id,'first_name' =>$first_name,'last_name' =>$last_name,'empsin' =>$empsin,'dob' =>$dob,'address1' =>$address1,'address2' =>$address2,'city' =>$city,'pincode' =>$pincode,'phone' =>$phone_code,'email' =>$email,'hire_date' =>$hire_date,'rehire_date' =>$rehire_date,'empcert' =>$empcert,'hour_rate' =>$hour_rate,'emp_position' =>$position,'medical' =>$medical,'vocation_rate' =>$vocation_rate,'status' =>$status);
+				$data = array(
+					'company'=> $company , 
+					'medical_contribution' => $medical_contr,  
+					'emp_id' =>$emp_new_id,
+					'first_name' =>$first_name,
+					'last_name' =>$last_name,
+					'empsin' =>$empsin,
+					'dob' =>$dob,
+					'address1' =>$address1,
+					'address2' =>$address2,
+					'city' =>$city,
+					'pincode' =>$pincode,
+					'phone' =>$phone_code,
+					'email' =>$email,
+					'hire_date' =>$hire_date,
+					'rehire_date' =>$rehire_date,
+					'empcert' =>$empcert,
+					'hour_rate' =>$hour_rate,
+					'emp_position' =>$position,
+					'medical' =>$medical,
+					'vocation_rate' =>$vocation_rate,
+					'status' =>$status,
+					'federal_tax' => $_POST['federal_rate']
+				);
 				
 		if(isset($_POST['insert_button']))
 		{

@@ -221,9 +221,11 @@
 
 								</tr>
 							</table>
-							<table class="table " id="payroll_details">
+							<div style="width: 100%; overflow:auto; scrollbar-width:thin ">
+								<table class="table " id="payroll_details">
 
-							</table>
+								</table>
+							</div>
 							<div class="form-group row">
 
 

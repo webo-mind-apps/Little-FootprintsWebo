@@ -86,6 +86,7 @@ class m_payStub extends CI_Model
             ->select_sum('vacation')
             ->select_sum('medical_contribution')
 			->select('rate', 'is_vacation')
+			->select('wages_hours')
 			->select('vacation_release')
 			->select('vacation_accrued')
             ->get('lit_payroll')->row();

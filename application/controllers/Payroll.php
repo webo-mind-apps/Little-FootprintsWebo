@@ -43,6 +43,7 @@ class Payroll extends CI_Controller
 						<th>PER HR RATE($)</th> 
 						<th class="text-center">REGULAR HRS</th> 
 						<th class="text-center">STAT HOL HRS</th> 
+						<th class="text-center">WAGES HRS</th> 
 						<th class="text-center">WAGES</th> 
 						<th class="text-center">MISCELLANEOUS</th> 
 						<th class="text-center" width="115px" style="width:115px">Vacation Accrued</th>
@@ -58,10 +59,6 @@ class Payroll extends CI_Controller
 					</tr>';
 		if (!empty($result)) :
 
-			// echo '<pre>';
-			// print_r($result);
-			// echo '</pre>';
-			// exit();
 			foreach ($result as $key => $row) {
 
 
@@ -69,11 +66,13 @@ class Payroll extends CI_Controller
 				if (!empty($row->payRoll->is_vacation)) {
 					$checked = ($row->payRoll->is_vacation == 1) ? 'checked' : '';
 				}
+				
 
 				$rate   		= (!empty($row->payRoll->rate) ? $row->payRoll->rate : $row->hour_rate);
 				$reg			= (!empty($row->payRoll->reg_unit) ? $row->payRoll->reg_unit : '');
 				$stat_rate		= (!empty($row->payRoll->stat_unit) ?  $row->payRoll->stat_unit : '');
 				$wages			= (!empty($row->payRoll->wages) ? $row->payRoll->wages : 0);
+				$wages_hours	= (!empty($row->payRoll->wages_hours) ? $row->payRoll->wages_hours : 0);
 				$miscellaneous	= (!empty($row->payRoll->miscellaneous) ?  $row->payRoll->miscellaneous : 0);
 				$medical		= (!empty($row->payRoll->medical) ?  $row->payRoll->medical : 0);
 
@@ -108,6 +107,10 @@ class Payroll extends CI_Controller
 				</td>
 			 
 				<td class="text-center">
+					<input type="text" class="form-control"  autocomplete="off" name="wages_hours[]" value="' . $wages_hours . '">
+				</td>
+
+				<td class="text-center">
 					<input type="text" class="form-control"  autocomplete="off" name="wage_amount[]" value="' . $wages . '">
 				</td>
 			 
@@ -116,7 +119,7 @@ class Payroll extends CI_Controller
 				</td>
 
 				<td class="text-center">
-					<input type="text" class="form-control"  autocomplete="off"  name="vacation_accrued[]" value="'  . (!empty($row->payRoll) ? round($row->payRoll->vacation_accrued, 2, 2) :  round($row->vacation_accrued->vacation_accrued, 2, 2)). '">
+					<input type="text" class="form-control"  autocomplete="off"  name="vacation_accrued[]" value="'  . (!empty($row->payRoll) ? round($row->payRoll->vacation_accrued, 2, 2) :  0). '">
 				</td>
 
 				<td class="text-center">
@@ -187,13 +190,18 @@ class Payroll extends CI_Controller
 			}
 		} else {
 			$post = $this->input->post();
+
+			
+
 			$sDate = $post['pay_date_val'];
 			$eDate = $post['pay_end_date_val'];
+			
 			foreach ($post['emp_ids'] as $key => $value) {
 				$data = array(
 					'emp_ids' 		    	=> $post['emp_ids'][$key],
 					'reg_rate' 				=> $post['regular_hrs'][$key],
 					'stat_rate' 			=> $post['stat_hol_hrs'][$key],
+					'wages_hours' 			=> $post['wages_hours'][$key],
 					'wages' 				=> $post['wage_amount'][$key],
 					'miscellaneous' 		=> $post['miscellaneous_amount'][$key],
 					'per_hr_rate'			=> $post['rate_hour'][$key],
@@ -211,7 +219,7 @@ class Payroll extends CI_Controller
 				);
 				
 				$pid = $post['prl_id'][$key];
-				if ($data['reg_rate'] > 0 || $data['stat_rate'] > 0) :
+				if (isset($data['reg_rate']) || isset($data['stat_rate'])) :
 					$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
 				endif;
 			}

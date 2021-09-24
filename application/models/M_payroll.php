@@ -50,7 +50,7 @@ class M_payroll extends CI_Model
 		
 		
         return  $this->db->from('lit_payroll_root r')
-            ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.miscellaneous, p.medical, p.rate, p.vacation_release, p.vacation_accrued')
+            ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.wages_hours, p.miscellaneous, p.medical, p.rate, p.vacation_release, p.vacation_accrued')
             ->where('r.empid', $empid)
             ->where('r.start_on >=', $sdate)
             ->where('r.end_on <=', $edate)
@@ -67,6 +67,7 @@ class M_payroll extends CI_Model
     // Save payroll Details
     public function savePayroll($data = null, $sDate = null, $eDate = null, $pid = null)
     {
+        
         if (empty($pid)) {
             $pid = $this->insertPayroll($data);
         }
@@ -121,6 +122,7 @@ class M_payroll extends CI_Model
             'reg_amt'       => 0,
             'stat_amt'      => 0,
             'wages'         => 0,
+			'wages_hours'   => 0,
             'miscellaneous' => 0,
             'rate'          => 0,
             'govt_pen'      => 0,
@@ -144,6 +146,7 @@ class M_payroll extends CI_Model
         $rates->stat_unit       =  $data['stat_rate'];
         $rates->rate            =  $data['per_hr_rate'];
         $rates->wages           =  $data['wages'];
+		$rates->wages_hours     =  $data['wages_hours'];
         $rates->miscellaneous   =  $data['miscellaneous'];
         $rates->is_vacation     =  $data['is_vacation_release'];
         $rates->medical_contribution =  $data['medical_contribution'];
@@ -204,6 +207,7 @@ class M_payroll extends CI_Model
             // $this->db->where('center', $data->center);
             $this->db->where('root_id', $data->root_id);
             $this->db->update('lit_payroll', $insert);
+            
 		else :
 			if ($data->is_vacation == 0) {
 				$data->vacation_accrued = $data->vacation_accrued + $data->vacation;
