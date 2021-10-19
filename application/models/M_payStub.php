@@ -55,7 +55,7 @@ class m_payStub extends CI_Model
     public function getPayroll($id = null, $sdate = null, $edate = null)
     {
 
-        $this->db->select('r.*, e.first_name, e.email, e.last_name, e.address1, e.city, e.pincode, e.phone');
+        $this->db->select('r.*, e.first_name, e.email, e.last_name, e.address1, e.address2, e.city, e.pincode, e.phone');
 
         $this->db->from('lit_payroll_root r');
         $this->db->join('lit_employee_details e', 'e.emp_id = r.empid', 'left');
@@ -89,6 +89,7 @@ class m_payStub extends CI_Model
 			->select('wages_hours')
 			->select('vacation_release')
 			->select('vacation_accrued')
+            ->select('note')
             ->get('lit_payroll')->row();
     }
     public function currentUnit1($id = null, $created = null)

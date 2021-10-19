@@ -120,9 +120,10 @@
 			<tbody>
 				<tr class="border" style="background-color:#fff">
 					<td class="border">
-						<?php echo $pdf->first_name . ' ' . $pdf->last_name ?>
-						<?php echo $pdf->city ?>, <br>
+						<?php echo $pdf->first_name . ' ' . $pdf->last_name ?>, <br>
 						<?php echo $pdf->address1 ?>, <br>
+						<?php echo $pdf->city ?>, <br>
+						<?php echo $pdf->address2 ?>, <br>
 						<?php echo $pdf->pincode ?>
 					</td>
 					<td class="border text-center"><?php echo date('d-m-Y', strtotime($pdf->start_on)) ?> - <?php echo date('d-m-Y', strtotime($pdf->end_on)) ?></td>
@@ -179,6 +180,10 @@
 					<td class="text-right">0.00</td>
 					<td class="text-right"><?php echo number_format(round($pdf->empYtd['miscellaneous'], 2), 2) ?></td>
 				</tr>
+
+				
+
+
 				<tr style="background-color:#fff">
 					<td>EMPLOYER MEDICAL <br> CONTRIBUTION</td>
 					<td class="text-right">0.00</td>
@@ -197,6 +202,15 @@
 						<td class="text-right"><?php echo number_format(round($pdf->currentUnit->vacation_accrued, 2), 2) ?></td>
 					</tr>
 				<?php } ?>
+				<?php if ($pdf->currentUnit->note != null) { ?>
+					<tr style="background-color:#fff">
+						<td>Note</td>
+						<td class="text-left border-right" colspan="3"><?php echo $pdf->currentUnit->note ?></td>
+						<td class="text-right"></td>
+						<td class="text-right"></td>
+					</tr>
+				<?php } ?>
+
 
 			</tbody>
 			<tfoot>

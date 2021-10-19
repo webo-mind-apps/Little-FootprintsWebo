@@ -50,6 +50,7 @@ class Payroll extends CI_Controller
 						<th class="text-center">Vacation Release</th>
 						<th class="text-center">MEDICAL</th> 
 						<th class="text-center">MEDICAL <br/> CONTRIBUTION</th> 
+						<th class="text-center" style="width:150px">Note</th> 
 						<th style="width:115px"	 class="text-center">
 							RELEASE <br> 
 							VACATION PAY <br>
@@ -61,7 +62,6 @@ class Payroll extends CI_Controller
 
 			foreach ($result as $key => $row) {
 
-
 				$checked = '';
 				if (!empty($row->payRoll->is_vacation)) {
 					$checked = ($row->payRoll->is_vacation == 1) ? 'checked' : '';
@@ -70,6 +70,7 @@ class Payroll extends CI_Controller
 
 				$rate   		= (!empty($row->payRoll->rate) ? $row->payRoll->rate : $row->hour_rate);
 				$reg			= (!empty($row->payRoll->reg_unit) ? $row->payRoll->reg_unit : '');
+				$note			= (!empty($row->payRoll->note) ? $row->payRoll->note : '');
 				$stat_rate		= (!empty($row->payRoll->stat_unit) ?  $row->payRoll->stat_unit : '');
 				$wages			= (!empty($row->payRoll->wages) ? $row->payRoll->wages : 0);
 				$wages_hours	= (!empty($row->payRoll->wages_hours) ? $row->payRoll->wages_hours : 0);
@@ -132,6 +133,10 @@ class Payroll extends CI_Controller
 				<td class="text-center">
 					<input type="text" class="form-control" readonly  autocomplete="off" name="medicalcontr[]" value="' . $row->medical_contribution . '">
 				</td>
+
+				<td>
+					<input type="text" name="note[]" value="'. $note .'" style="min-width: 200px;" />
+				</td>
 				
 				<td class="text-center">
 					<input type="checkbox" class="form-control vacchek" ' . $checked . ' name="vacationPay[]" value="1">
@@ -191,8 +196,6 @@ class Payroll extends CI_Controller
 		} else {
 			$post = $this->input->post();
 
-			
-
 			$sDate = $post['pay_date_val'];
 			$eDate = $post['pay_end_date_val'];
 			
@@ -215,14 +218,21 @@ class Payroll extends CI_Controller
 					'vacation'				=> $post['vacation'][$key],
 					'is_vacation_release' 	=> (isset($post['vacationPay'][$key])) ? '1' : '0',
 					'vacation_release'		=> $post['vacation_release'][$key],
-					'vacation_accrued'		=> $post['vacation_accrued'][$key]
+					'vacation_accrued'		=> $post['vacation_accrued'][$key],
+					'note'					=> $post['note'][$key]
 				);
 				
 				$pid = $post['prl_id'][$key];
-				if (isset($data['reg_rate']) || isset($data['stat_rate'])) :
+
+				if ($data['reg_rate'] > 0 || $data['stat_rate'] >  0 || !empty($data['wages']) || !empty($data['wages_hours'])) :
 					$this->m_payroll->savePayroll($data, $sDate, $eDate, $pid);
+				else:
+					if(!empty($pid)){
+						$this->m_payroll->deletePayroll($pid);
+					}
 				endif;
 			}
+
 			$this->session->set_flashdata('abc', 'success');
 			redirect('main_control/pay_roll_page');
 		}

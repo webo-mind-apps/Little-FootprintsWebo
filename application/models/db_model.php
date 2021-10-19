@@ -88,6 +88,11 @@ class Db_model extends CI_Model
 					'status' =>$status,
 					'federal_tax' => $_POST['federal_rate']
 				);
+
+				// echo '<pre>';
+				// print_r($data);
+				// echo '</pre>';
+				// exit();
 				
 		if(isset($_POST['insert_button']))
 		{

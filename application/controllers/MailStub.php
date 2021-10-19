@@ -57,7 +57,6 @@ class MailStub extends CI_Controller
             $edate = $this->input->get('edate');
 			$result['pdf'] = $this->m_payStub->PdfGet($empid, $sdate, $edate);
 
-			
 
             $mpdf = new \Mpdf\Mpdf();
             $html = $this->load->view('payroll-pdf1', $result, true);

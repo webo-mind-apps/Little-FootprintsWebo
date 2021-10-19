@@ -22,6 +22,7 @@ class M_payroll extends CI_Model
             ->from('lit_employee_details e')
             ->join('emp_center c', 'c.empid = e.emp_id', 'left')
             ->where('e.company', $company)
+            ->distinct()
             // ->where('c.center', $center)
             ->get()
             ->result();
@@ -50,7 +51,7 @@ class M_payroll extends CI_Model
 		
 		
         return  $this->db->from('lit_payroll_root r')
-            ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.wages_hours, p.miscellaneous, p.medical, p.rate, p.vacation_release, p.vacation_accrued')
+            ->select('r.*, p.reg_unit, p.stat_unit, p.wages, p.wages_hours, p.miscellaneous, p.medical, p.rate, p.vacation_release, p.vacation_accrued, p.note')
             ->where('r.empid', $empid)
             ->where('r.start_on >=', $sdate)
             ->where('r.end_on <=', $edate)
@@ -138,6 +139,7 @@ class M_payroll extends CI_Model
 			'vacation_release' => $data['vacation_release'],
 			'vacation_accrued' => $data['vacation_accrued'],
             'medical_contribution'  => 0,
+            'note' => $data['note']
 
         );
 
@@ -155,6 +157,8 @@ class M_payroll extends CI_Model
         $rates->company         =  $data['company'];
         $rates->emp_id          =  $data['emp_ids'];
 
+       
+
         $rates->reg_amt   = (float) $rates->reg_unit  * (float) $rates->rate;
         $rates->stat_amt  = (float) $rates->stat_unit * (float) $rates->rate;
 
@@ -165,7 +169,10 @@ class M_payroll extends CI_Model
             $gross =  $gross +  $rates->vacation;
         endif;
         if ($gross > 0) {
-            $rates->fedl     = (float) $gross * (float) $master->fed_tax;
+            $emps =$this->getEmpDetail( $data['emp_ids']);
+            $fedrals = isset($emps->federal_tax) ? $emps->federal_tax : $master->fed_tax;
+
+            $rates->fedl     = (float) $gross * (float) $fedrals;
             $rates->medical  = $data['medical'];
         } else {
             $rates->fedl = 0;
@@ -230,7 +237,7 @@ class M_payroll extends CI_Model
     // Get Employee Details
     public function getEmpDetail($id = null)
     {
-        return  $this->db->where('emp_id', $id)->select('medical,medical_contribution, hour_rate, vocation_rate')->get('lit_employee_details')->row();
+        return  $this->db->where('emp_id', $id)->select('medical,medical_contribution, hour_rate, vocation_rate , federal_tax')->get('lit_employee_details')->row();
     }
 
 
@@ -292,6 +299,12 @@ class M_payroll extends CI_Model
 		echo '</pre>';
 		exit();
 	}
+
+    public function deletePayroll($pid)
+    {
+       $this->db->where('id', $pid)->delete('lit_payroll_root');
+       return;
+    }
 }
 
 /* End of file M_payroll.php */

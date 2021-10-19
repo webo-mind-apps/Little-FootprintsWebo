@@ -335,7 +335,7 @@
 									<div class="form-group">
 										<label>Federal Tax</label>
 										<div class="input-group">
-											<input type="text" id="vocation-rate" class="form-control" placeholder="Federal Tax" name="federal_rate" maxlength="6" onfocusout="vocation_rate_check();" required>
+											<input type="text" id="fed-rate" class="form-control" placeholder="Federal Tax" name="federal_rate" maxlength="6"  required>
 										</div>
 									</div>
 								</div>
@@ -410,6 +410,7 @@
 				$medCont    = $row['medical_contribution'];
 				$vocation_rate = $row['vocation_rate'];
 				$status = $row['status'];
+				$federal_tax = $row['federal_tax'];
 			}
 		?>
 			<script>
@@ -458,6 +459,8 @@
 				$("#medical").val(`<?php echo $medical; ?>`);
 
 				$("#vocation-rate").val(`<?php echo $vocation_rate; ?>`);
+				$("#fed-rate").val(`<?php echo $federal_tax; ?>`);
+
 
 				$("#status").val(`<?php echo $status; ?>`);
 			</script>
